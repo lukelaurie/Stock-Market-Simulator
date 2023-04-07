@@ -16,6 +16,21 @@ authenticatePages();
 app.use(express.static("public_html"));
 app.use(express.json());
 
+/*
+ * This is the code that gets ran whenever the client
+ * makes a get request to the server at the url, in order
+ * to get back the prediction on how a stock will perform.
+ * @param {Object} req is the information about the request.
+ * @param {Object} res the responce sent back to the user.
+ */
+app.get("/api/prediction/:symbol", (req, res) => {
+  // localhost:3000/api/stock/date/2023-01-01/IBM
+  let curStock = req.params.symbol;
+  
+  // TODO -> run a prediction to predict how much a stock will increase over the next year
+
+  res.send("10.00%");
+});
 
 /*
  * This is the code that gets ran whenever the client
@@ -24,37 +39,12 @@ app.use(express.json());
  * @param {Object} req is the information about the request.
  * @param {Object} res the responce sent back to the user.
  */
-app.get("/api/stock/date/:date/:symbol", (req, res) => {
-  // localhost:3000/api/stock/date/2023-01-01/IBM
-  let curStock = req.params.symbol;
-  let curDate = req.params.date;
-  // determines the correct output size 
-  if (curDate == "year" || curDate == "fiveYear") {
-    var outputsize = "full";
-  } else {
-    var outputsize = "compact";
-  }
-  // determines the url to get the stock information at
-  let apiKey = "QKI4RBI2S56M014L";
-  let url =
-    "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=" +
-    curStock +
-    "&apikey=" +
-    apiKey +
-    "&outputsize=" + outputsize;
+app.post("/api/date/daily", (req, res) => {
+  let curStock = req.body.symbol;
+  let curDate = req.body.date;
+  // send back the data to the user
+  getDailyInfo(curDate, curStock, res);
   
-  fetch(url)
-    .then((responce) => {
-      return responce.json();
-    })
-    .then((data) => {
-      // console.log(data["Global Quote"]["01. symbol"]);
-      console.log(parseTime(data, curDate));
-      res.send(parseTime(data, curDate));
-    })
-    .catch((err) => {
-      res.send("invalid stock");
-    });
 });
 
 /*
@@ -201,7 +191,7 @@ function authenticate(req, res, next) {
 /*
  * This will parse all of the stock data to only get the needed amount of time.
  * @param {Object} data contains all of the stock information.
- * @param {tring} time represents how much information to get for the stock.
+ * @param {String} time represents how much information to get for the stock.
  */
 function parseTime(data, time) {
   const stockData = {};
@@ -225,6 +215,43 @@ function parseTime(data, time) {
     }
   }
   return stockData;
+}
+
+/*
+ * This will git all of the daily stock information up until a 
+ * given date.
+ * @param {String} curDate is the information about the which date 
+ * should be searched up to.
+ * @param {String} curStock is the stock to get info about.
+ * @param {Object} res the responce sent back to the user.
+ */
+function getDailyInfo(curDate, curStock, res) {
+  // determines the correct output size 
+  if (curDate == "year" || curDate == "fiveYear") {
+    var outputsize = "full";
+  } else {
+    var outputsize = "compact";
+  }
+  // determines the url to get the stock information at
+  let apiKey = "QKI4RBI2S56M014L";
+  let url =
+    "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=" +
+    curStock +
+    "&apikey=" +
+    apiKey +
+    "&outputsize=" + outputsize;
+  
+  fetch(url)
+    .then((responce) => {
+      return responce.json();
+    })
+    .then((data) => {
+      // send back the data to the user
+      res.send(parseTime(data, curDate));
+    })
+    .catch((err) => {
+      res.send("invalid stock");
+    });
 }
 
 app.listen(3000, () => {
