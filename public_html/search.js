@@ -1,5 +1,6 @@
 
-graphInfo("year", "WMT");
+graphInfo("fiveYear", "IBM");
+
 
 function graphInfo(timeAmount, stock) {
   // makes a post requst to the server
@@ -27,17 +28,17 @@ function graphInfo(timeAmount, stock) {
 function drawGraph(data, curStock) {
   const ctx = document.getElementById("myChart").getContext("2d");
   // the information to be displayed on the graph
-  let labels = Object.keys(data).sort().reverse();
+  let labels = Object.keys(data).sort();
   let datapoints = Object.values(data)
-    .map((item) => item["5. adjusted close"])
+    .map((item) => item["4. close"])
     .reverse();
   // determines if stock is positive or negative 
   if (Number(datapoints[0]) > Number(datapoints[datapoints.length - 1])) {
-    //rgb(255, 99, 132)
     var color = "rgb(255, 0, 0)";
   } else {
     var color = "rgb(0, 128, 0)";
   }
+  console.log(data[labels[0]]);
   // create the chart to be displayed
   const chart = new Chart(ctx, {
     type: "line",

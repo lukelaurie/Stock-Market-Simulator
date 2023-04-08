@@ -26,7 +26,7 @@ app.use(express.json());
 app.get("/api/prediction/:symbol", (req, res) => {
   // localhost:3000/api/stock/date/2023-01-01/IBM
   let curStock = req.params.symbol;
-  
+
   // TODO -> run a prediction to predict how much a stock will increase over the next year
 
   res.send("10.00%");
@@ -44,7 +44,6 @@ app.post("/api/date/daily", (req, res) => {
   let curDate = req.body.date;
   // send back the data to the user
   getDailyInfo(curDate, curStock, res);
-  
 });
 
 /*
@@ -192,11 +191,13 @@ function authenticate(req, res, next) {
  * This will parse all of the stock data to only get the needed amount of time.
  * @param {Object} data contains all of the stock information.
  * @param {String} time represents how much information to get for the stock.
+ * @param {String} interval represents the interval of times to get the stock.
  */
-function parseTime(data, time) {
+function parseTime(data, time, interval) {
   const stockData = {};
   // finds the correct date to compare with
   const allDates = {
+    day: new Date(new Date().setDate(new Date().getDay() - 1)),
     week: new Date(new Date().setDate(new Date().getDay() - 7)),
     month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
     sixMonth: new Date(new Date().setMonth(new Date().getMonth() - 6)),
@@ -204,50 +205,61 @@ function parseTime(data, time) {
     fiveYear: new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
   };
   var checkDate = allDates[time];
-
-  // this is slow so potentially try and optimize this later
-  // increase to look at every week?
-
   // Loop through all the data points and only keep the needed ones
-  for (const date in data["Time Series (Daily)"]) {
-    if (new Date(date) >= checkDate) {
-      stockData[date] = data["Time Series (Daily)"][date];
+  for (const date in data["Time Series " + interval]) {
+    if (time == "allTime" || new Date(date.split(" ")[0]) >= checkDate) {
+      stockData[date] = data["Time Series " + interval][date];
     }
   }
   return stockData;
 }
 
 /*
- * This will git all of the daily stock information up until a 
+ * This will git all of the daily stock information up until a
  * given date.
- * @param {String} curDate is the information about the which date 
+ * @param {String} curDate is the information about the which date
  * should be searched up to.
  * @param {String} curStock is the stock to get info about.
  * @param {Object} res the responce sent back to the user.
  */
 function getDailyInfo(curDate, curStock, res) {
-  // determines the correct output size 
-  if (curDate == "year" || curDate == "fiveYear") {
-    var outputsize = "full";
-  } else {
-    var outputsize = "compact";
+  // determine the correct time intervals for each period
+  var valuesFunction = "function=TIME_SERIES_DAILY_ADJUSTED";
+  var interval = "";
+  var outputsize = "&outputsize=full";
+  if (curDate == "day") {
+    valuesFunction = "function=TIME_SERIES_INTRADAY";
+    interval = "&interval=5min";
+  } else if (curDate == "week") {
+    valuesFunction = "function=TIME_SERIES_INTRADAY";
+    interval = "&interval=30min";
+  } else if (curDate == "month") {
+    valuesFunction = "function=TIME_SERIES_INTRADAY";
+    interval = "&interval=60min";
   }
   // determines the url to get the stock information at
-  let apiKey = "QKI4RBI2S56M014L";
+  let apiKey = "&apikey=QKI4RBI2S56M014L";
+  let symbol = "&symbol=" + curStock;
   let url =
-    "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=" +
-    curStock +
-    "&apikey=" +
-    apiKey +
-    "&outputsize=" + outputsize;
-  
+    "https://www.alphavantage.co/query?" +
+    valuesFunction +
+    symbol +
+    interval +
+    outputsize +
+    apiKey;
   fetch(url)
     .then((responce) => {
       return responce.json();
     })
     .then((data) => {
+      // determines the correct input signal
+      if (interval != "") {
+        var inputSignal = "(" + interval.split("=")[1] + ")";
+      } else {
+        var inputSignal = "(Daily)";
+      }
       // send back the data to the user
-      res.send(parseTime(data, curDate));
+      res.send(parseTime(data, curDate, inputSignal));
     })
     .catch((err) => {
       res.send("invalid stock");
