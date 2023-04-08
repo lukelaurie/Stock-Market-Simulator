@@ -1,7 +1,26 @@
+/*
+ * This will run the needed frontend code to make the search 
+ * stock page interactive. For example it will display to the 
+ * user an interactive graph based on a time interval of their 
+ * choosing
+ * Author: Luke Laurie
+ * Date: 4/8/2023
+ */
 
-graphInfo("fiveYear", "IBM");
+//graphInfo("day", "IBM");
+graphInfo("week", "WMT");
+// graphInfo("month", "WMT");
+// graphInfo("sixMonth", "WMT");
+// graphInfo("year", "WMT");
+// graphInfo("fiveYear", "WMT");
+// graphInfo("allTime", "WMT");
 
-
+/*
+ * This will get all of the needed data for a graph on its 
+ * correct time interval.
+ * @param {String} timeAmount is the period of time to collect data.
+ * @param {String} stock is the symbol representing the stock.
+ */
 function graphInfo(timeAmount, stock) {
   // makes a post requst to the server
   fetch("/api/date/daily/", {
@@ -25,6 +44,12 @@ function graphInfo(timeAmount, stock) {
     });
 }
 
+/*
+ * This will draw the graph based on an inputted set of data, and it 
+ * will provide the needed styling to the graph as well.
+ * @param {Object} data is the container for all of the stock data.
+ * @param {String} curStock is the symbol representing the stock.
+ */
 function drawGraph(data, curStock) {
   const ctx = document.getElementById("myChart").getContext("2d");
   // the information to be displayed on the graph
