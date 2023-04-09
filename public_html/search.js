@@ -7,8 +7,8 @@
  * Date: 4/8/2023
  */
 
-//graphInfo("day", "IBM");
-graphInfo("week", "WMT");
+graphInfo("day", "IBM");
+//graphInfo("week", "WMT");
 // graphInfo("month", "WMT");
 // graphInfo("sixMonth", "WMT");
 // graphInfo("year", "WMT");
