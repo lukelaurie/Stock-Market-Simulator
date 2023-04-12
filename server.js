@@ -26,10 +26,11 @@ app.use(express.json());
 app.get("/api/prediction/:symbol", (req, res) => {
   // localhost:3000/api/stock/date/2023-01-01/IBM
   let curStock = req.params.symbol;
-
+  let stockData = getDailyInfo("predictionInterval", curStock, res);
+  console.log(stockData);
   // TODO -> run a prediction to predict how much a stock will increase over the next year
 
-  res.send("10.00%");
+  res.send(stockData);
 });
 
 /*
@@ -201,6 +202,7 @@ function parseTime(data, time, interval) {
     week: new Date(new Date().setDate(new Date().getDay() - 7)),
     month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
     sixMonth: new Date(new Date().setMonth(new Date().getMonth() - 6)),
+    predictionInterval: new Date(new Date().setDate(new Date().getDay() - 200)),
     year: new Date(new Date().setMonth(new Date().getMonth() - 12)),
     fiveYear: new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
   };
@@ -258,8 +260,12 @@ function getDailyInfo(curDate, curStock, res) {
       } else {
         var inputSignal = "(Daily)";
       }
-      // send back the data to the user
-      res.send(parseTime(data, curDate, inputSignal));
+      // send back the data to the user or return out of function
+      if (curDate == "predictionInterval") {
+        return parseTime(data, curDate, inputSignal);
+      } else {
+        res.send(parseTime(data, curDate, inputSignal));
+      }
     })
     .catch((err) => {
       res.send("invalid stock");
