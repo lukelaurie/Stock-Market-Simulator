@@ -106,3 +106,25 @@ tr:hover {background-color: #ddd;}
 .topnav .search-container {
     float: right;
 }
+
+.buttonTable {
+    border: none;
+}
+
+.buttonRow td{
+    border: none;
+    background-color: inherit;
+    padding: 0px;
+}
+
+.buttonTable tr:hover {
+    background-color: inherit;
+}
+
+.buttonTable button {
+    width: 100%;
+    height: 100%;
+}
+.searchContent {
+    text-align: center;
+}
