@@ -8,6 +8,7 @@
  * Date: 4/8/2023
  */
 const express = require("express");
+const regression = require("regression");
 
 const app = express();
 
@@ -24,13 +25,9 @@ app.use(express.json());
  * @param {Object} res the responce sent back to the user.
  */
 app.get("/api/prediction/:symbol", (req, res) => {
-  // localhost:3000/api/stock/date/2023-01-01/IBM
   let curStock = req.params.symbol;
-  let stockData = getDailyInfo("predictionInterval", curStock, res);
-  console.log(stockData);
-  // TODO -> run a prediction to predict how much a stock will increase over the next year
-
-  res.send(stockData);
+  // send back the prediction
+  getDailyInfo("predictionInterval", curStock, res);
 });
 
 /*
@@ -193,20 +190,24 @@ function authenticate(req, res, next) {
  * @param {Object} data contains all of the stock information.
  * @param {String} time represents how much information to get for the stock.
  * @param {String} interval represents the interval of times to get the stock.
+ * @returns {Object} Object with all of the correct stock information.
  */
 function parseTime(data, time, interval) {
   const stockData = {};
+  if (time == "predictionInterval") {
+    time = "fiveYear";
+  }
   // finds the correct date to compare with
   const allDates = {
     day: new Date(new Date().setDate(new Date().getDay() - 1)),
     week: new Date(new Date().setDate(new Date().getDay() - 7)),
     month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
     sixMonth: new Date(new Date().setMonth(new Date().getMonth() - 6)),
-    predictionInterval: new Date(new Date().setDate(new Date().getDay() - 200)),
     year: new Date(new Date().setMonth(new Date().getMonth() - 12)),
     fiveYear: new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
   };
-  var checkDate = allDates[time];
+  // var checkDate = allDates[time];
+  var checkDate = allDates["fiveYear"];
   // Loop through all the data points and only keep the needed ones
   for (const date in data["Time Series " + interval]) {
     if (time == "allTime" || new Date(date.split(" ")[0]) >= checkDate) {
@@ -225,6 +226,46 @@ function parseTime(data, time, interval) {
  * @param {Object} res the responce sent back to the user.
  */
 function getDailyInfo(curDate, curStock, res) {
+  // get the correct url
+  let urlInfo = getTimeUrl(curDate, curStock);
+  let url = urlInfo[0]; 
+  let interval = urlInfo[1];
+  fetch(url)
+    .then((responce) => {
+      return responce.json();
+    })
+    .then((data) => {
+      // determines the correct input signal
+      if (interval != "") {
+        var inputSignal = "(" + interval.split("=")[1] + ")";
+      } else {
+        var inputSignal = "(Daily)";
+      }
+      // send back the data to the user or return out of function
+      let finalInfo = parseTime(data, curDate, inputSignal);
+      if (curDate == "predictionInterval") {
+        let prediction = regressionPrediction(finalInfo);
+        res.send(prediction);
+      } else {
+        res.send(finalInfo);
+      }
+    })
+    .catch((err) => {
+      res.send("invalid stock");
+    });
+}
+
+/*
+ * This will create the correct url, such that the correct information 
+ * will be accessed from the url.
+ * @param {String} curDate is the information about the which date
+ * should be searched up to.
+ * @param {String} curDate is the representation of how far to look 
+ * back on for the stock.
+ * @param {String} curStock is the stock to get info about.
+ * @return {Array} The url to access the data and the correct interval.
+ */
+function getTimeUrl(curDate, curStock) {
   // determine the correct time intervals for each period
   var valuesFunction = "function=TIME_SERIES_DAILY_ADJUSTED";
   var interval = "";
@@ -249,29 +290,39 @@ function getDailyInfo(curDate, curStock, res) {
     interval +
     outputsize +
     apiKey;
-  fetch(url)
-    .then((responce) => {
-      return responce.json();
-    })
-    .then((data) => {
-      // determines the correct input signal
-      if (interval != "") {
-        var inputSignal = "(" + interval.split("=")[1] + ")";
-      } else {
-        var inputSignal = "(Daily)";
-      }
-      // send back the data to the user or return out of function
-      if (curDate == "predictionInterval") {
-        return parseTime(data, curDate, inputSignal);
-      } else {
-        res.send(parseTime(data, curDate, inputSignal));
-      }
-    })
-    .catch((err) => {
-      res.send("invalid stock");
-    });
+  return [url, interval];
 }
 
+/*
+ * This will use a linear regression model in order to determine 
+ * a stocks predicted amount of change over the next year.
+ * @param {Object} data is all the information about the stock.
+ */
+function regressionPrediction(data) {
+  // Extract the closing prices from the data
+  const allDates = Object.keys(data).sort();
+  // gets all datapoints in sorted order
+  const prices = allDates.map((item) =>
+    parseFloat(data[item]["5. adjusted close"])
+  );
+  const priceMappings = prices.map((price, index) => [index, price]);
+  // Perform linear regression to predict future prices
+  const result = regression.linear(priceMappings);
+  const slope = result.equation[0];
+  const intercept = result.equation[1];
+  // predicts the performance for the next year
+  console.log(slope + "    " + intercept);
+  const currentPrice = slope * prices.length + intercept;
+  const futurePrice = slope * (prices.length + 252) + intercept;
+  var percentage = ((futurePrice - currentPrice) / currentPrice) * 100;
+  percentage = percentage.toFixed(2);
+  return percentage.toString() + "%";
+}
+
+/*
+ * This will set port 3000 as the location where the page 
+ * can be accesed.
+ */
 app.listen(3000, () => {
   console.log("Listening on port 3000");
 });

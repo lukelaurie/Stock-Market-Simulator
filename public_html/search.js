@@ -7,12 +7,12 @@
  * Date: 4/8/2023
  */
 
-graphInfo("day", "IBM");
+//graphInfo("day", "IBM");
 //graphInfo("week", "WMT");
 // graphInfo("month", "WMT");
 // graphInfo("sixMonth", "WMT");
 // graphInfo("year", "WMT");
-// graphInfo("fiveYear", "WMT");
+graphInfo("fiveYear", "AAPL");
 // graphInfo("allTime", "WMT");
 
 /*
@@ -54,8 +54,9 @@ function drawGraph(data, curStock) {
   const ctx = document.getElementById("myChart").getContext("2d");
   // the information to be displayed on the graph
   let labels = Object.keys(data).sort();
+  console.log(data);
   let datapoints = Object.values(data)
-    .map((item) => item["4. close"])
+    .map((item) => item["5. adjusted close"])
     .reverse();
   // determines if stock is positive or negative 
   if (Number(datapoints[0]) > Number(datapoints[datapoints.length - 1])) {
