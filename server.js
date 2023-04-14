@@ -378,7 +378,6 @@ function saveStockPrediction(stockTicker, prediction) {
       } else {
         // updates the value of the prediction
         result.prediction = prediction; 
-        console.log(result);
         result.save();
       }
     });
