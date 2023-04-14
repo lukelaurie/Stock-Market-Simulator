@@ -12,8 +12,8 @@
 // graphInfo("month", "WMT");
 // graphInfo("sixMonth", "WMT");
 // graphInfo("year", "WMT");
-graphInfo("fiveYear", "AAPL");
-// graphInfo("allTime", "WMT");
+// graphInfo("fiveYear", "ACRX");
+// graphInfo("allTime", "AAPL");
 
 /*
  * This will get all of the needed data for a graph on its 
@@ -58,6 +58,12 @@ function drawGraph(data, curStock) {
   let datapoints = Object.values(data)
     .map((item) => item["5. adjusted close"])
     .reverse();
+    console.log("here");
+    for (i in datapoints) {
+      if (i % 2 == 0) {
+        console.log(datapoints[i]);
+      }
+    }
   // determines if stock is positive or negative 
   if (Number(datapoints[0]) > Number(datapoints[datapoints.length - 1])) {
     var color = "rgb(255, 0, 0)";

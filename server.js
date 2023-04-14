@@ -7,10 +7,17 @@
  * Author: Luke Laurie
  * Date: 4/8/2023
  */
+// gets needed libraries
 const express = require("express");
 const regression = require("regression");
+const mongoose = require("mongoose");
 
 const app = express();
+
+
+const Stock = require("./Stock.js");
+
+mongoose.connect('mongodb://127.0.0.1:27017/stockSimulation');
 
 authenticatePages();
 
@@ -24,10 +31,26 @@ app.use(express.json());
  * @param {Object} req is the information about the request.
  * @param {Object} res the responce sent back to the user.
  */
-app.get("/api/prediction/:symbol", (req, res) => {
+app.get("/api/prediction/:symbol", async (req, res) => {
   let curStock = req.params.symbol;
   // send back the prediction
-  getDailyInfo("predictionInterval", curStock, res);
+  const predictionValue = await getDailyInfo(
+    "predictionInterval",
+    curStock,
+    res
+  );
+  res.send(predictionValue);
+});
+
+/*
+ * This is search through all the stocks in the s&p 500 and
+ * find the predicted top ten stocks
+ * @param {Object} req is the information about the request.
+ * @param {Object} res the responce sent back to the user.
+ */
+app.get("/api/stock/top", async (req, res) => {
+  const predictionStocks = await topStocks();
+  res.send(predictionStocks);
 });
 
 /*
@@ -37,11 +60,12 @@ app.get("/api/prediction/:symbol", (req, res) => {
  * @param {Object} req is the information about the request.
  * @param {Object} res the responce sent back to the user.
  */
-app.post("/api/date/daily", (req, res) => {
+app.post("/api/date/daily", async (req, res) => {
   let curStock = req.body.symbol;
   let curDate = req.body.date;
   // send back the data to the user
-  getDailyInfo(curDate, curStock, res);
+  let stockInfo = await getDailyInfo(curDate, curStock, res);
+  res.send(stockInfo);
 });
 
 /*
@@ -64,7 +88,6 @@ app.get("/api/stock/day/:symbol", (req, res) => {
       return responce.json();
     })
     .then((data) => {
-      // console.log(data["Global Quote"]["01. symbol"]);
       res.send(data);
     })
     .catch((err) => {
@@ -205,9 +228,10 @@ function parseTime(data, time, interval) {
     sixMonth: new Date(new Date().setMonth(new Date().getMonth() - 6)),
     year: new Date(new Date().setMonth(new Date().getMonth() - 12)),
     fiveYear: new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
+    predictionInterval: new Date(new Date().setFullYear(new Date().getFullYear() - 5))
   };
-  // var checkDate = allDates[time];
-  var checkDate = allDates["fiveYear"];
+  //console.log("time");
+  var checkDate = allDates[time];
   // Loop through all the data points and only keep the needed ones
   for (const date in data["Time Series " + interval]) {
     if (time == "allTime" || new Date(date.split(" ")[0]) >= checkDate) {
@@ -218,50 +242,62 @@ function parseTime(data, time, interval) {
 }
 
 /*
- * This will git all of the daily stock information up until a
+ * This will find the top ten stock predictions, in the 
+ * database keeping track of the predictions.
+ */
+async function topStocks() {
+  // finds all the existing stock predictions
+  let curPrediction = await Stock.find({}); 
+  let topStocks = [] 
+  // gets all of the stocks 
+  for (i in curPrediction) {
+    let curStock = curPrediction[i];
+    topStocks.push([curStock.ticker, curStock.prediction]);
+  }
+  // sorts the stocks in descending order
+  topStocks.sort((a, b) => {
+    return b[1] - a[1];
+  });
+  // gets the top ten stocks
+  topStocks = topStocks.slice(0, 10);
+  return topStocks;
+}
+
+/*
+ * This will get all of the daily stock information up until a
  * given date.
  * @param {String} curDate is the information about the which date
  * should be searched up to.
  * @param {String} curStock is the stock to get info about.
- * @param {Object} res the responce sent back to the user.
  */
-function getDailyInfo(curDate, curStock, res) {
+async function getDailyInfo(curDate, curStock) {
   // get the correct url
   let urlInfo = getTimeUrl(curDate, curStock);
-  let url = urlInfo[0]; 
+  let url = urlInfo[0];
   let interval = urlInfo[1];
-  fetch(url)
-    .then((responce) => {
-      return responce.json();
-    })
-    .then((data) => {
-      // determines the correct input signal
-      if (interval != "") {
-        var inputSignal = "(" + interval.split("=")[1] + ")";
-      } else {
-        var inputSignal = "(Daily)";
-      }
-      // send back the data to the user or return out of function
-      let finalInfo = parseTime(data, curDate, inputSignal);
-      if (curDate == "predictionInterval") {
-        let prediction = regressionPrediction(finalInfo);
-        res.send(prediction);
-      } else {
-        res.send(finalInfo);
-      }
-    })
-    .catch((err) => {
-      res.send("invalid stock");
-    });
+  const responce = await fetch(url);
+  const data = await responce.json();
+  // determines the correct input signal
+  if (interval != "") {
+    var inputSignal = "(" + interval.split("=")[1] + ")";
+  } else {
+    var inputSignal = "(Daily)";
+  }
+  // send back the data to the user or return out of function
+  let finalInfo = parseTime(data, curDate, inputSignal);
+  if (curDate == "predictionInterval") {
+    let prediction = regressionPrediction(finalInfo, curStock);
+    return prediction;
+  } else {
+    return finalInfo;
+  }
 }
 
 /*
- * This will create the correct url, such that the correct information 
+ * This will create the correct url, such that the correct information
  * will be accessed from the url.
  * @param {String} curDate is the information about the which date
  * should be searched up to.
- * @param {String} curDate is the representation of how far to look 
- * back on for the stock.
  * @param {String} curStock is the stock to get info about.
  * @return {Array} The url to access the data and the correct interval.
  */
@@ -294,11 +330,13 @@ function getTimeUrl(curDate, curStock) {
 }
 
 /*
- * This will use a linear regression model in order to determine 
+ * This will use a linear regression model in order to determine
  * a stocks predicted amount of change over the next year.
  * @param {Object} data is all the information about the stock.
+ * @param {String} stockName is the name of the stock.
+ * @return {String} The predictd stock change.
  */
-function regressionPrediction(data) {
+function regressionPrediction(data, stockName) {
   // Extract the closing prices from the data
   const allDates = Object.keys(data).sort();
   // gets all datapoints in sorted order
@@ -311,16 +349,43 @@ function regressionPrediction(data) {
   const slope = result.equation[0];
   const intercept = result.equation[1];
   // predicts the performance for the next year
-  console.log(slope + "    " + intercept);
   const currentPrice = slope * prices.length + intercept;
   const futurePrice = slope * (prices.length + 252) + intercept;
-  var percentage = ((futurePrice - currentPrice) / currentPrice) * 100;
+  let percentage =
+    ((futurePrice - currentPrice) /
+      ((Math.abs(currentPrice) + Math.abs(futurePrice)) / 2)) *
+    100;
   percentage = percentage.toFixed(2);
+  // saves the prediction
+  saveStockPrediction(stockName, percentage)
   return percentage.toString() + "%";
 }
 
 /*
- * This will set port 3000 as the location where the page 
+ * This will either update the already existing value of the 
+ * prediction, or if not yet creaed it will create a new mapping.
+ * @param {String} stockTicker is symbol for the stock.
+ * @param {Number} prediction is the number representing how much
+ * the stock may change.
+ */
+function saveStockPrediction(stockTicker, prediction) {
+  Stock.findOne({ticker: stockTicker})
+    .then(result => {
+      // checks if the stock exists or not
+      if (result == null) {
+        // creates a new datapoint 
+        Stock.create({ticker: stockTicker, prediction: prediction});
+      } else {
+        // updates the value of the prediction
+        result.prediction = prediction; 
+        console.log(result);
+        result.save();
+      }
+    });
+}
+
+/*
+ * This will set port 3000 as the location where the page
  * can be accesed.
  */
 app.listen(3000, () => {
