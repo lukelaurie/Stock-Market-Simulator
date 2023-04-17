@@ -106,7 +106,17 @@ app.get("/api/user/stocks", (req, res) => {
   let curCookie = req.cookies;
   let curId = curCookie.id;
 
-  // TODO -> go into database, find user with id, and send back json of db stock items
+  // Go into database, find user with id, and send back json of db stock items
+  User.findById(curId, (err, user) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Error retrieving user stocks.");
+    } else if (!user) {
+      res.status(404).send("User not found.");
+    } else {
+      res.json(user.stocks);
+    }
+  });
 
   res.redirect("success");
 });
@@ -123,10 +133,27 @@ app.post("/api/user/add/stock", (req, res) => {
   let curId = curCookie.id;
   let curStock = req.body.stock;
 
-  // TODO -> go into database, find user with id, create new stock db item and add to user
-
-  res.send("success");
+  // Go into database, find user with id, create new stock db item and add to user
+  User.findById(curId, (err, user) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Error retrieving user.");
+    } else if (!user) {
+      res.status(404).send("User not found.");
+    } else {
+      user.stocks.push(curStock);
+      user.save((err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Error updating user stocks.");
+        } else {
+          res.send("success");
+        }
+      });
+    }
+  });
 });
+
 
 /*
  * This is the code that gets ran whenever the client
@@ -139,9 +166,27 @@ app.post("/api/login", (req, res) => {
   let curUsername = req.body.username;
   let curPassword = req.body.password;
 
-  // TODO -> check if user in the db, if so create cookie/session and allow into the website
-
-  res.redirect("/index.html");
+  // Check if user in the db, if so create cookie/session and allow into the website
+  User.findOne({ username: curUsername }, (err, user) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Error retrieving user.");
+    } else if (!user) {
+      res.status(404).send("User not found.");
+    } else {
+      user.comparePassword(curPassword, (err, isMatch) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Error comparing password.");
+        } else if (!isMatch) {
+          res.status(401).send("Incorrect password.");
+        } else {
+          req.session.userId = user._id;
+          res.redirect("/index.html");
+        }
+      });
+    }
+  });
 });
 
 /*
@@ -155,10 +200,22 @@ app.post("/api/register", (req, res) => {
   let curUsername = req.body.username;
   let curPassword = req.body.password;
 
-  // TODO -> save the user in the database
+  // Save the user in the database
+  const newUser = new User({
+    username: curUsername,
+    password: curPassword
+  });
 
-  res.redirect("/index.html");
+  newUser.save((err, savedUser) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Error saving the user.");
+    } else {
+      res.redirect("/index.html");
+    }
+  });
 });
+
 
 /*
  * This is the code that gets ran whenever the client
@@ -168,7 +225,9 @@ app.post("/api/register", (req, res) => {
  * @param {Object} res the responce sent back to the user.
  */
 app.post("/api/logout", (req, res) => {
-  // TODO -> remove the users cookies
+  // Remove the user's cookies
+  res.cookie("id", "", { expires: new Date(0) });
+  res.cookie("username", "", { expires: new Date(0) });
 
   res.redirect("/login.html");
 });
@@ -193,20 +252,24 @@ function authenticatePages() {
  * @param {Object} The function to be ran if cookie is valid.
  */
 function authenticate(req, res, next) {
-  // TODO -> check for cookies
-  let curCookie = true;
-  if (curCookie) {
-    // checks if the cookie exists
-    //var result = hasSession(curCookie.user, curCookie.sessionId);
-    var result = true;
+  // Check for cookies
+  let curCookie = req.cookies;
+  
+  // Verify the existence of cookies (e.g. "id" and "username")
+  if (curCookie && curCookie.id && curCookie.username) {
+    // Check if the cookie is valid (e.g., using a function like 'hasSession')
+    // This function should be implemented to look up the session in your database
+    var result = hasSession(curCookie.username, curCookie.id);
     if (result) {
       next();
       return;
     }
   }
-  // sent to login page if not yet logged in
+  
+  // Redirect to the login page if not logged in
   res.redirect("/login.html");
 }
+
 
 /*
  * This will parse all of the stock data to only get the needed amount of time.
