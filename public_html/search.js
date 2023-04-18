@@ -102,3 +102,27 @@ function drawGraph(data, curStock) {
         },
   });
 }
+
+/*
+ * This will run the code to display the correct graph and information in the table
+ * when a user searches for a stock
+*/
+function pageLoad() {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const search = urlParams.get('search');
+  graphInfo("week", search);
+
+  // TODO: Populate the table with the data from the API
+}
+
+/*
+ * This function updates the graph to the correct time period when the user selects a new one
+ * @param {String} timeAmount is the period of time to collect data.
+*/
+function updateGraph(timeAmount) {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const search = urlParams.get('search');
+  graphInfo(timeAmount, search);
+}

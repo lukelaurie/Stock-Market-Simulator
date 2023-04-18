@@ -11,6 +11,7 @@
 const express = require("express");
 const regression = require("regression");
 const mongoose = require("mongoose");
+const bodyParser = require('body-parser')
 
 const app = express();
 
@@ -23,6 +24,10 @@ authenticatePages();
 
 app.use(express.static("public_html"));
 app.use(express.json());
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
 
 /*
  * This is the code that gets ran whenever the client
