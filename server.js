@@ -15,7 +15,10 @@ const bodyParser = require('body-parser')
 
 const app = express();
 
+// Import and use the 'User' model
+const User = require("./User.js");
 
+// Import and use the 'Stock' model
 const Stock = require("./Stock.js");
 
 mongoose.connect('mongodb://127.0.0.1:27017/stockSimulation');
