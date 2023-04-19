@@ -16,7 +16,7 @@ const bodyParser = require('body-parser')
 const app = express();
 
 // Import and use the 'User' model
-const User = require("./User.js");
+const User = require("./user.js");
 
 // Import and use the 'Stock' model
 const Stock = require("./Stock.js");
@@ -115,18 +115,19 @@ app.get("/api/user/stocks", (req, res) => {
   let curId = curCookie.id;
 
   // Go into database, find user with id, and send back json of db stock items
-  User.findById(curId, (err, user) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Error retrieving user stocks.");
-    } else if (!user) {
+  User.findById(curId)
+  .then ( (user) => {
+    if (user.length == 0) {
       res.status(404).send("User not found.");
-    } else {
+    }
+    else {
       res.json(user.stocks);
     }
+  })
+  .catch ( (err) => {
+    console.error(err);
+    res.status(500).send("Error retrieving user stocks.");
   });
-
-  res.redirect("success");
 });
 
 /*
@@ -142,21 +143,20 @@ app.post("/api/user/add/stock", (req, res) => {
   let curStock = req.body.stock;
 
   // Go into database, find user with id, create new stock db item and add to user
-  User.findById(curId, (err, user) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Error retrieving user.");
-    } else if (!user) {
+  User.findById(curId)
+  .then ( (user) => {
+    if (user.length == 0) {
       res.status(404).send("User not found.");
-    } else {
+    }
+    else {
       user.stocks.push(curStock);
-      user.save((err, updatedUser) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send("Error updating user stocks.");
-        } else {
-          res.send("success");
-        }
+      user.save()
+      .then ( (updatedUser) => {
+        res.send("success");
+      })
+      .catch ( (err) => {
+        console.error(err);
+        res.status(500).send("Error updating user stocks.");
       });
     }
   });
@@ -175,26 +175,31 @@ app.post("/api/login", (req, res) => {
   let curPassword = req.body.password;
 
   // Check if user in the db, if so create cookie/session and allow into the website
-  User.findOne({ username: curUsername }, (err, user) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Error retrieving user.");
-    } else if (!user) {
+  User.findOne({ username: curUsername })
+  .then( (data) => {
+    if (data.length == 0) {
       res.status(404).send("User not found.");
-    } else {
-      user.comparePassword(curPassword, (err, isMatch) => {
+    }
+    else {
+      data.comparePassword(curPassword, (err, isMatch) => {
         if (err) {
           console.error(err);
           res.status(500).send("Error comparing password.");
         } else if (!isMatch) {
           res.status(401).send("Incorrect password.");
-        } else {
-          req.session.userId = user._id;
+        }
+        else {
+          res.cookie('id', data._id, { maxAge: 900000, httpOnly: true });
           res.redirect("/index.html");
         }
-      });
+      })
     }
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send("Error finding user.");
   });
+
 });
 
 /*
@@ -214,14 +219,15 @@ app.post("/api/register", (req, res) => {
     password: curPassword
   });
 
-  newUser.save((err, savedUser) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Error saving the user.");
-    } else {
-      res.redirect("/index.html");
-    }
-  });
+  newUser.save()
+  .then(() => {
+    console.log("User saved successfully.");
+    res.redirect("/login.html");
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send("Error saving the user");
+  })
 });
 
 
