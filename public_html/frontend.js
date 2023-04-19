@@ -36,3 +36,59 @@ function login() {
     });
 
 }
+
+/*
+    This function is called when the user clicks the register button on the login.html page. It
+    sends the user's information to the server to be stored in the database.
+*/
+function register() {
+    let username = document.getElementById("newUsername").value;
+    let password = document.getElementById("newPsw").value;
+    let confirmPassword = document.getElementById("newPswRepeat").value;
+    let email = document.getElementById("email").value;
+    let phoneNumber = document.getElementById("phoneNumber").value;
+
+    // Check if the passwords match
+    if (password !== confirmPassword) {
+        alert("Passwords do not match");
+        return;
+    }
+
+    let user = {
+        username: username,
+        password: password,
+        email: email,
+        phoneNumber: phoneNumber
+    };
+
+    fetch ("/api/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user)
+    })
+    .then(response => {
+        return response.text();
+    })
+    .then ((data) => {
+        console.log(data);
+        if (data == "UEXISTS") {
+            alert("Username already exists");
+        }
+        else if (data == "PEXISTS") {
+            alert("Phone number already exists");
+        }
+        else if (data == "EEXISTS") {
+            alert("Email already exists");
+        }
+        else if (data == "OKAY") {
+            alert("Registration successful");
+            window.location.href = "/login.html"
+        }
+        else {
+            alert("Registration failed");
+        }
+    });
+
+}

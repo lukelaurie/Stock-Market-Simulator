@@ -37,33 +37,30 @@
         <!-- Based off of https://www.w3schools.com/howto/howto_css_signup_form.asp -->
         <div id="id01" display="none" class="modal">
             <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal"></span>
-            <form class="modal-content" action="/api/register" method="post">
+            <div class="modal-content">
             <div class="container">
                 <h1>Sign Up</h1>
-                <!--
                 <label for="email"><b>Email</b></label>
-                <input type="text" placeholder="Enter Email" id="email" name="email" required> -->
+                <input type="text" placeholder="Enter Email" id="email" name="email" required>
 
                 <label for="newUsername"><b>Username</b></label>
                 <input type="text" placeholder="Enter Username" id="newUsername" name="username" required>
 
-                <!--
                 <label for="phoneNumber"><b>Phone Number</b></label>
-                <input type="text" placeholder="Enter Phone Number" id="phoneNumber" name="phoneNumber" required> -->
+                <input type="text" pattern="([0-9]{3})[0-9]{3}-[0-9]{4}" placeholder="Enter Phone Number (xxx)xxx-xxxx" id="phoneNumber" name="phoneNumber" required>
         
                 <label for="newPsw"><b>Password</b></label>
                 <input type="password" placeholder="Enter Password" id="newPsw" name="password" required>
         
-                <!--
                 <label for="newPswRepeat"><b>Repeat Password</b></label>
-                <input type="password" placeholder="Repeat Password" id="newPswRepeat" name="secondPassword" required> -->
+                <input type="password" placeholder="Repeat Password" id="newPswRepeat" name="secondPassword" required>
 
                 <div class="clearfix">
-                <button type="submit" class="signup">Sign Up</button>
+                <button onclick="register()" class="signup">Sign Up</button>
                 <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
                 </div>
             </div>
-            </form>
+            </div>
         </div>
     </body>
 </html> 

@@ -219,22 +219,53 @@ app.post("/api/login", (req, res) => {
 app.post("/api/register", (req, res) => {
   let curUsername = req.body.username;
   let curPassword = req.body.password;
+  let curEmail = req.body.email;
+  let curPhoneNumber = req.body.phoneNumber;
 
-  // Save the user in the database
-  const newUser = new User({
-    username: curUsername,
-    password: curPassword
+  User.findOne({ username: curUsername })
+  .then( (data) => {
+    // If the username already exists, send back an error
+    if (data && data.length != 0) {
+      res.end("UEXISTS");
+    }
+    else {
+
+      User.findOne({ email: curEmail })
+      .then( (data) => {
+        // If the email already exists, send back an error
+        if (data && data.length != 0) {
+          res.end("EEXISTS");
+        }
+        else {
+          User.findOne({ phoneNumber: curPhoneNumber })
+          .then( (data) => {
+            // If the phone number already exists, send back an error
+            if (data && data.length != 0) {
+              res.end("PEXISTS");
+            }
+            else {
+              // Save the user in the database
+              const newUser = new User({
+                username: curUsername,
+                password: curPassword,
+                email: curEmail,
+                phoneNumber: curPhoneNumber,
+              });
+              newUser.save()
+              .then(() => {
+                console.log("User saved successfully.");
+                res.end("OKAY");
+              })
+              .catch((err) => {
+                console.error(err);
+                res.end("ERROR");
+              });
+            }
+          });
+        }
+      });
+    }
   });
-
-  newUser.save()
-  .then(() => {
-    console.log("User saved successfully.");
-    res.redirect("/login.html");
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).send("Error saving the user");
-  })
 });
 
 
