@@ -16,7 +16,7 @@ const bodyParser = require('body-parser')
 const app = express();
 
 // Import and use the 'User' model
-const User = require("./User.js");
+const User = require("./user.js");
 
 // Import and use the 'Stock' model
 const Stock = require("./Stock.js");
@@ -214,14 +214,15 @@ app.post("/api/register", (req, res) => {
     password: curPassword
   });
 
-  newUser.save((err, savedUser) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Error saving the user.");
-    } else {
-      res.redirect("/index.html");
-    }
-  });
+  newUser.save()
+  .then(() => {
+    console.log("User saved successfully.");
+    res.redirect("/login.html");
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send("Error saving the user");
+  })
 });
 
 
