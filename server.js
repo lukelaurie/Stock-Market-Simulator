@@ -291,17 +291,18 @@ function parseTime(data, time, interval) {
   if (time == "predictionInterval") {
     time = "fiveYear";
   }
+  let today = new Date();
+  let findDate = new Date();
   // finds the correct date to compare with
   const allDates = {
-    day: new Date(new Date().setDate(new Date().getDay() - 1)),
-    week: new Date(new Date().setDate(new Date().getDay() - 7)),
+    day: new Date(new Date().setDate(new Date().getDate() - 2)),
+    week: new Date(new Date().setDate(new Date().getDate() - 8)),
     month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
     sixMonth: new Date(new Date().setMonth(new Date().getMonth() - 6)),
     year: new Date(new Date().setMonth(new Date().getMonth() - 12)),
     fiveYear: new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
     predictionInterval: new Date(new Date().setFullYear(new Date().getFullYear() - 5))
   };
-  //console.log("time");
   var checkDate = allDates[time];
   // Loop through all the data points and only keep the needed ones
   for (const date in data["Time Series " + interval]) {

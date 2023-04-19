@@ -1,22 +1,23 @@
 /*
- * This will run the needed frontend code to make the search 
- * stock page interactive. For example it will display to the 
- * user an interactive graph based on a time interval of their 
+ * This will run the needed frontend code to make the search
+ * stock page interactive. For example it will display to the
+ * user an interactive graph based on a time interval of their
  * choosing
  * Author: Luke Laurie
  * Date: 4/8/2023
  */
+const canvas = document.getElementById("myChart");
+const graphButtons = document.getElementsByClassName("button");
+chart = "";
 
-//graphInfo("day", "IBM");
-//graphInfo("week", "WMT");
-// graphInfo("month", "WMT");
-// graphInfo("sixMonth", "WMT");
-// graphInfo("year", "WMT");
-// graphInfo("fiveYear", "ACRX");
-// graphInfo("allTime", "AAPL");
+function displayStock() {
+  // gets the stock ticker
+  const currentUrl = window.location.search;
+  const stockTicker = currentUrl.split("=")[1];
+}
 
 /*
- * This will get all of the needed data for a graph on its 
+ * This will get all of the needed data for a graph on its
  * correct time interval.
  * @param {String} timeAmount is the period of time to collect data.
  * @param {String} stock is the symbol representing the stock.
@@ -36,43 +37,46 @@ function graphInfo(timeAmount, stock) {
     .then((curData) => {
       // draws the graph if data was found
       if (Object.keys(curData).length != 0) {
-        drawGraph(curData, stock);
+        drawGraph(curData, stock, timeAmount);
       }
-    })
-    .catch((err) => {
-      console.log(err);
     });
+  // .catch((err) => {
+  //   console.log(err);
+  // });
 }
 
 /*
- * This will draw the graph based on an inputted set of data, and it 
+ * This will draw the graph based on an inputted set of data, and it
  * will provide the needed styling to the graph as well.
  * @param {Object} data is the container for all of the stock data.
  * @param {String} curStock is the symbol representing the stock.
+ * @param {String} timeAmount is the period of time to collect data.
  */
-function drawGraph(data, curStock) {
-  const ctx = document.getElementById("myChart").getContext("2d");
+function drawGraph(data, curStock, timeAmount) {
+  // determines the key to search for in the data
+  if (timeAmount == "day" || timeAmount == "week" || timeAmount == "month") {
+    var dataPicker = "4. close";
+  } else {
+    var dataPicker = "5. adjusted close";
+  }
+  // destroys the chart if already existing
+  if (chart != "") {
+    chart.destroy();
+  }
+  const ctx = canvas.getContext("2d");
   // the information to be displayed on the graph
   let labels = Object.keys(data).sort();
-  console.log(data);
   let datapoints = Object.values(data)
-    .map((item) => item["5. adjusted close"])
+    .map((item) => item[dataPicker])
     .reverse();
-    console.log("here");
-    for (i in datapoints) {
-      if (i % 2 == 0) {
-        console.log(datapoints[i]);
-      }
-    }
-  // determines if stock is positive or negative 
+  // determines if stock is positive or negative
   if (Number(datapoints[0]) > Number(datapoints[datapoints.length - 1])) {
     var color = "rgb(255, 0, 0)";
   } else {
     var color = "rgb(0, 128, 0)";
   }
-  console.log(data[labels[0]]);
   // create the chart to be displayed
-  const chart = new Chart(ctx, {
+  chart = new Chart(ctx, {
     type: "line",
     data: {
       labels: labels,
@@ -82,36 +86,36 @@ function drawGraph(data, curStock) {
           data: datapoints,
           borderColor: color,
           fill: false,
-          pointRadius: 0
+          pointRadius: 0,
         },
       ],
     },
     // Allows for responsive chart regardless of y location of curser
     options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: curStock + ' Stock Chart'
-            },
-            tooltip: {
-              mode: 'index',
-              intersect: false
-            }
-          }
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: curStock + " Stock Chart",
         },
+        tooltip: {
+          mode: "index",
+          intersect: false,
+        },
+      },
+    },
   });
 }
 
 /*
  * This will run the code to display the correct graph and information in the table
  * when a user searches for a stock
-*/
+ */
 function pageLoad() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const search = urlParams.get('search');
-  graphInfo("week", search);
+  const search = urlParams.get("search");
+  graphInfo("day", search);
 
   // TODO: Populate the table with the data from the API
 }
@@ -119,10 +123,10 @@ function pageLoad() {
 /*
  * This function updates the graph to the correct time period when the user selects a new one
  * @param {String} timeAmount is the period of time to collect data.
-*/
-function updateGraph(timeAmount) {
+ */
+function changeGraph(timeAmount) {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const search = urlParams.get('search');
+  const search = urlParams.get("search");
   graphInfo(timeAmount, search);
 }
