@@ -6,9 +6,21 @@
  * Author: Luke Laurie
  * Date: 4/8/2023
  */
+// gets the DOM elements
 const canvas = document.getElementById("myChart");
-const graphButtons = document.getElementsByClassName("button");
+const stockTitle = document.getElementById("stockTitle");
+const sharesPurchase = document.getElementById("shares");
+const sharesButton = document.getElementById("sharesButton");
+const sharesSell = document.getElementById("sell");
+const sellButton = document.getElementById("sellButton");
+const stockPrice = document.getElementById("stockPrice");
+const stockChange = document.getElementById("stockChange");
+const stockDividend = document.getElementById("stockDividend");
+const stockPrediction = document.getElementById("stockPrediction");
+// creates the needed global variables
 chart = "";
+const red = "rgb(255, 0, 0)"; 
+const green = "rgb(0, 128, 0)";
 
 function displayStock() {
   // gets the stock ticker
@@ -71,9 +83,9 @@ function drawGraph(data, curStock, timeAmount) {
     .reverse();
   // determines if stock is positive or negative
   if (Number(datapoints[0]) > Number(datapoints[datapoints.length - 1])) {
-    var color = "rgb(255, 0, 0)";
+    var color = red;
   } else {
-    var color = "rgb(0, 128, 0)";
+    var color = green;
   }
   // create the chart to be displayed
   chart = new Chart(ctx, {
@@ -116,8 +128,10 @@ function pageLoad() {
   const urlParams = new URLSearchParams(queryString);
   const search = urlParams.get("search");
   graphInfo("day", search);
-
-  // TODO: Populate the table with the data from the API
+  // gets the data for the day 
+  todaysData(search)
+  // gets the prediction 
+  getPrediction(search)
 }
 
 /*
@@ -129,4 +143,61 @@ function changeGraph(timeAmount) {
   const urlParams = new URLSearchParams(queryString);
   const search = urlParams.get("search");
   graphInfo(timeAmount, search);
+}
+
+/*
+ * This function gets all of the current days information for a stock.
+ * @param {String} stockTicker is the symbol representing the stock.
+ * @return {Object} the data containing the info for the day.
+ */
+function todaysData(stockTicker) {
+  let url = "/api/stock/day/" + stockTicker; 
+  // gets the days information
+  fetch(url) 
+    .then(responce => {
+      return responce.json();
+    }).then(data => {
+      // updates the values of the DOM
+      const symbol = data["Global Quote"]["01. symbol"]
+      const priceStock = data["Global Quote"]["05. price"]; 
+      const changeStock = data["Global Quote"]["10. change percent"]; 
+      stockTitle.innerText = symbol;
+      stockPrice.innerText = "$" + priceStock;
+      stockChange.innerText = changeStock;
+      // sets the correct color 
+      if (changeStock.charAt(0) == '+') {
+        stockChange.style.color = green;
+      } else {
+        stockChange.style.color = red;
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    });
+}
+
+/*
+ * This function gets all the prediction for a stock.
+ * @param {String} stockTicker is the symbol representing the stock.
+ * @return {String} the percentage prediction for the stock.
+ */
+function getPrediction(stockTicker) {
+  let url = "/api/prediction/" + stockTicker; 
+  // gets the days information
+  fetch(url) 
+    .then(responce => {
+      return responce.text();
+    }).then(data => {
+      // updates the value of the DOM
+      stockPrediction.innerText = data;
+      // sets the correct color 
+      if (data.charAt(0) != '-') {
+        stockPrediction.style.color = green;
+      } else {
+        stockPrediction.style.color = red;
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    });
 }

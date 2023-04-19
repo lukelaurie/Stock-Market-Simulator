@@ -291,8 +291,6 @@ function parseTime(data, time, interval) {
   if (time == "predictionInterval") {
     time = "fiveYear";
   }
-  let today = new Date();
-  let findDate = new Date();
   // finds the correct date to compare with
   const allDates = {
     day: new Date(new Date().setDate(new Date().getDate() - 2)),
