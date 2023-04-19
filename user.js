@@ -4,6 +4,14 @@ const bcrypt = require("bcryptjs");
 
 // Define the schema for the User model
 const userSchema = new mongoose.Schema({
+
+  // The user's unique username
+  username: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  
   // The user's unique email address
   email: {
     type: String,
@@ -75,14 +83,23 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// Method to compare a given password with the stored hashed password
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  // Use bcrypt to compare the given password with the stored hashed password
-  const isMatch = await bcrypt.compare(candidatePassword, this.password);
+// // Method to compare a given password with the stored hashed password
+// userSchema.methods.comparePassword = async function (candidatePassword) {
+//   // Use bcrypt to compare the given password with the stored hashed password
+//   console.log("candidatePassword: " + candidatePassword);
+//   console.log("this.password: " + this.password);
+//   bcrypt.compare(candidatePassword, this.password)
+//   .then(function(result) {
+//     console.log("Compare result is " + result);
+//     return result;
+//   })
+//   .catch(function(err) {
+//     console.log("err: " + err);
+//     return false;
+//   });
   
-  // Return the result of the comparison (true if they match, false otherwise)
-  return isMatch;
-};
+
+// };
 
 // Create and export the User model using the userSchema
 const User = mongoose.model("User", userSchema);
