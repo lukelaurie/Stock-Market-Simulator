@@ -11,7 +11,9 @@
 const express = require("express");
 const regression = require("regression");
 const mongoose = require("mongoose");
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const bcrypt = require("bcryptjs");
+const cookieparser = require("cookie-parser");
 
 const app = express();
 
@@ -23,14 +25,14 @@ const Stock = require("./Stock.js");
 
 mongoose.connect('mongodb://127.0.0.1:27017/stockSimulation');
 
+app.use(cookieparser());
 authenticatePages();
-
-app.use(express.static("public_html"));
 app.use(express.json());
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
+app.use(express.static("public_html"));
 
 /*
  * This is the code that gets ran whenever the client
@@ -177,22 +179,27 @@ app.post("/api/login", (req, res) => {
   // Check if user in the db, if so create cookie/session and allow into the website
   User.findOne({ username: curUsername })
   .then( (data) => {
-    if (data.length == 0) {
+    if (!data || data.length == 0) {
       res.status(404).send("User not found.");
     }
     else {
-      data.comparePassword(curPassword, (err, isMatch) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send("Error comparing password.");
-        } else if (!isMatch) {
-          res.status(401).send("Incorrect password.");
+      bcrypt.compare(curPassword, data.password)
+      .then( (isMatch) => {
+        if (!isMatch) {
+          console.log("Match: " + isMatch);
+          res.end("ERROR");
         }
         else {
-          res.cookie('id', data._id, { maxAge: 900000, httpOnly: true });
-          res.redirect("/index.html");
+          console.log("User logged in: " + data.username);
+          sessId = addSession(data.username);
+          res.cookie('login', {username: data.username, sid: sessId}, {maxAge: 60*60, encode: String});
+          res.end("OKAY");
         }
       })
+      .catch( (err) => {
+        console.error(err);
+        res.end("ERROR");
+      });
     }
   })
   .catch((err) => {
@@ -256,8 +263,53 @@ function authenticatePages() {
   app.use("/index.html", authenticate);
   app.use("/predictions.html", authenticate);
   app.use("/profile.html", authenticate);
-  app.use("/searchh.html", authenticate);
+  app.use("/search.html", authenticate);
 }
+
+let sessions = {};
+
+/*
+  * This will add a session for the user to the sessions object.
+  * @param {Object} user is the information about the user
+*/
+function addSession(user) {
+	let sessionId = Math.floor(Math.random() * 100000);
+	let sessionStart = Date.now();
+	sessions[user] = {'sid': sessionId, 'start': sessionStart}
+  console.log("Session added for user: " + user + " with id: " + sessionId);
+	return sessionId;
+}
+
+/*
+  * This will check if the user has a session.
+  * @param {String} user is the information about the user
+  * @param {String} sessionId is the id of the session
+*/
+function hasSession(user, sessionId) {
+  console.log("checking session");
+  if (sessions[user] && sessions[user].sid == sessionId) {
+    return true;
+  }
+  return false;
+}
+
+/*
+  * This will remove a session for the user to the sessions object
+*/
+function cleanupSessions() {
+	let now = Date.now();
+	for (let user in sessions) {
+		let session = sessions[user];
+		if (session.start + SESSION_LENGTH < Date.now()) {
+			delete sessions[user];
+		}
+	}
+}
+
+// Set session length to 10 minutes
+const SESSION_LENGTH = 600000;
+
+setInterval(cleanupSessions, 2000);
 
 /*
  * This will check if the user can be validated with cookies.
@@ -268,20 +320,24 @@ function authenticatePages() {
 function authenticate(req, res, next) {
   // Check for cookies
   let curCookie = req.cookies;
+  console.log(curCookie.login);
   
   // Verify the existence of cookies (e.g. "id" and "username")
-  if (curCookie && curCookie.id && curCookie.username) {
+  if (curCookie && curCookie.login && curCookie.login.sid && curCookie.login.username) {
+    console.log("Cookie found for user: " + curCookie.login.username + " with id: " + curCookie.login.sid);
     // Check if the cookie is valid (e.g., using a function like 'hasSession')
     // This function should be implemented to look up the session in your database
-    var result = hasSession(curCookie.username, curCookie.id);
+    var result = hasSession(curCookie.login.username, curCookie.login.sid);
     if (result) {
+      addSession(curCookie.login.username)
       next();
       return;
     }
   }
-  
-  // Redirect to the login page if not logged in
-  res.redirect("/login.html");
+  else {
+    res.redirect("/login.html");
+  }
+
 }
 
 
