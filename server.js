@@ -192,7 +192,7 @@ app.post("/api/login", (req, res) => {
         else {
           console.log("User logged in: " + data.username);
           sessId = addSession(data.username);
-          res.cookie('login', {username: data.username, sid: sessId}, {maxAge: 60*60, encode: String});
+          res.cookie('login', {username: data.username, sid: sessId}, {maxAge: 1000*60*60, encode: String});
           res.end("OKAY");
         }
       })
@@ -360,7 +360,6 @@ function authenticate(req, res, next) {
     // This function should be implemented to look up the session in your database
     var result = hasSession(curCookie.login.username, curCookie.login.sid);
     if (result) {
-      addSession(curCookie.login.username)
       next();
       return;
     }
