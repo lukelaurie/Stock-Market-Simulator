@@ -22,7 +22,37 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true
-  }
+  },
+
+  // The user's available cash balance
+  cashBalance: {
+    type: Number,
+    required: true,
+    default: 10000 // Set an initial cash balance for the user, e.g., 10,000
+  },
+
+  // The user's stock holdings
+  holdings: [
+    {
+      // Stock symbol for the holding
+      symbol: {
+        type: String,
+        required: true
+      },
+
+      // Number of shares in the holding
+      shares: {
+        type: Number,
+        required: true
+      },
+
+      // Average purchase price of the holding
+      averagePrice: {
+        type: Number,
+        required: true
+      }
+    }
+  ]
 });
 
 // Middleware to hash the password before saving the user to the database
