@@ -90,5 +90,29 @@ function register() {
             alert("Registration failed");
         }
     });
+}
+
+/*
+    This function is called when the user navigates to index.html. It populates the tables on that page
+    with the information from the user's profile in the database
+*/
+function loadIndex() {
+
+    var table = document.getElementById("summary");
+
+    var row = table.insertRow();
+
+    var cell1 = row.insertCell();
+    var newText = document.createTextNode('new row');
+    cell1.appendChild(newText);
+
+    var cell2 = row.insertCell();
+    var newText = document.createTextNode('new row');
+    cell2.appendChild(newText);
+
+    var cell3 = row.insertCell();
+    var newText = document.createTextNode('new row');
+    cell3.appendChild(newText);
+    
 
 }
