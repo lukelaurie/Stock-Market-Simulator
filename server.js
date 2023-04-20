@@ -295,6 +295,7 @@ function authenticatePages() {
   app.use("/predictions.html", authenticate);
   app.use("/profile.html", authenticate);
   app.use("/search.html", authenticate);
+  //app.use("/", authenticate);
 }
 
 let sessions = {};
