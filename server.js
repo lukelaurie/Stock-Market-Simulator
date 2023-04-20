@@ -352,7 +352,8 @@ setInterval(cleanupSessions, 2000);
 function authenticate(req, res, next) {
   // Check for cookies
   let curCookie = req.cookies;
-  console.log(curCookie.login);
+  console.log(curCookie);
+  
   
   // Verify the existence of cookies (e.g. "id" and "username")
   if (curCookie && curCookie.login && curCookie.login.sid && curCookie.login.username) {
