@@ -19,7 +19,7 @@ const stockDividend = document.getElementById("stockDividend");
 const stockPrediction = document.getElementById("stockPrediction");
 // creates the needed global variables
 chart = "";
-const red = "rgb(255, 0, 0)"; 
+const red = "rgb(255, 0, 0)";
 const green = "rgb(0, 128, 0)";
 
 function displayStock() {
@@ -48,13 +48,15 @@ function graphInfo(timeAmount, stock) {
     })
     .then((curData) => {
       // draws the graph if data was found
-      if (Object.keys(curData).length != 0) {
+      if (Object.keys(curData).length > 1) {
         drawGraph(curData, stock, timeAmount);
+      } else if (Object.keys(curData).length == 1) {
+        alert("Too Many API Calls, Try Again In One Minute");
       }
+    })
+    .catch((err) => {
+      alert("Choose A Valid Stock Ticker");
     });
-  // .catch((err) => {
-  //   console.log(err);
-  // });
 }
 
 /*
@@ -127,11 +129,8 @@ function pageLoad() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const search = urlParams.get("search");
-  graphInfo("day", search);
-  // gets the data for the day 
-  todaysData(search)
-  // gets the prediction 
-  getPrediction(search)
+  // gets the data for the day
+  todaysData(search);
 }
 
 /*
@@ -151,28 +150,43 @@ function changeGraph(timeAmount) {
  * @return {Object} the data containing the info for the day.
  */
 function todaysData(stockTicker) {
-  let url = "/api/stock/day/" + stockTicker; 
+  let url = "/api/stock/day/" + stockTicker;
   // gets the days information
-  fetch(url) 
-    .then(responce => {
+  fetch(url)
+    .then((responce) => {
       return responce.json();
-    }).then(data => {
+    })
+    .then((data) => {
+      // checks if api call was made
+      if (data.hasOwnProperty("Note")) {
+        stockTitle.innerText = stockTicker.toUpperCase();
+        stockPrice.innerText = "$" + "0.00";
+        stockChange.innerText = "%" + "0.00";
+        stockPrediction.innerText = "%" + "0.00";
+        alert("Too Many API Calls, Refresh In One Minute");
+        return;
+      }
       // updates the values of the DOM
-      const symbol = data["Global Quote"]["01. symbol"]
-      const priceStock = data["Global Quote"]["05. price"]; 
-      const changeStock = data["Global Quote"]["10. change percent"]; 
-      stockTitle.innerText = symbol;
-      stockPrice.innerText = "$" + priceStock;
-      stockChange.innerText = changeStock;
-      // sets the correct color 
-      if (changeStock.charAt(0) == '+') {
+      var symbol = data["Global Quote"]["01. symbol"];
+      var priceStock = data["Global Quote"]["05. price"];
+      var changeStock = data["Global Quote"]["10. change percent"];
+      // sets the correct color
+      if (changeStock.charAt(0) != "-") {
         stockChange.style.color = green;
+        changeStock = "+" + changeStock;
       } else {
         stockChange.style.color = red;
       }
+      stockTitle.innerText = symbol;
+      stockPrice.innerText = "$" + priceStock;
+      stockChange.innerText = changeStock;
+      // displays the graph
+      graphInfo("day", stockTicker);
+      // gets the prediction
+      getPrediction(stockTicker);
     })
-    .catch(err => {
-      console.log(err);
+    .catch((err) => {
+      alert("Choose A Valid Stock Ticker");
     });
 }
 
@@ -182,22 +196,22 @@ function todaysData(stockTicker) {
  * @return {String} the percentage prediction for the stock.
  */
 function getPrediction(stockTicker) {
-  let url = "/api/prediction/" + stockTicker; 
+  let url = "/api/prediction/" + stockTicker;
   // gets the days information
-  fetch(url) 
-    .then(responce => {
+  fetch(url)
+    .then((responce) => {
       return responce.text();
-    }).then(data => {
+    })
+    .then((data) => {
       // updates the value of the DOM
-      stockPrediction.innerText = data;
-      // sets the correct color 
-      if (data.charAt(0) != '-') {
+      // sets the correct color
+      if (data.charAt(0) != "-") {
         stockPrediction.style.color = green;
+        data = "+" + data;
       } else {
         stockPrediction.style.color = red;
       }
+      stockPrediction.innerText = data;
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch((err) => {});
 }

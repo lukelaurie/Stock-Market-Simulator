@@ -40,10 +40,6 @@
           <input type="number" id="sell" name="shares" min="1" max="100" />
           <button onclick="sellShares" id="sellButton">Sell</button>
       </div>
-      <div class="predictionReport">
-        <h3>Prediction Report</h3>
-        <p>Estimated gain: PLACEHOLDER</p>
-      </div>
       <div class="stockInfo">
         <h3>Info</h3>
         <table class="stockTable">
@@ -53,9 +49,9 @@
             <th>Prediction</th>
           </tr>
           <tr>
-            <td id="stockPrice">PLACEHOLDER</td>
-            <td id="stockChange">PLACEHOLDER</td>
-            <td id="stockPrediction">PLACEHOLDER</td>
+            <td id="stockPrice">$0.00</td>
+            <td id="stockChange">0.00%</td>
+            <td id="stockPrediction">0.00%</td>
           </tr>
         </table>
       </div>
@@ -72,8 +68,6 @@
                 <td><button class="button" onclick="changeGraph('allTime')">All</button></td>
             </tr>
         </table>
-        <p>GRAPH PLACEHOLDER</p>
-
         <!-- Import Chart.js library -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <canvas id="myChart"></canvas>

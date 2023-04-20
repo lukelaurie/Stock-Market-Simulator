@@ -299,7 +299,7 @@ function parseTime(data, time, interval) {
   }
   // finds the correct date to compare with
   const allDates = {
-    day: new Date(new Date().setDate(new Date().getDate() - 2)),
+    day: new Date(data["Meta Data"]["3. Last Refreshed"].split(" ")[0]),
     week: new Date(new Date().setDate(new Date().getDate() - 8)),
     month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
     sixMonth: new Date(new Date().setMonth(new Date().getMonth() - 6)),
@@ -353,6 +353,10 @@ async function getDailyInfo(curDate, curStock) {
   let interval = urlInfo[1];
   const responce = await fetch(url);
   const data = await responce.json();
+  // checks if out of api calls
+  if (data.hasOwnProperty("Note")) {
+    return data;
+  }
   // determines the correct input signal
   if (interval != "") {
     var inputSignal = "(" + interval.split("=")[1] + ")";
@@ -413,6 +417,10 @@ function getTimeUrl(curDate, curStock) {
  * @return {String} The predictd stock change.
  */
 function regressionPrediction(data, stockName) {
+  // check if api calls exceeded
+  if (Object.keys(data).length == 1) {
+    return "0.00%";
+  }
   // Extract the closing prices from the data
   const allDates = Object.keys(data).sort();
   // gets all datapoints in sorted order
