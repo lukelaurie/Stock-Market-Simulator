@@ -4,7 +4,7 @@
  * allwoing them to create a new account, or add a new
  * stock to their existing account. It will also have get
  * requests allowing for the user to retreive the needed data.
- * Author: Luke Laurie
+ * Author: Luke Laurie 
  * Date: 4/8/2023
  */
 // gets needed libraries
