@@ -8,6 +8,7 @@
         <meta charset="utf-8">
         <title>Stock Portfolio Simulator Login</title>
         <link rel="stylesheet" href="loginStyle.css">
+        <script src="frontend.js"></script>
     </head> 
     <body>
         <header>
@@ -16,8 +17,7 @@
             <h1 class="headerText">Stock Market Simulator</h1>
         </header>
         <div class="formContainer">
-            <form action="/api/login" method="post">
-            
+            <div class="form">
                 <div class="container">
                     <label for="uname"><b>Username</b></label>
                     <input type="text" placeholder="Enter Username" name="username" id="uname">
@@ -25,9 +25,9 @@
                     <label for="psw"><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" name="password" id="psw">
                 
-                    <button type="submit">Login</button>
+                    <button onclick="login()">Login</button>
                 </div>
-            </form>
+            </div>
             <span class="signUp">
                 <button class="signUpButton" onclick="document.getElementById('id01').style.display='block'">Don't have an account? Make one here!</button>
             </span>
@@ -37,7 +37,7 @@
         <!-- Based off of https://www.w3schools.com/howto/howto_css_signup_form.asp -->
         <div id="id01" display="none" class="modal">
             <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal"></span>
-            <form class="modal-content" action="/api/register" method="post">
+            <div class="modal-content">
             <div class="container">
                 <h1>Sign Up</h1>
                 <label for="email"><b>Email</b></label>
@@ -47,7 +47,7 @@
                 <input type="text" placeholder="Enter Username" id="newUsername" name="username" required>
 
                 <label for="phoneNumber"><b>Phone Number</b></label>
-                <input type="text" placeholder="Enter Phone Number" id="phoneNumber" name="phoneNumber" required>
+                <input type="text" pattern="([0-9]{3})[0-9]{3}-[0-9]{4}" placeholder="Enter Phone Number (xxx)xxx-xxxx" id="phoneNumber" name="phoneNumber" required>
         
                 <label for="newPsw"><b>Password</b></label>
                 <input type="password" placeholder="Enter Password" id="newPsw" name="password" required>
@@ -56,11 +56,11 @@
                 <input type="password" placeholder="Repeat Password" id="newPswRepeat" name="secondPassword" required>
 
                 <div class="clearfix">
-                <button type="submit" class="signup">Sign Up</button>
+                <button onclick="register()" class="signup">Sign Up</button>
                 <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
                 </div>
             </div>
-            </form>
+            </div>
         </div>
     </body>
 </html> 
