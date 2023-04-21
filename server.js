@@ -477,6 +477,9 @@ function getTimeUrl(curDate, curStock) {
  * @return {String} The predictd stock change.
  */
 function regressionPrediction(data, stockName) {
+  if (data["s"] == "no_data") {
+    return "0.00%";
+  }
   // gets the data points
   const prices = data["c"];
   const priceMappings = prices.map((price, index) => [index, price]);

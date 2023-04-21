@@ -158,6 +158,11 @@ function todaysData(stockTicker) {
       return responce.json();
     })
     .then((data) => {
+      
+      if (data["d"] == null) {
+        alert("Choose A Valid Stock Ticker");
+        return;
+      }
       // updates the values of the DOM
       var priceStock = data["c"];
       // calculates stock performance for the day
@@ -181,7 +186,7 @@ function todaysData(stockTicker) {
       getPrediction(stockTicker);
     })
   .catch((err) => {
-    alert("Choose A Valid Stock Ticker");
+    console.log(err);
   });
 }
 
