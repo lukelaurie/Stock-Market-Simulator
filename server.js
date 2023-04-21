@@ -348,10 +348,6 @@ setInterval(cleanupSessions, 2000);
  * @param {Object} The function to be ran if cookie is valid.
  */
 function authenticate(req, res, next) {
-  // remove later
-  next();
-  return;
-
   // Check for cookies
   let curCookie = req.cookies;
   console.log(curCookie);
@@ -376,43 +372,9 @@ function authenticate(req, res, next) {
       next();
       return;
     }
-  } else {
-    res.redirect("/login.html");
   }
-}
-
-/*
- * This will parse all of the stock data to only get the needed amount of time.
- * @param {Object} data contains all of the stock information.
- * @param {String} time represents how much information to get for the stock.
- * @param {String} interval represents the interval of times to get the stock.
- * @returns {Object} Object with all of the correct stock information.
- */
-function parseTime(data, time, interval) {
-  const stockData = {};
-  if (time == "predictionInterval") {
-    time = "fiveYear";
-  }
-  // finds the correct date to compare with
-  const allDates = {
-    day: new Date(data["Meta Data"]["3. Last Refreshed"].split(" ")[0]),
-    week: new Date(new Date().setDate(new Date().getDate() - 8)),
-    month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-    sixMonth: new Date(new Date().setMonth(new Date().getMonth() - 6)),
-    year: new Date(new Date().setMonth(new Date().getMonth() - 12)),
-    fiveYear: new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
-    predictionInterval: new Date(
-      new Date().setFullYear(new Date().getFullYear() - 5)
-    ),
-  };
-  var checkDate = allDates[time];
-  // Loop through all the data points and only keep the needed ones
-  for (const date in data["Time Series " + interval]) {
-    if (time == "allTime" || new Date(date.split(" ")[0]) >= checkDate) {
-      stockData[date] = data["Time Series " + interval][date];
-    }
-  }
-  return stockData;
+  // sends back to html
+  res.redirect("/login.html");
 }
 
 /*
@@ -445,6 +407,7 @@ async function topStocks() {
  * @param {String} curStock is the stock to get info about.
  */
 async function getDailyInfo(curDate, curStock) {
+  // gets the data at the correct url
   let url = getTimeUrl(curDate, curStock);
   const responce = await fetch(url);
   const data = await responce.json();
@@ -452,35 +415,8 @@ async function getDailyInfo(curDate, curStock) {
     let prediction = regressionPrediction(data, curStock);
     return prediction;
   } else {
-    return finalInfo;
-  }
-
-  /*
-  // get the correct url
-  let urlInfo = getTimeUrl(curDate, curStock);
-  let url = urlInfo[0];
-  let interval = urlInfo[1];
-  const responce = await fetch(url);
-  const data = await responce.json();
-  // checks if out of api calls
-  if (data.hasOwnProperty("Note")) {
     return data;
   }
-  // determines the correct input signal
-  if (interval != "") {
-    var inputSignal = "(" + interval.split("=")[1] + ")";
-  } else {
-    var inputSignal = "(Daily)";
-  }
-  // send back the data to the user or return out of function
-  let finalInfo = parseTime(data, curDate, inputSignal);
-  if (curDate == "predictionInterval") {
-    let prediction = regressionPrediction(finalInfo, curStock);
-    return prediction;
-  } else {
-    return finalInfo;
-  }
-  */
 }
 
 /*
@@ -492,16 +428,25 @@ async function getDailyInfo(curDate, curStock) {
  * @return {Array} The url to access the data and the correct interval.
  */
 function getTimeUrl(curDate, curStock) {
+  let apiKey = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
+  // gets all the correct times and symbols
   const allDates = {
-    day: [new Date(), "5"],
+    day: [new Date(), "1"],
     week: [new Date(new Date().setDate(new Date().getDate() - 7)), "30"],
     month: [new Date(new Date().setMonth(new Date().getMonth() - 1)), "60"],
     sixMonth: [new Date(new Date().setMonth(new Date().getMonth() - 6)), "D"],
     year: [new Date(new Date().setMonth(new Date().getMonth() - 12)), "D"],
     fiveYear: [
-      new Date(new Date().setFullYear(new Date().getFullYear() - 5)), "W"],
+      new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
+      "W",
+    ],
     predictionInterval: [
-      new Date(new Date().setFullYear(new Date().getFullYear() - 5)), "D",
+      new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
+      "D",
+    ],
+    allTime: [
+      new Date(new Date().setFullYear(new Date().getFullYear() - 30)),
+      "W",
     ]
   };
   var startTime = allDates[curDate][0];
@@ -511,7 +456,6 @@ function getTimeUrl(curDate, curStock) {
   const startTimestamp = Math.floor(startTime.getTime() / 1000);
   // Set the end time to the current time
   const endTimestamp = Math.floor(Date.now() / 1000);
-  let apiKey = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
   let url =
     "https://finnhub.io/api/v1/stock/candle?symbol=" +
     curStock +
@@ -524,34 +468,6 @@ function getTimeUrl(curDate, curStock) {
     "&token=" +
     apiKey;
   return url;
-
-  /*
-  // determine the correct time intervals for each period
-  var valuesFunction = "function=TIME_SERIES_DAILY_ADJUSTED";
-  var interval = "";
-  var outputsize = "&outputsize=full";
-  if (curDate == "day") {
-    valuesFunction = "function=TIME_SERIES_INTRADAY";
-    interval = "&interval=5min";
-  } else if (curDate == "week") {
-    valuesFunction = "function=TIME_SERIES_INTRADAY";
-    interval = "&interval=30min";
-  } else if (curDate == "month") {
-    valuesFunction = "function=TIME_SERIES_INTRADAY";
-    interval = "&interval=60min";
-  }
-  // determines the url to get the stock information at
-  let apiKey = "&apikey=QKI4RBI2S56M014L";
-  let symbol = "&symbol=" + curStock;
-  let url =
-    "https://www.alphavantage.co/query?" +
-    valuesFunction +
-    symbol +
-    interval +
-    outputsize +
-    apiKey;
-  return [url, interval];
-  */
 }
 
 /*
@@ -562,13 +478,7 @@ function getTimeUrl(curDate, curStock) {
  * @return {String} The predictd stock change.
  */
 function regressionPrediction(data, stockName) {
-  // Extract the closing prices from the data
-  // const allDates = Object.keys(data).sort();
-  // // gets all datapoints in sorted order
-  // const prices = allDates.map((item) =>
-  //   parseFloat(data[item]["5. adjusted close"])
-  // );
-  // gets the data points 
+  // gets the data points
   const prices = data["c"];
   const priceMappings = prices.map((price, index) => [index, price]);
   // Perform linear regression to predict future prices
@@ -585,7 +495,7 @@ function regressionPrediction(data, stockName) {
     100;
   percentage = percentage.toFixed(2);
   // saves the prediction
-  //saveStockPrediction(stockName, percentage);
+  saveStockPrediction(stockName, percentage);
   return percentage.toString() + "%";
 }
 

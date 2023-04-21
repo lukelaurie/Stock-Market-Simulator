@@ -22,12 +22,6 @@ chart = "";
 const red = "rgb(255, 0, 0)";
 const green = "rgb(0, 128, 0)";
 
-function displayStock() {
-  // gets the stock ticker
-  const currentUrl = window.location.search;
-  const stockTicker = currentUrl.split("=")[1];
-}
-
 /*
  * This will get all of the needed data for a graph on its
  * correct time interval.
@@ -50,8 +44,8 @@ function graphInfo(timeAmount, stock) {
       // draws the graph if data was found
       if (Object.keys(curData).length > 1) {
         drawGraph(curData, stock, timeAmount);
-      } else if (Object.keys(curData).length == 1) {
-        alert("Too Many API Calls, Try Again In One Minute");
+      } else {
+        alert("Choose A Valid Stock Ticker");
       }
     })
     .catch((err) => {
@@ -164,16 +158,6 @@ function todaysData(stockTicker) {
       return responce.json();
     })
     .then((data) => {
-      // checks if api call was made
-      if (data.hasOwnProperty("Note")) {
-        stockTitle.innerText = stockTicker.toUpperCase();
-        stockPrice.innerText = "$" + "0.00";
-        stockChange.innerText = "%" + "0.00";
-        stockPrediction.innerText = "%" + "0.00";
-        alert("Too Many API Calls, Refresh In One Minute");
-        return;
-      }
-
       // updates the values of the DOM
       var priceStock = data["c"];
       // calculates stock performance for the day
@@ -194,7 +178,7 @@ function todaysData(stockTicker) {
       // displays the graph
       graphInfo("day", stockTicker);
       // gets the prediction
-      //getPrediction(stockTicker);
+      getPrediction(stockTicker);
     })
   .catch((err) => {
     alert("Choose A Valid Stock Ticker");
@@ -224,5 +208,7 @@ function getPrediction(stockTicker) {
       }
       stockPrediction.innerText = data;
     })
-    .catch((err) => {});
+    .catch((err) => {
+      console.log(err);
+    });
 }
