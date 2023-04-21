@@ -98,7 +98,6 @@ app.get("/api/stock/day/:symbol", (req, res) => {
   let apiKey = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
   let url =
     "https://finnhub.io/api/v1/quote?symbol=" + curStock + "&token=" + apiKey;
-  console.log(url);
   fetch(url)
     .then((responce) => {
       return responce.json();
@@ -337,7 +336,7 @@ function cleanupSessions() {
 }
 
 // Set session length to 10 minutes
-const SESSION_LENGTH = 600000;
+const SESSION_LENGTH = 1000 * 60 * 60;
 
 setInterval(cleanupSessions, 2000);
 
@@ -431,7 +430,7 @@ function getTimeUrl(curDate, curStock) {
   let apiKey = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
   // gets all the correct times and symbols
   const allDates = {
-    day: [new Date(), "1"],
+    day: [new Date(new Date().setDate(new Date().getDate() - 1)), "5"],
     week: [new Date(new Date().setDate(new Date().getDate() - 7)), "30"],
     month: [new Date(new Date().setMonth(new Date().getMonth() - 1)), "60"],
     sixMonth: [new Date(new Date().setMonth(new Date().getMonth() - 6)), "D"],
@@ -485,7 +484,6 @@ function regressionPrediction(data, stockName) {
   const result = regression.linear(priceMappings);
   const slope = result.equation[0];
   const intercept = result.equation[1];
-  console.log(slope + "    " + intercept);
   // predicts the performance for the next year
   const currentPrice = slope * prices.length + intercept;
   const futurePrice = slope * (prices.length + 252) + intercept;

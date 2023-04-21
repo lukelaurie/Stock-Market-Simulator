@@ -61,7 +61,6 @@ function graphInfo(timeAmount, stock) {
  * @param {String} timeAmount is the period of time to collect data.
  */
 function drawGraph(data, curStock, timeAmount) {
-  console.log(data);
   // destroys the chart if already existing
   if (chart != "") {
     chart.destroy();
@@ -76,6 +75,7 @@ function drawGraph(data, curStock, timeAmount) {
     minute: "numeric",
     hour12: false,
   };
+  // removes the incorrect data points
   // the information to be displayed on the graph
   let labels = data["t"].map((item) => {
     // formats the date correctly
