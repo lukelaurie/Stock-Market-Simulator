@@ -4,14 +4,14 @@
  * allwoing them to create a new account, or add a new
  * stock to their existing account. It will also have get
  * requests allowing for the user to retreive the needed data.
- * Author: Luke Laurie 
+ * Author: Luke Laurie
  * Date: 4/8/2023
  */
 // gets needed libraries
 const express = require("express");
 const regression = require("regression");
 const mongoose = require("mongoose");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieparser = require("cookie-parser");
 
@@ -23,15 +23,18 @@ const User = require("./user.js");
 // Import and use the 'Stock' model
 const Stock = require("./Stock.js");
 
-mongoose.connect('mongodb://127.0.0.1:27017/stockSimulation');
+mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
 app.use(cookieparser());
 authenticatePages();
 app.use(express.json());
-app.use(bodyParser.json()); 
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
-})); 
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    // to support URL-encoded bodies
+    extended: true,
+  })
+);
 app.use(express.static("public_html"));
 
 /*
@@ -87,12 +90,15 @@ app.post("/api/date/daily", async (req, res) => {
  */
 app.get("/api/stock/day/:symbol", (req, res) => {
   let curStock = req.params.symbol;
+  // Get the current date
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const timestamp = Math.floor(currentDate.getTime() / 1000);
   // determines the url to get the stock information at
-  let apiKey = "QKI4RBI2S56M014L";
+  let apiKey = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
   let url =
-    "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" +
-    curStock +
-    "&apikey=QKI4RBI2S56M014L";
+    "https://finnhub.io/api/v1/quote?symbol=" + curStock + "&token=" + apiKey;
+  console.log(url);
   fetch(url)
     .then((responce) => {
       return responce.json();
@@ -118,18 +124,17 @@ app.get("/api/user/stocks", (req, res) => {
 
   // Go into database, find user with id, and send back json of db stock items
   User.findById(curId)
-  .then ( (user) => {
-    if (user.length == 0) {
-      res.status(404).send("User not found.");
-    }
-    else {
-      res.json(user.stocks);
-    }
-  })
-  .catch ( (err) => {
-    console.error(err);
-    res.status(500).send("Error retrieving user stocks.");
-  });
+    .then((user) => {
+      if (user.length == 0) {
+        res.status(404).send("User not found.");
+      } else {
+        res.json(user.stocks);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error retrieving user stocks.");
+    });
 });
 
 /*
@@ -145,25 +150,23 @@ app.post("/api/user/add/stock", (req, res) => {
   let curStock = req.body.stock;
 
   // Go into database, find user with id, create new stock db item and add to user
-  User.findById(curId)
-  .then ( (user) => {
+  User.findById(curId).then((user) => {
     if (user.length == 0) {
       res.status(404).send("User not found.");
-    }
-    else {
+    } else {
       user.stocks.push(curStock);
-      user.save()
-      .then ( (updatedUser) => {
-        res.send("success");
-      })
-      .catch ( (err) => {
-        console.error(err);
-        res.status(500).send("Error updating user stocks.");
-      });
+      user
+        .save()
+        .then((updatedUser) => {
+          res.send("success");
+        })
+        .catch((err) => {
+          console.error(err);
+          res.status(500).send("Error updating user stocks.");
+        });
     }
   });
 });
-
 
 /*
  * This is the code that gets ran whenever the client
@@ -178,35 +181,37 @@ app.post("/api/login", (req, res) => {
 
   // Check if user in the db, if so create cookie/session and allow into the website
   User.findOne({ username: curUsername })
-  .then( (data) => {
-    if (!data || data.length == 0) {
-      res.status(404).send("User not found.");
-    }
-    else {
-      bcrypt.compare(curPassword, data.password)
-      .then( (isMatch) => {
-        if (!isMatch) {
-          console.log("Match: " + isMatch);
-          res.end("ERROR");
-        }
-        else {
-          console.log("User logged in: " + data.username);
-          sessId = addSession(data.username);
-          res.cookie('login', {username: data.username, sid: sessId}, {maxAge: 1000*60*60, encode: String});
-          res.end("OKAY");
-        }
-      })
-      .catch( (err) => {
-        console.error(err);
-        res.end("ERROR");
-      });
-    }
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).send("Error finding user.");
-  });
-
+    .then((data) => {
+      if (!data || data.length == 0) {
+        res.status(404).send("User not found.");
+      } else {
+        bcrypt
+          .compare(curPassword, data.password)
+          .then((isMatch) => {
+            if (!isMatch) {
+              console.log("Match: " + isMatch);
+              res.end("ERROR");
+            } else {
+              console.log("User logged in: " + data.username);
+              sessId = addSession(data.username);
+              res.cookie(
+                "login",
+                { username: data.username, sid: sessId },
+                { maxAge: 1000 * 60 * 60, encode: String }
+              );
+              res.end("OKAY");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            res.end("ERROR");
+          });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error finding user.");
+    });
 });
 
 /*
@@ -222,28 +227,21 @@ app.post("/api/register", (req, res) => {
   let curEmail = req.body.email;
   let curPhoneNumber = req.body.phoneNumber;
 
-  User.findOne({ username: curUsername })
-  .then( (data) => {
+  User.findOne({ username: curUsername }).then((data) => {
     // If the username already exists, send back an error
     if (data && data.length != 0) {
       res.end("UEXISTS");
-    }
-    else {
-
-      User.findOne({ email: curEmail })
-      .then( (data) => {
+    } else {
+      User.findOne({ email: curEmail }).then((data) => {
         // If the email already exists, send back an error
         if (data && data.length != 0) {
           res.end("EEXISTS");
-        }
-        else {
-          User.findOne({ phoneNumber: curPhoneNumber })
-          .then( (data) => {
+        } else {
+          User.findOne({ phoneNumber: curPhoneNumber }).then((data) => {
             // If the phone number already exists, send back an error
             if (data && data.length != 0) {
               res.end("PEXISTS");
-            }
-            else {
+            } else {
               // Save the user in the database
               const newUser = new User({
                 username: curUsername,
@@ -251,15 +249,16 @@ app.post("/api/register", (req, res) => {
                 email: curEmail,
                 phoneNumber: curPhoneNumber,
               });
-              newUser.save()
-              .then(() => {
-                console.log("User saved successfully.");
-                res.end("OKAY");
-              })
-              .catch((err) => {
-                console.error(err);
-                res.end("ERROR");
-              });
+              newUser
+                .save()
+                .then(() => {
+                  console.log("User saved successfully.");
+                  res.end("OKAY");
+                })
+                .catch((err) => {
+                  console.error(err);
+                  res.end("ERROR");
+                });
             }
           });
         }
@@ -267,7 +266,6 @@ app.post("/api/register", (req, res) => {
     }
   });
 });
-
 
 /*
  * This is the code that gets ran whenever the client
@@ -301,22 +299,22 @@ function authenticatePages() {
 let sessions = {};
 
 /*
-  * This will add a session for the user to the sessions object.
-  * @param {Object} user is the information about the user
-*/
+ * This will add a session for the user to the sessions object.
+ * @param {Object} user is the information about the user
+ */
 function addSession(user) {
-	let sessionId = Math.floor(Math.random() * 100000);
-	let sessionStart = Date.now();
-	sessions[user] = {'sid': sessionId, 'start': sessionStart}
+  let sessionId = Math.floor(Math.random() * 100000);
+  let sessionStart = Date.now();
+  sessions[user] = { sid: sessionId, start: sessionStart };
   console.log("Session added for user: " + user + " with id: " + sessionId);
-	return sessionId;
+  return sessionId;
 }
 
 /*
-  * This will check if the user has a session.
-  * @param {String} user is the information about the user
-  * @param {String} sessionId is the id of the session
-*/
+ * This will check if the user has a session.
+ * @param {String} user is the information about the user
+ * @param {String} sessionId is the id of the session
+ */
 function hasSession(user, sessionId) {
   console.log("checking session");
   if (sessions[user] && sessions[user].sid == sessionId) {
@@ -326,16 +324,16 @@ function hasSession(user, sessionId) {
 }
 
 /*
-  * This will remove a session for the user to the sessions object
-*/
+ * This will remove a session for the user to the sessions object
+ */
 function cleanupSessions() {
-	let now = Date.now();
-	for (let user in sessions) {
-		let session = sessions[user];
-		if (session.start + SESSION_LENGTH < Date.now()) {
-			delete sessions[user];
-		}
-	}
+  let now = Date.now();
+  for (let user in sessions) {
+    let session = sessions[user];
+    if (session.start + SESSION_LENGTH < Date.now()) {
+      delete sessions[user];
+    }
+  }
 }
 
 // Set session length to 10 minutes
@@ -350,14 +348,27 @@ setInterval(cleanupSessions, 2000);
  * @param {Object} The function to be ran if cookie is valid.
  */
 function authenticate(req, res, next) {
+  // remove later
+  next();
+  return;
+
   // Check for cookies
   let curCookie = req.cookies;
   console.log(curCookie);
-  
-  
+
   // Verify the existence of cookies (e.g. "id" and "username")
-  if (curCookie && curCookie.login && curCookie.login.sid && curCookie.login.username) {
-    console.log("Cookie found for user: " + curCookie.login.username + " with id: " + curCookie.login.sid);
+  if (
+    curCookie &&
+    curCookie.login &&
+    curCookie.login.sid &&
+    curCookie.login.username
+  ) {
+    console.log(
+      "Cookie found for user: " +
+        curCookie.login.username +
+        " with id: " +
+        curCookie.login.sid
+    );
     // Check if the cookie is valid (e.g., using a function like 'hasSession')
     // This function should be implemented to look up the session in your database
     var result = hasSession(curCookie.login.username, curCookie.login.sid);
@@ -365,13 +376,10 @@ function authenticate(req, res, next) {
       next();
       return;
     }
-  }
-  else {
+  } else {
     res.redirect("/login.html");
   }
-
 }
-
 
 /*
  * This will parse all of the stock data to only get the needed amount of time.
@@ -393,7 +401,9 @@ function parseTime(data, time, interval) {
     sixMonth: new Date(new Date().setMonth(new Date().getMonth() - 6)),
     year: new Date(new Date().setMonth(new Date().getMonth() - 12)),
     fiveYear: new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
-    predictionInterval: new Date(new Date().setFullYear(new Date().getFullYear() - 5))
+    predictionInterval: new Date(
+      new Date().setFullYear(new Date().getFullYear() - 5)
+    ),
   };
   var checkDate = allDates[time];
   // Loop through all the data points and only keep the needed ones
@@ -406,14 +416,14 @@ function parseTime(data, time, interval) {
 }
 
 /*
- * This will find the top ten stock predictions, in the 
+ * This will find the top ten stock predictions, in the
  * database keeping track of the predictions.
  */
 async function topStocks() {
   // finds all the existing stock predictions
-  let curPrediction = await Stock.find({}); 
-  let topStocks = [] 
-  // gets all of the stocks 
+  let curPrediction = await Stock.find({});
+  let topStocks = [];
+  // gets all of the stocks
   for (i in curPrediction) {
     let curStock = curPrediction[i];
     topStocks.push([curStock.ticker, curStock.prediction]);
@@ -435,6 +445,17 @@ async function topStocks() {
  * @param {String} curStock is the stock to get info about.
  */
 async function getDailyInfo(curDate, curStock) {
+  let url = getTimeUrl(curDate, curStock);
+  const responce = await fetch(url);
+  const data = await responce.json();
+  if (curDate == "predictionInterval") {
+    let prediction = regressionPrediction(data, curStock);
+    return prediction;
+  } else {
+    return finalInfo;
+  }
+
+  /*
   // get the correct url
   let urlInfo = getTimeUrl(curDate, curStock);
   let url = urlInfo[0];
@@ -459,6 +480,7 @@ async function getDailyInfo(curDate, curStock) {
   } else {
     return finalInfo;
   }
+  */
 }
 
 /*
@@ -470,6 +492,40 @@ async function getDailyInfo(curDate, curStock) {
  * @return {Array} The url to access the data and the correct interval.
  */
 function getTimeUrl(curDate, curStock) {
+  const allDates = {
+    day: [new Date(), "5"],
+    week: [new Date(new Date().setDate(new Date().getDate() - 7)), "30"],
+    month: [new Date(new Date().setMonth(new Date().getMonth() - 1)), "60"],
+    sixMonth: [new Date(new Date().setMonth(new Date().getMonth() - 6)), "D"],
+    year: [new Date(new Date().setMonth(new Date().getMonth() - 12)), "D"],
+    fiveYear: [
+      new Date(new Date().setFullYear(new Date().getFullYear() - 5)), "W"],
+    predictionInterval: [
+      new Date(new Date().setFullYear(new Date().getFullYear() - 5)), "D",
+    ]
+  };
+  var startTime = allDates[curDate][0];
+  const timePeriod = allDates[curDate][1];
+  // Set the start time to midnight today
+  startTime.setHours(0, 0, 0, 0);
+  const startTimestamp = Math.floor(startTime.getTime() / 1000);
+  // Set the end time to the current time
+  const endTimestamp = Math.floor(Date.now() / 1000);
+  let apiKey = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
+  let url =
+    "https://finnhub.io/api/v1/stock/candle?symbol=" +
+    curStock +
+    "&resolution=" +
+    timePeriod +
+    "&from=" +
+    startTimestamp +
+    "&to=" +
+    endTimestamp +
+    "&token=" +
+    apiKey;
+  return url;
+
+  /*
   // determine the correct time intervals for each period
   var valuesFunction = "function=TIME_SERIES_DAILY_ADJUSTED";
   var interval = "";
@@ -495,6 +551,7 @@ function getTimeUrl(curDate, curStock) {
     outputsize +
     apiKey;
   return [url, interval];
+  */
 }
 
 /*
@@ -505,21 +562,20 @@ function getTimeUrl(curDate, curStock) {
  * @return {String} The predictd stock change.
  */
 function regressionPrediction(data, stockName) {
-  // check if api calls exceeded
-  if (Object.keys(data).length == 1) {
-    return "0.00%";
-  }
   // Extract the closing prices from the data
-  const allDates = Object.keys(data).sort();
-  // gets all datapoints in sorted order
-  const prices = allDates.map((item) =>
-    parseFloat(data[item]["5. adjusted close"])
-  );
+  // const allDates = Object.keys(data).sort();
+  // // gets all datapoints in sorted order
+  // const prices = allDates.map((item) =>
+  //   parseFloat(data[item]["5. adjusted close"])
+  // );
+  // gets the data points 
+  const prices = data["c"];
   const priceMappings = prices.map((price, index) => [index, price]);
   // Perform linear regression to predict future prices
   const result = regression.linear(priceMappings);
   const slope = result.equation[0];
   const intercept = result.equation[1];
+  console.log(slope + "    " + intercept);
   // predicts the performance for the next year
   const currentPrice = slope * prices.length + intercept;
   const futurePrice = slope * (prices.length + 252) + intercept;
@@ -529,30 +585,29 @@ function regressionPrediction(data, stockName) {
     100;
   percentage = percentage.toFixed(2);
   // saves the prediction
-  saveStockPrediction(stockName, percentage)
+  //saveStockPrediction(stockName, percentage);
   return percentage.toString() + "%";
 }
 
 /*
- * This will either update the already existing value of the 
+ * This will either update the already existing value of the
  * prediction, or if not yet creaed it will create a new mapping.
  * @param {String} stockTicker is symbol for the stock.
  * @param {Number} prediction is the number representing how much
  * the stock may change.
  */
 function saveStockPrediction(stockTicker, prediction) {
-  Stock.findOne({ticker: stockTicker})
-    .then(result => {
-      // checks if the stock exists or not
-      if (result == null) {
-        // creates a new datapoint 
-        Stock.create({ticker: stockTicker, prediction: prediction});
-      } else {
-        // updates the value of the prediction
-        result.prediction = prediction; 
-        result.save();
-      }
-    });
+  Stock.findOne({ ticker: stockTicker }).then((result) => {
+    // checks if the stock exists or not
+    if (result == null) {
+      // creates a new datapoint
+      Stock.create({ ticker: stockTicker, prediction: prediction });
+    } else {
+      // updates the value of the prediction
+      result.prediction = prediction;
+      result.save();
+    }
+  });
 }
 
 /*

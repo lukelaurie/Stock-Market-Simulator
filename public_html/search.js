@@ -67,22 +67,29 @@ function graphInfo(timeAmount, stock) {
  * @param {String} timeAmount is the period of time to collect data.
  */
 function drawGraph(data, curStock, timeAmount) {
-  // determines the key to search for in the data
-  if (timeAmount == "day" || timeAmount == "week" || timeAmount == "month") {
-    var dataPicker = "4. close";
-  } else {
-    var dataPicker = "5. adjusted close";
-  }
+  console.log(data);
   // destroys the chart if already existing
   if (chart != "") {
     chart.destroy();
   }
   const ctx = canvas.getContext("2d");
+  // format for the date
+  const options = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false,
+  };
   // the information to be displayed on the graph
-  let labels = Object.keys(data).sort();
-  let datapoints = Object.values(data)
-    .map((item) => item[dataPicker])
-    .reverse();
+  let labels = data["t"].map((item) => {
+    // formats the date correctly
+    let curDate = new Date(item * 1000);
+    const formattedDate = curDate.toLocaleString("en-US", options);
+    return formattedDate;
+  });
+  let datapoints = data["c"];
   // determines if stock is positive or negative
   if (Number(datapoints[0]) > Number(datapoints[datapoints.length - 1])) {
     var color = red;
@@ -166,10 +173,14 @@ function todaysData(stockTicker) {
         alert("Too Many API Calls, Refresh In One Minute");
         return;
       }
+
       // updates the values of the DOM
-      var symbol = data["Global Quote"]["01. symbol"];
-      var priceStock = data["Global Quote"]["05. price"];
-      var changeStock = data["Global Quote"]["10. change percent"];
+      var priceStock = data["c"];
+      // calculates stock performance for the day
+      const openingPrice = data.o;
+      const closingPrice = data.c;
+      var changeStock = ((closingPrice - openingPrice) / openingPrice) * 100;
+      changeStock = changeStock.toFixed(2).toString() + "%";
       // sets the correct color
       if (changeStock.charAt(0) != "-") {
         stockChange.style.color = green;
@@ -177,17 +188,17 @@ function todaysData(stockTicker) {
       } else {
         stockChange.style.color = red;
       }
-      stockTitle.innerText = symbol;
+      stockTitle.innerText = stockTicker.toUpperCase();
       stockPrice.innerText = "$" + priceStock;
       stockChange.innerText = changeStock;
       // displays the graph
       graphInfo("day", stockTicker);
       // gets the prediction
-      getPrediction(stockTicker);
+      //getPrediction(stockTicker);
     })
-    .catch((err) => {
-      alert("Choose A Valid Stock Ticker");
-    });
+  .catch((err) => {
+    alert("Choose A Valid Stock Ticker");
+  });
 }
 
 /*
