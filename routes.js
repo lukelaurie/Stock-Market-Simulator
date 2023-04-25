@@ -3,11 +3,19 @@ const router = express.Router();
 const userController = require('./controllers/userController');
 const stockController = require('./controllers/stockController');
 
+// Define isAuthenticated middleware
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: 'Unauthorized' });
+};
+
 // User routes
 router.post('/user/register', userController.register);
 router.post('/user/login', userController.login);
 router.get('/user/logout', userController.logout);
-router.get('/user/summary', userController.getUserSummary);
+router.get('/user/summary', isAuthenticated, userController.getUserSummary);
 
 // Stock routes
 router.get('/stocks', stockController.getAllStocks);
@@ -15,8 +23,8 @@ router.get('/stocks/:symbol', stockController.getStockBySymbol);
 router.get('/stocks/:symbol/history', stockController.getStockHistory);
 
 // Portfolio routes
-router.get('/portfolio', userController.getPortfolio);
-router.post('/portfolio/buy', userController.buyStock);
-router.post('/portfolio/sell', userController.sellStock);
+router.get('/portfolio', isAuthenticated, userController.getPortfolio);
+router.post('/portfolio/buy', isAuthenticated, userController.buyStock);
+router.post('/portfolio/sell', isAuthenticated, userController.sellStock);
 
 module.exports = router;
