@@ -4,16 +4,49 @@ const bcrypt = require('bcryptjs');
 
 const userController = {
   register: async (req, res) => {
-    // Registration logic
-  },
+    const { username, email, password, phoneNumber } = req.body;
 
-  login: async (req, res) => {
-    // Login logic
-  },
+    if (!username || !email || !password || !phoneNumber) {
+      return res.status(400).json({ message: 'Missing required fields: username, email, password, phoneNumber' });
+    }
 
+    try {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already in use' });
+      }
+
+      const newUser = new User({ username, email, password, phoneNumber });
+      await newUser.save();
+
+      res.status(201).json({ message: 'User registered successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'An error occurred while registering the user' });
+    }
+  },
+  
+  login: async (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(401).json({ message: info.message });
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        res.status(200).json({ message: 'Logged in successfully' });
+      });
+    })(req, res, next);
+  },
+  
   logout: async (req, res) => {
-    // Logout logic
+    req.logout();
+    res.status(200).json({ message: 'Logged out successfully' });
   },
+
 
   getUserSummary: async (req, res) => {
     try {
