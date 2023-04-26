@@ -25,24 +25,20 @@
       </div>
     </div>
     <div class="searchContent">
-      <h2>STOCK PLACEHOLDER</h2>
+      <h2 id="stockTitle">STOCK PLACEHOLDER</h2>
       <div class="sharePurchase">
         <h3>Purchase Shares</h3>
         <form action="PLACEHOLDER">
           <label for="shares">Number of Shares:</label>
           <input type="number" id="shares" name="shares" min="1" max="100" />
-          <input type="submit" value="Buy" />
+          <input type="submit" value="Buy" id="sharesButton" />
         </form>
       </div>
       <div class="shareSell">
         <h3>Sell Shares</h3>
           <label for="shares">Number of Shares:</label>
-          <input type="number" id="shares" name="shares" min="1" max="100" />
-          <button onclick="sellShares">Sell</button>
-      </div>
-      <div class="predictionReport">
-        <h3>Prediction Report</h3>
-        <p>Estimated gain: PLACEHOLDER</p>
+          <input type="number" id="sell" name="shares" min="1" max="100" />
+          <button onclick="sellShares" id="sellButton">Sell</button>
       </div>
       <div class="stockInfo">
         <h3>Info</h3>
@@ -50,14 +46,12 @@
           <tr>
             <th>Price</th>
             <th>Today's change</th>
-            <th>Dividend</th>
             <th>Prediction</th>
           </tr>
           <tr>
-            <td>PLACEHOLDER</td>
-            <td>PLACEHOLDER</td>
-            <td>PLACEHOLDER</td>
-            <td>PLACEHOLDER</td>
+            <td id="stockPrice">$0.00</td>
+            <td id="stockChange">0.00%</td>
+            <td id="stockPrediction">0.00%</td>
           </tr>
         </table>
       </div>
@@ -68,14 +62,12 @@
                 <td><button class="button" onclick="changeGraph('day')">1D</button></td>
                 <td><button class="button" onclick="changeGraph('week')">1W</button></td>
                 <td><button class="button" onclick="changeGraph('month')">1M</button></td>
-                <td><button class="button" onclick="changeGraph('sixMonth')">3M</button></td>
+                <td><button class="button" onclick="changeGraph('sixMonth')">6M</button></td>
                 <td><button class="button" onclick="changeGraph('year')">1Y</button></td>
                 <td><button class="button" onclick="changeGraph('fiveYear')">5Y</button></td>
                 <td><button class="button" onclick="changeGraph('allTime')">All</button></td>
             </tr>
         </table>
-        <p>GRAPH PLACEHOLDER</p>
-
         <!-- Import Chart.js library -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <canvas id="myChart"></canvas>
