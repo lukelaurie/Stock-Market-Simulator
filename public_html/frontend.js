@@ -113,6 +113,27 @@ function loadIndex() {
     var cell3 = row.insertCell();
     var newText = document.createTextNode('new row');
     cell3.appendChild(newText);
-    
+
+    var stockSummary = document.getElementById("stockTable");
+    var row = stockSummary.insertRow();
+    var cell1 = row.insertCell();
+    var newText = document.createTextNode('Placeholder 1');
+    cell1.appendChild(newText);
+    var cell2 = row.insertCell();
+    var newText = document.createTextNode('Placeholder 2');
+    cell2.appendChild(newText);
+    var cell3 = row.insertCell();
+    var newText = document.createTextNode('Placeholder 3');
+    cell3.appendChild(newText);
+    var cell4 = row.insertCell();
+    var newText = document.createTextNode('Placeholder 4');
+    cell4.appendChild(newText);
+    var cell5 = row.insertCell();
+    var newText = document.createTextNode('Placeholder 5');
+    cell5.appendChild(newText);
+    var cell6 = row.insertCell();
+    var newText = document.createTextNode('Placeholder 6');
+    cell6.appendChild(newText);
+
 
 }
