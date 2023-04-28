@@ -25,18 +25,18 @@ const User = require("./user.js");
 const Stock = require("./Stock.js");
 
 // Stock routes
-app.get('/api/stocks', stockController.getAllStocks);
-app.get('/api/stocks/:symbol', stockController.getStockBySymbol);
-app.get('/api/stocks/:symbol/history', stockController.getStockHistory);
+app.get('/api/stocks', getAllStocks);
+app.get('/api/stocks/:symbol', getStockBySymbol);
+app.get('/api/stocks/:symbol/history', getStockHistory);
 
 // User routes
-app.post('/api/users/register', userController.register);
-app.post('/api/users/login', userController.login);
-app.post('/api/users/logout', userController.logout);
-app.get('/api/users/summary', userController.getUserSummary);
-app.get('/api/users/portfolio', userController.getPortfolio);
-app.post('/api/users/portfolio/buy', userController.buyStock);
-app.post('/api/users/portfolio/sell', userController.sellStock);
+app.post('/api/users/register', register);
+app.post('/api/users/login', login);
+app.post('/api/users/logout', logout);
+app.get('/api/users/summary', getUserSummary);
+app.get('/api/users/portfolio', getPortfolio);
+app.post('/api/users/portfolio/buy', buyStock);
+app.post('/api/users/portfolio/sell', sellStock);
 
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
