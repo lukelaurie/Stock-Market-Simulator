@@ -56,6 +56,34 @@ app.get("/api/prediction/:symbol", async (req, res) => {
 });
 
 /*
+ * This is the code that gets ran whenever the client
+ * makes a get request to the server at the url, in order
+ * to get back the stocks full name from the tucker.
+ * @param {Object} req is the information about the request.
+ * @param {Object} res the responce sent back to the user.
+ */
+app.get("/api/stock/fullname/:symbol", async (req, res) => {
+  let curStock = req.params.symbol;
+  let key = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
+  // send back the name of the sotck
+  let url = "https://finnhub.io/api/v1/stock/profile2?symbol=" + curStock +"&token=" + key;
+  let responce = await fetch(url);
+  let data = await responce.json();
+  let name = data["name"];
+  // remove the Inc associated with compant
+  name = name.split(" "); 
+  if (name.length != 1) {
+    let finalWord = name[name.length - 1].toLowerCase();
+    if (finalWord == "inc" || finalWord == "co" ||finalWord == "corp") {
+      // stips off last part 
+      name = name.slice(0, name.length - 1);
+    }
+  }
+  const joined = name.join(' ');
+  res.send(joined);
+});
+
+/*
  * This is search through all the stocks in the s&p 500 and
  * find the predicted top ten stocks
  * @param {Object} req is the information about the request.
@@ -287,11 +315,11 @@ app.post("/api/logout", (req, res) => {
  */
 function authenticatePages() {
   // checks if user has authoritie to log into the pages
-  app.use("/help.html", authenticate);
-  app.use("/index.html", authenticate);
-  app.use("/predictions.html", authenticate);
-  app.use("/profile.html", authenticate);
-  app.use("/search.html", authenticate);
+  // app.use("/help.html", authenticate);
+  // app.use("/index.html", authenticate);
+  // app.use("/predictions.html", authenticate);
+  // app.use("/profile.html", authenticate);
+  // app.use("/search.html", authenticate);
   //app.use("/", authenticate);
 }
 
@@ -393,8 +421,6 @@ async function topStocks() {
   topStocks.sort((a, b) => {
     return b[1] - a[1];
   });
-  // gets the top ten stocks
-  topStocks = topStocks.slice(0, 10);
   return topStocks;
 }
 
@@ -508,6 +534,8 @@ function regressionPrediction(data, stockName) {
  * the stock may change.
  */
 function saveStockPrediction(stockTicker, prediction) {
+  stockTicker = stockTicker.toUpperCase();
+  
   Stock.findOne({ ticker: stockTicker }).then((result) => {
     // checks if the stock exists or not
     if (result == null) {
