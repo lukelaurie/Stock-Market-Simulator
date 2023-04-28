@@ -24,19 +24,19 @@ const User = require("./user.js");
 // Import and use the 'Stock' model
 const Stock = require("./Stock.js");
 
-// Stock routes
-app.get('/api/stocks', getAllStocks);
-app.get('/api/stocks/:symbol', getStockBySymbol);
-app.get('/api/stocks/:symbol/history', getStockHistory);
+// // Stock routes
+// app.get('/api/stocks', getAllStocks);
+// app.get('/api/stocks/:symbol', getStockBySymbol);
+// app.get('/api/stocks/:symbol/history', getStockHistory);
 
-// User routes
-app.post('/api/users/register', register);
-app.post('/api/users/login', login);
-app.post('/api/users/logout', logout);
-app.get('/api/users/summary', getUserSummary);
-app.get('/api/users/portfolio', getPortfolio);
-app.post('/api/users/portfolio/buy', buyStock);
-app.post('/api/users/portfolio/sell', sellStock);
+// // User routes
+// app.post('/api/users/register', register);
+// app.post('/api/users/login', login);
+// app.post('/api/users/logout', logout);
+// app.get('/api/users/summary', getUserSummary);
+// app.get('/api/users/portfolio', getPortfolio);
+// app.post('/api/users/portfolio/buy', buyStock);
+// app.post('/api/users/portfolio/sell', sellStock);
 
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
@@ -569,6 +569,6 @@ function saveStockPrediction(stockTicker, prediction) {
  * This will set port 3000 as the location where the page
  * can be accesed.
  */
-app.listen(3000, () => {
-  console.log("Listening on port 3000");
+app.listen(80, () => {
+  console.log("Listening on port 80");
 });
