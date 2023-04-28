@@ -15,8 +15,6 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieparser = require("cookie-parser");
 const session = require('express-session');
-const stockController = require('./stockController');
-const userController = require('./userController');
 
 const app = express();
 
