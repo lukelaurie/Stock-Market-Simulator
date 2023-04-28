@@ -25,7 +25,7 @@ const User = require("./user.js");
 const Stock = require("./Stock.js");
 
 // Stock Controller
-getAllStocks: async (req, res) => {
+getAllStocks = async (req, res) => {
   try {
     const stocks = await Stock.find({});
     if (!stocks) {
@@ -37,7 +37,7 @@ getAllStocks: async (req, res) => {
   }
 };
 
-getStockBySymbol: async (req, res) => {
+getStockBySymbol = async (req, res) => {
   try {
     const { symbol } = req.params;
     const stock = await Stock.findOne({ ticker: symbol.toUpperCase() });
@@ -50,7 +50,7 @@ getStockBySymbol: async (req, res) => {
   }
 };
 
-getStockHistory: async (req, res) => {
+getStockHistory = async (req, res) => {
   try {
     const { symbol } = req.params;
     const stock = await Stock.findOne({ ticker: symbol.toUpperCase() });
@@ -75,7 +75,7 @@ getStockHistory: async (req, res) => {
 };
   
 // User Controller
-register: async (req, res) => {
+register = async (req, res) => {
   const { username, email, password, phoneNumber } = req.body;
 
   if (!username || !email || !password || !phoneNumber) {
@@ -97,7 +97,7 @@ register: async (req, res) => {
   }
 };
   
-login: async (req, res) => {
+login = async (req, res) => {
 const { username, password } = req.body;
 
 try {
@@ -126,7 +126,7 @@ try {
 };
 
   
-logout: async (req, res) => {
+logout = async (req, res) => {
 // Clear the session
 req.session.destroy(err => {
   if (err) {
@@ -137,7 +137,7 @@ req.session.destroy(err => {
 });
 };
 
-getUserSummary: async (req, res) => {
+getUserSummary = async (req, res) => {
   try {
     const user = await User.findOne({ username: req.user.username }).select('-password');
     if (!user) {
@@ -152,7 +152,7 @@ getUserSummary: async (req, res) => {
   }
 };
 
-getPortfolio: async (req, res) => {
+getPortfolio = async (req, res) => {
   try {
     const user = await User.findOne({ username: req.user.username }).select('holdings');
     if (!user) {
@@ -164,7 +164,7 @@ getPortfolio: async (req, res) => {
   }
 };
 
-buyStock: async (req, res) => {
+buyStock = async (req, res) => {
   const { symbol, shares, price } = req.body;
   
   if (!symbol || !shares || !price) {
@@ -203,7 +203,7 @@ buyStock: async (req, res) => {
 };
 
 
-sellStock: async (req, res) => {
+sellStock = async (req, res) => {
   const { symbol, shares, price } = req.body;
 
   if (!symbol || !shares || !price) {
