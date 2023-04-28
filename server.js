@@ -14,6 +14,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieparser = require("cookie-parser");
+const session = require('express-session');
+const stockController = require('./stockController');
+const userController = require('./userController');
 
 const app = express();
 
@@ -22,6 +25,21 @@ const User = require("./user.js");
 
 // Import and use the 'Stock' model
 const Stock = require("./Stock.js");
+
+// Stock routes
+app.get('/api/stocks', stockController.getAllStocks);
+app.get('/api/stocks/:symbol', stockController.getStockBySymbol);
+app.get('/api/stocks/:symbol/history', stockController.getStockHistory);
+
+// User routes
+app.post('/api/users/register', userController.register);
+app.post('/api/users/login', userController.login);
+app.post('/api/users/logout', userController.logout);
+app.get('/api/users/summary', userController.getUserSummary);
+app.get('/api/users/portfolio', userController.getPortfolio);
+app.post('/api/users/portfolio/buy', userController.buyStock);
+app.post('/api/users/portfolio/sell', userController.sellStock);
+
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
