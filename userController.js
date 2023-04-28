@@ -25,27 +25,46 @@ const userController = {
     }
   },
   
-  login: async (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        return res.status(401).json({ message: info.message });
-      }
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
-        }
-        res.status(200).json({ message: 'Logged in successfully' });
-      });
-    })(req, res, next);
-  },
+  login: async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Set user information in the session
+    req.session.user = {
+      id: user._id,
+      username: user.username
+    };
+
+    res.status(200).json({ message: "Logged in successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred during login" });
+  }
+},
+
   
   logout: async (req, res) => {
-    req.logout();
-    res.status(200).json({ message: 'Logged out successfully' });
-  },
+  // Clear the session
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({ message: "An error occurred while logging out" });
+    }
+
+    res.status(200).json({ message: "Logged out successfully" });
+  });
+},
+
 
 
   getUserSummary: async (req, res) => {
