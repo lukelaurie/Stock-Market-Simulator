@@ -18,109 +18,118 @@
 // const stockDividend = document.getElementById("stockDividend");
 // const stockPrediction = document.getElementById("stockPrediction");
 // // creates the needed global variables
-// chart = "";
+//chart = "";
 // const red = "rgb(255, 0, 0)";
 // const green = "rgb(0, 128, 0)";
 
-// /*
-//  * This will get all of the needed data for a graph on its
-//  * correct time interval.
-//  * @param {String} timeAmount is the period of time to collect data.
-//  * @param {String} stock is the symbol representing the stock.
-//  */
-// function graphInfo(timeAmount, stock) {
-//   // makes a post requst to the server
-//   fetch("/api/date/daily/", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({ date: timeAmount, symbol: stock }),
-//   })
-//     .then((responce) => {
-//       return responce.json();
-//     })
-//     .then((curData) => {
-//       // draws the graph if data was found
-//       if (Object.keys(curData).length > 1) {
-//         drawGraph(curData, stock, timeAmount);
-//       } else {
-//         alert("Choose A Valid Stock Ticker");
-//       }
-//     })
-//     .catch((err) => {
-//       alert("Choose A Valid Stock Ticker");
-//     });
-// }
+/*
+ * This will get all of the needed data for a graph on its
+ * correct time interval.
+ * @param {String} timeAmount is the period of time to collect data.
+ * @param {String} stock is the symbol representing the stock.
+ */
+function graphInfo(timeAmount, stock) {
+  // makes a post requst to the server
+  return fetch("http://localhost/api/date/daily/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ date: timeAmount, symbol: stock }),
+  })
+    .then((responce) => {
+      return responce.json();
+    })
+    .then((curData) => {
+      // draws the graph if data was found
+      if (Object.keys(curData).length > 1) {
+        
+        return getGraphInfo(curData, stock, timeAmount);
+      } else {
+        alert("Choose A Valid Stock Ticker");
+      }
+    })
+    .catch((err) => {
+      alert("Choose A Valid Stock Ticker");
+    });
+}
 
-// /*
-//  * This will draw the graph based on an inputted set of data, and it
-//  * will provide the needed styling to the graph as well.
-//  * @param {Object} data is the container for all of the stock data.
-//  * @param {String} curStock is the symbol representing the stock.
-//  * @param {String} timeAmount is the period of time to collect data.
-//  */
-// function drawGraph(data, curStock, timeAmount) {
-//   // destroys the chart if already existing
-//   if (chart != "") {
-//     chart.destroy();
-//   }
-//   const ctx = canvas.getContext("2d");
-//   // format for the date
-//   const options = {
-//     year: "numeric",
-//     month: "numeric",
-//     day: "numeric",
-//     hour: "numeric",
-//     minute: "numeric",
-//     hour12: false,
-//   };
-//   // removes the incorrect data points
-//   // the information to be displayed on the graph
-//   let labels = data["t"].map((item) => {
-//     // formats the date correctly
-//     let curDate = new Date(item * 1000);
-//     const formattedDate = curDate.toLocaleString("en-US", options);
-//     return formattedDate;
-//   });
-//   let datapoints = data["c"];
-//   // determines if stock is positive or negative
-//   if (Number(datapoints[0]) > Number(datapoints[datapoints.length - 1])) {
-//     var color = red;
-//   } else {
-//     var color = green;
-//   }
-//   // create the chart to be displayed
-//   chart = new Chart(ctx, {
-//     type: "line",
-//     data: {
-//       labels: labels,
-//       datasets: [
-//         {
-//           label: curStock,
-//           data: datapoints,
-//           borderColor: color,
-//           fill: false,
-//           pointRadius: 0,
-//         },
-//       ],
-//     },
-//     // Allows for responsive chart regardless of y location of curser
-//     options: {
-//       responsive: true,
-//       plugins: {
-//         title: {
-//           display: true,
-//           text: curStock + " Stock Chart",
-//         },
-//         tooltip: {
-//           mode: "index",
-//           intersect: false,
-//         },
-//       },
-//     },
-//   });
-// }
+/*
+ * This will draw the graph based on an inputted set of data, and it
+ * will provide the needed styling to the graph as well.
+ * @param {Object} data is the container for all of the stock data.
+ * @param {String} curStock is the symbol representing the stock.
+ * @param {String} timeAmount is the period of time to collect data.
+ */
+function getGraphInfo(data, curStock, timeAmount) {
+  // // destroys the chart if already existing
+  // if (chart != "") {
+  //   chart.destroy();
+  // }
+  // const ctx = canvas.getContext("2d");
+  // format for the date
+  const red = "rgb(255, 0, 0)";
+  const green = "rgb(0, 128, 0)";
+  const options = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false,
+  };
+  // removes the incorrect data points
+  let labels = data["t"].map((item) => {
+    // formats the date correctly
+    let curDate = new Date(item * 1000);
+    const formattedDate = curDate.toLocaleString("en-US", options);
+    return formattedDate;
+  });
+  let datapoints = data["c"];
+  // determines if stock is positive or negative
+  if (Number(datapoints[0]) > Number(datapoints[datapoints.length - 1])) {
+    var color = red;
+  } else {
+    var color = green;
+  }
+
+  const retVal = {
+    labels: labels,
+    datapoints: datapoints,
+    color: color,
+  };
+  return retVal;
+  // // create the chart to be displayed
+  // chart = new Chart(ctx, {
+  //   type: "line",
+  //   data: {
+  //     labels: labels,
+  //     datasets: [
+  //       {
+  //         label: curStock,
+  //         data: datapoints,
+  //         borderColor: color,
+  //         fill: false,
+  //         pointRadius: 0,
+  //       },
+  //     ],
+  //   },
+  //   // Allows for responsive chart regardless of y location of curser
+  //   options: {
+  //     responsive: true,
+  //     plugins: {
+  //       title: {
+  //         display: true,
+  //         text: curStock + " Stock Chart",
+  //       },
+  //       tooltip: {
+  //         mode: "index",
+  //         intersect: false,
+  //       },
+  //     },
+  //   },
+  // });
+}
 
 // /*
 //  * This will run the code to display the correct graph and information in the table
@@ -174,31 +183,17 @@ function todaysData(stockTicker) {
         changeStock: changeStock,
       };
       return stockInfo;
-      // // sets the correct color
-      // if (changeStock.charAt(0) != "-") {
-      //   stockChange.style.color = green;
-      //   changeStock = "+" + changeStock;
-      // } else {
-      //   stockChange.style.color = red;
-      // }
-      // stockTitle.innerText = stockTicker.toUpperCase();
-      // stockPrice.innerText = "$" + priceStock;
-      // stockChange.innerText = changeStock;
-      // // displays the graph
-      // graphInfo("day", stockTicker);
-      // // gets the prediction
-      // getPrediction(stockTicker);
     })
     .catch((err) => {
       console.log(err);
     });
 }
 
-// /*
-//  * This function gets all the prediction for a stock.
-//  * @param {String} stockTicker is the symbol representing the stock.
-//  * @return {String} the percentage prediction for the stock.
-//  */
+/*
+ * This function gets all the prediction for a stock.
+ * @param {String} stockTicker is the symbol representing the stock.
+ * @return {String} the percentage prediction for the stock.
+ */
 function getPrediction(stockTicker) {
   let url = "http://localhost/api/prediction/" + stockTicker;
   // gets the days information
@@ -208,19 +203,10 @@ function getPrediction(stockTicker) {
     })
     .then((data) => {
       return data;
-      // updates the value of the DOM
-      // sets the correct color
-      // if (data.charAt(0) != "-") {
-      //   stockPrediction.style.color = green;
-      //   data = "+" + data;
-      // } else {
-      //   stockPrediction.style.color = red;
-      // }
-      // stockPrediction.innerText = data;
     })
     .catch((err) => {
       console.log(err);
     });
 }
 
-export { todaysData, getPrediction };
+export { todaysData, getPrediction, graphInfo };

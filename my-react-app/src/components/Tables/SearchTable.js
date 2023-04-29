@@ -9,7 +9,7 @@ function SearchTable(props) {
   const [predictionStyle, setPredictionStyle] = useState({ color: "#FF0000" });
   const [changeData, setChangeData] = useState({});
   const [predictionData, setPredictionData] = useState("0.00");
-  // gets the data for the serched stock
+  // gets the data for the saerched stock
   useEffect(() => {
     stockData(ticker); 
     stockPrediction(ticker);
