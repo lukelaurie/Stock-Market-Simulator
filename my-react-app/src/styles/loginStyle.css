@@ -4,16 +4,16 @@
 */
 
 .headerImage {
-    margin-left: 10%;
-    margin-right: 10%;
-    width: 150px;
-    height: 150px;
+  margin-left: 10%;
+  margin-right: 10%;
+  width: 150px;
+  height: 150px;
 }
 
 .headerText {
-    height: 120px;
-    vertical-align: middle;
-    text-align: center; 
+  height: 120px;
+  vertical-align: middle;
+  text-align: center; 
 }
 
 .floatLeft { float: left; }
@@ -22,112 +22,111 @@
 
 
 h1 {
-    text-align: center;
-    font-size: 50px;
-    color: #04AA6D;
-    font-family: 'Roboto', sans-serif;
+  text-align: center;
+  font-size: 50px;
+  color: #04AA6D;
+  font-family: 'Roboto', sans-serif;
 }
 
 .formContainer {
-    width: 75%;
-    margin: 0 auto;
+  width: 75%;
+  margin: 0 auto;
 }
 
 .form {
-    margin-top: 100px;
-    border: 3px solid #f1f1f1;
+  margin-top: 100px;
+  border: 3px solid #f1f1f1;
 }
-  
-  /* Full-width inputs */
-input {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #04AA6D;
-    box-sizing: border-box;
+
+/* Full-width inputs */
+.inputLogin {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #04AA6D;
+  box-sizing: border-box;
 }
-  
-  /* Set a style for all buttons */
-button {
-    background-color: #04AA6D;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
-    width: 100%;
+
+/* Set a style for all buttons */
+.loginButton {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
 }
-  
-  /* Add a hover effect for buttons */
-button:hover {
-    opacity: 0.6;
+
+/* Add a hover effect for buttons */
+.loginButton:hover {
+  opacity: 0.6;
 }   
-  
-  /* Add padding to containers */
+
+/* Add padding to containers */
 .container {
-    padding: 16px;
+  padding: 16px;
 }
 
 body {font-family: Arial, Helvetica, sans-serif;}
 * {box-sizing: border-box;}
 
 /* Full-width input fields */
-input[type=text], input[type=password] {
-  width: 100%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  display: inline-block;
-  border: none;
-  background: #f1f1f1;
+.inputLogin[type=text], input[type=password] {
+width: 100%;
+padding: 15px;
+margin: 5px 0 22px 0;
+display: inline-block;
+border: none;
+background: #f1f1f1;
 }
 
-button:hover {
-  opacity:1;
+.loginButton:hover {
+opacity:1;
 }
 
 /* Extra styles for the cancel button */
 .cancelbtn {
-  padding: 14px 20px;
-  background-color: #f44336;
+padding: 14px 20px;
+background-color: #f44336;
 }
 
 
 
 /* The Modal (background) */
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: #474e5d;
-  padding-top: 50px;
+position: fixed; /* Stay in place */
+z-index: 1; /* Sit on top */
+left: 0;
+top: 0;
+width: 100%; /* Full width */
+height: 100%; /* Full height */
+overflow: auto; /* Enable scroll if needed */
+background-color: #474e5d;
+padding-top: 50px;
 }
 
 /* Modal Content/Box */
 .modal-content {
-  background-color: #fefefe;
-  margin: 5% auto 15% auto;
-  border: 1px solid #888;
-  width: 80%; 
+background-color: #fefefe;
+margin: 5% auto 15% auto;
+border: 1px solid #888;
+width: 80%; 
 }
- 
+
 
 .clearfix::after {
-  content: "";
-  clear: both;
-  display: table;
+content: "";
+clear: both;
+display: table;
 }
 
 .signUpButton {
-    background: none!important;
-    border: none;
-    padding: 0!important;
-    color: #069;
-    text-decoration: underline;
-    cursor: pointer;
-  }
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}

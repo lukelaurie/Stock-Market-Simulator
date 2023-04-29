@@ -128,3 +128,13 @@ tr:hover {background-color: #ddd;}
 .searchContent {
     text-align: center;
 }
+
+.searchButton {
+    display: inline-block;
+}
+
+.searchBar {
+    display: inline-block;
+    width: 50%;
+    background-color: pink;
+}

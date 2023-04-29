@@ -1,16 +1,16 @@
 import "../../styles/loginStyle.css";
-import LoginHeader from "../Header/LoginHeader";
-import LoginSection from "../Login/LoginSection";
-import SignupLink from "../Login/SignupLink";
+import RegisterInput from "../Login/RegisterInput";
+import RegisterButtons from "../Login/RegisterButtons";
 
 function Register() {
   return (
-    <div>
-    <h1>But we registering rn</h1>
-      <LoginHeader />
-      <div class="formContainer">
-        <LoginSection />
-        <SignupLink />
+    <div id="id01" className="modal">
+      <div className="modal-content">
+        <div className="container">
+          <h1>Sign Up</h1>
+          <RegisterInput />
+          <RegisterButtons />
+        </div>
       </div>
     </div>
   );

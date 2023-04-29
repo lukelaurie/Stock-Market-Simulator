@@ -12,6 +12,7 @@ function LoginSection() {
               placeholder="Enter Username"
               name="username"
               id="uname"
+              className="inputLogin"
             />
 
             <label for="psw">
@@ -22,9 +23,10 @@ function LoginSection() {
               placeholder="Enter Password"
               name="password"
               id="psw"
+              className="inputLogin"
             />
 
-            <button onclick="login()">Login</button>
+            <button onclick="login()" className="loginButton">Login</button>
           </div>
         </div>
   );
