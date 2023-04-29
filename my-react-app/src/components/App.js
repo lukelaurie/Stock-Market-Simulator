@@ -1,18 +1,25 @@
 // imports all of the needed pages
-import HelpPage from './Pages/Help';
-import HomePage from './Pages/Index';
-import LoginPage from './Pages/Login';
-import PredictionPage from './Pages/Predictions';
-import ProfilePage from './Pages/Profile';
-import SearchPage from './Pages/Search';
-
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./Pages/Home";
+import HelpPage from "./Pages/Help";
+import LoginPage from "./Pages/Login";
+import PredictionPage from "./Pages/Predictions";
+import ProfilePage from "./Pages/Profile";
+import SearchPage from "./Pages/Search";
 
 function App() {
   return (
-    <div className="App">
-      <SearchPage />
-    </div>
+    <BrowserRouter>
+        {/* Switches to correct route based on the url */}
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/predictions" element={<PredictionPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/search" element={<SearchPage />} />
+        </Routes>
+    </BrowserRouter>
   );
 }
 
