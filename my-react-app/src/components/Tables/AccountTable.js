@@ -1,4 +1,5 @@
 import "../../styles/commonStyle.css";
+import TableRow from "./StockSummaryRow";
 
 function AccountTable() {
   return (
