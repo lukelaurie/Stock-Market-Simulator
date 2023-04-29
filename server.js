@@ -15,8 +15,11 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieparser = require("cookie-parser");
 const session = require('express-session');
+const cors = require('cors');
+
 
 const app = express();
+app.use(cors());
 
 // Import and use the 'User' model
 const User = require("./user.js");

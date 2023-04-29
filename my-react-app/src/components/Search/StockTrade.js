@@ -1,9 +1,9 @@
 import "../../styles/loginStyle.css";
 
-function StockTrade() {
+function StockTrade(props) {
   return (
     <div>
-      <h2 id="stockTitle">STOCK PLACEHOLDER</h2>
+      <h2 id="stockTitle">{props.stockTicker}</h2>
       <div className="sharePurchase">
         <h3>Purchase Shares</h3>
         <form action="PLACEHOLDER">
