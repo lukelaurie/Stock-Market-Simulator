@@ -1,8 +1,11 @@
+import Header from './Header';
+
+
 function App() {
   return (
     <div className="App">
-      <h1>Howdy</h1>
-        
+    <Header activePage="home" />
+
     </div>
   );
 }
