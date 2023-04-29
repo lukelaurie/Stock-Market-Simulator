@@ -3,9 +3,10 @@ import LoginHeader from "../Header/LoginHeader";
 import LoginSection from "../Login/LoginSection";
 import SignupLink from "../Login/SignupLink";
 
-function Login() {
+function Register() {
   return (
     <div>
+    <h1>But we registering rn</h1>
       <LoginHeader />
       <div class="formContainer">
         <LoginSection />
@@ -15,4 +16,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;

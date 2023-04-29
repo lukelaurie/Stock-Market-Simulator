@@ -6,6 +6,8 @@ import LoginPage from "./Pages/Login";
 import PredictionPage from "./Pages/Predictions";
 import ProfilePage from "./Pages/Profile";
 import SearchPage from "./Pages/Search";
+import RegisterPage from "./Pages/Register";
+
 
 function App() {
   return (
@@ -15,6 +17,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/predictions" element={<PredictionPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/search" element={<SearchPage />} />
