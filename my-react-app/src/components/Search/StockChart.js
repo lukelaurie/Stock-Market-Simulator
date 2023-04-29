@@ -6,17 +6,15 @@ import { graphInfo } from "../../utils/search";
 
 
 function StockChart(props) {
+  // initialzies the needed data
   const [datapoints, setStockData] = useState([]);
   const [labels, setStockLabels] = useState([]);
   const [color, setStockColor] = useState([]);
-  // const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  // const datapoints = [100, 200, 300, 400, 500, 600, 700];
-  const title = 'WMT';
-
-  // gets the data for the saerched stock
+  const title = props.stockTicker;
+  // gets the data for the searched stock
   useEffect(() => {
-    chartInfo(title, "fiveYear"); 
-  }, []);
+    chartInfo(title, props.time); 
+  }, [title, props.time]);
   // gets the daily change of the stock
   const chartInfo = (ticker, time) => {
     graphInfo(time, ticker)

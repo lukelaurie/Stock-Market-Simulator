@@ -1,27 +1,11 @@
-// /*
-//  * This will run the needed frontend code to make the search
-//  * stock page interactive. For example it will display to the
-//  * user an interactive graph based on a time interval of their
-//  * choosing
-//  * Author: Luke Laurie
-//  * Date: 4/8/2023
-//  */
-// // gets the DOM elements
-// const canvas = document.getElementById("myChart");
-// const stockTitle = document.getElementById("stockTitle");
-// const sharesPurchase = document.getElementById("shares");
-// const sharesButton = document.getElementById("sharesButton");
-// const sharesSell = document.getElementById("sell");
-// const sellButton = document.getElementById("sellButton");
-// const stockPrice = document.getElementById("stockPrice");
-// const stockChange = document.getElementById("stockChange");
-// const stockDividend = document.getElementById("stockDividend");
-// const stockPrediction = document.getElementById("stockPrediction");
-// // creates the needed global variables
-//chart = "";
-// const red = "rgb(255, 0, 0)";
-// const green = "rgb(0, 128, 0)";
-
+/*
+ * This will run the needed frontend code to make the search
+ * stock page interactive. For example it will display to the
+ * user an interactive graph based on a time interval of their
+ * choosing
+ * Author: Luke Laurie
+ * Date: 4/8/2023
+ */
 /*
  * This will get all of the needed data for a graph on its
  * correct time interval.
@@ -99,36 +83,6 @@ function getGraphInfo(data, curStock, timeAmount) {
     color: color,
   };
   return retVal;
-  // // create the chart to be displayed
-  // chart = new Chart(ctx, {
-  //   type: "line",
-  //   data: {
-  //     labels: labels,
-  //     datasets: [
-  //       {
-  //         label: curStock,
-  //         data: datapoints,
-  //         borderColor: color,
-  //         fill: false,
-  //         pointRadius: 0,
-  //       },
-  //     ],
-  //   },
-  //   // Allows for responsive chart regardless of y location of curser
-  //   options: {
-  //     responsive: true,
-  //     plugins: {
-  //       title: {
-  //         display: true,
-  //         text: curStock + " Stock Chart",
-  //       },
-  //       tooltip: {
-  //         mode: "index",
-  //         intersect: false,
-  //       },
-  //     },
-  //   },
-  // });
 }
 
 // /*

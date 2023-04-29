@@ -1,6 +1,5 @@
 import "../../styles/commonStyle.css";
 import Header from "../Header/Header";
-import StockChart from "../Search/StockChart";
 import StockPerformance from "../Search/StockPerformance";
 import StockTrade from "../Search/StockTrade";
 import SearchTable from "../Tables/SearchTable";
@@ -17,8 +16,7 @@ function Search() {
       <StockTrade stockTicker={stockTicker} />
       <SearchTable stockTicker={stockTicker} />
       <div className="graph">
-        <StockPerformance />
-        <StockChart />
+        <StockPerformance stockTicker={stockTicker} />
       </div>
     </div>
   );
