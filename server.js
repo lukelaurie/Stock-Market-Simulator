@@ -17,7 +17,6 @@ const cookieparser = require("cookie-parser");
 const session = require('express-session');
 
 const app = express();
-
 // Import and use the 'User' model
 const User = require("./user.js");
 
@@ -37,6 +36,7 @@ getAllStocks = async (req, res) => {
   }
 };
 
+// Given a stock symbol, return the stock
 getStockBySymbol = async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -50,6 +50,7 @@ getStockBySymbol = async (req, res) => {
   }
 };
 
+// Given a stock symbol, return the stock's historical data
 getStockHistory = async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -75,6 +76,8 @@ getStockHistory = async (req, res) => {
 };
   
 // User Controller
+
+// Register a user
 register = async (req, res) => {
   const { username, email, password, phoneNumber } = req.body;
 
@@ -97,64 +100,80 @@ register = async (req, res) => {
   }
 };
   
+// Login a user
 login = async (req, res) => {
-const { username, password } = req.body;
+  const { username, password } = req.body;
 
-try {
-  const user = await User.findOne({ username });
+  try {
+    const user = await User.findOne({ username });
 
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Set user information in the session
+    req.session.user = {
+      id: user._id,
+      username: user.username
+    };
+
+    res.status(200).json({ message: "Logged in successfully" });
+    } catch (error) {
+    res.status(500).json({ message: "An error occurred during login" });
   }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid credentials" });
-  }
-
-  // Set user information in the session
-  req.session.user = {
-    id: user._id,
-    username: user.username
-  };
-
-  res.status(200).json({ message: "Logged in successfully" });
-  } catch (error) {
-  res.status(500).json({ message: "An error occurred during login" });
-}
 };
 
-  
+// Logout a user
 logout = async (req, res) => {
-// Clear the session
-req.session.destroy(err => {
-  if (err) {
-    return res.status(500).json({ message: "An error occurred while logging out" });
-  }
+  // Clear the session
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({ message: "An error occurred while logging out" });
+    }
 
-  res.status(200).json({ message: "Logged out successfully" });
-});
+    res.status(200).json({ message: "Logged out successfully" });
+  });
 };
 
+// Get the user's summary
 getUserSummary = async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.user.username }).select('-password');
+    // get the username from the login cookie
+    let curCookie = req.cookies;
+    console.log(curCookie);
+
+    const user = await User.findOne({ username: curCookie.login.username }).select('-password');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json({
       cashBalance: user.cashBalance,
       holdings: user.holdings,
+      username: user.username,
+      email: user.email,
+      phoneNumber: user.phoneNumber
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'An error occurred while fetching user summary' });
   }
 };
 
+// Get the user's portfolio
 getPortfolio = async (req, res) => {
+
+  let curCookie = req.cookies;
+  console.log(curCookie);
+  username = curCookie.login.username;
+
   try {
-    const user = await User.findOne({ username: req.user.username }).select('holdings');
+    const user = await User.findOne({ username: username }).select('holdings');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -164,15 +183,23 @@ getPortfolio = async (req, res) => {
   }
 };
 
+// Buy a stock
 buyStock = async (req, res) => {
   const { symbol, shares, price } = req.body;
+
+  let curCookie = req.cookies;
+  console.log(curCookie);
+  username = curCookie.login.username;
   
   if (!symbol || !shares || !price) {
     return res.status(400).json({ message: 'Missing required fields: symbol, shares, price' });
   }
 
+  console.log(symbol, shares, price);
+
   try {
-    const user = await User.findOne({ username: req.user.username });
+    const user = await User.findOne({ username: username });
+    console.log("user: ", user);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -198,20 +225,25 @@ buyStock = async (req, res) => {
     await user.save();
     res.status(200).json({ message: 'Stock purchased successfully' });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'An error occurred while buying the stock' });
   }
 };
 
-
+// Sell a stock
 sellStock = async (req, res) => {
   const { symbol, shares, price } = req.body;
+
+  let curCookie = req.cookies;
+  console.log(curCookie);
+  username = curCookie.login.username;
 
   if (!symbol || !shares || !price) {
     return res.status(400).json({ message: 'Missing required fields: symbol, shares, price' });
   }
 
   try {
-    const user = await User.findOne({ username: req.user.username });
+    const user = await User.findOne({ username: username });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -239,20 +271,6 @@ sellStock = async (req, res) => {
     res.status(500).json({ message: 'An error occurred while selling the stock' });
   }
 };
-  
-// Stock routes
-app.get('/api/stocks', getAllStocks);
-app.get('/api/stocks/:symbol', getStockBySymbol);
-app.get('/api/stocks/:symbol/history', getStockHistory);
-
-// User routes
-app.post('/api/users/register', register);
-app.post('/api/users/login', login);
-app.post('/api/users/logout', logout);
-app.get('/api/users/summary', getUserSummary);
-app.get('/api/users/portfolio', getPortfolio);
-app.post('/api/users/portfolio/buy', buyStock);
-app.post('/api/users/portfolio/sell', sellStock);
 
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
@@ -268,6 +286,21 @@ app.use(
   })
 );
 app.use(express.static("public_html"));
+
+
+// Stock routes
+app.get('/api/stocks', getAllStocks);
+app.get('/api/stocks/:symbol', getStockBySymbol);
+app.get('/api/stocks/:symbol/history', getStockHistory);
+
+// User routes
+app.post('/api/users/register', register);
+app.post('/api/users/login', login);
+app.post('/api/users/logout', logout);
+app.get('/api/users/summary', getUserSummary);
+app.get('/api/users/portfolio', getPortfolio);
+app.post('/api/users/portfolio/buy', buyStock);
+app.post('/api/users/portfolio/sell', sellStock);
 
 /*
  * This is the code that gets ran whenever the client
@@ -296,6 +329,7 @@ app.get("/api/prediction/:symbol", async (req, res) => {
  */
 app.get("/api/stock/fullname/:symbol", async (req, res) => {
   let curStock = req.params.symbol;
+  console.log(curStock);
   let key = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
   // send back the name of the sotck
   let url = "https://finnhub.io/api/v1/stock/profile2?symbol=" + curStock +"&token=" + key;
@@ -547,12 +581,12 @@ app.post("/api/logout", (req, res) => {
  */
 function authenticatePages() {
   // checks if user has authoritie to log into the pages
-  // app.use("/help.html", authenticate);
-  // app.use("/index.html", authenticate);
-  // app.use("/predictions.html", authenticate);
-  // app.use("/profile.html", authenticate);
-  // app.use("/search.html", authenticate);
-  //app.use("/", authenticate);
+  app.use("/help.html", authenticate);
+  app.use("/index.html", authenticate);
+  app.use("/predictions.html", authenticate);
+  app.use("/profile.html", authenticate);
+  app.use("/search.html", authenticate);
+  // app.use("/", authenticate);
 }
 
 let sessions = {};
@@ -632,8 +666,11 @@ function authenticate(req, res, next) {
       return;
     }
   }
-  // sends back to html
-  res.redirect("/login.html");
+  else {
+    console.log("No cookie found");
+    // sends back to html
+    res.redirect("/login.html");
+  }
 }
 
 /*
