@@ -98,42 +98,162 @@ function register() {
 */
 function loadIndex() {
 
-    var table = document.getElementById("summary");
+    fetch ("api/users/summary", {
+        method: "GET"
+    })
+    .then(response => {
+        return response.json();
+    })
+    .then ((data) => {
 
-    var row = table.insertRow();
 
-    var cell1 = row.insertCell();
-    var newText = document.createTextNode('new row');
-    cell1.appendChild(newText);
+        var accountValue = 0;
+        let holdings = data.holdings;
+        var cashBalance = data.cashBalance;
 
-    var cell2 = row.insertCell();
-    var newText = document.createTextNode('new row');
-    cell2.appendChild(newText);
+        // Create the row in the summary table to store relevant data, and initianlize values
+        let summary = document.getElementById("summary");
+        const summRow = document.createElement("tr");
+        const totalValue = document.createElement("td");
+        totalValue.id = "totalValue";
+        totalValue.innerText = "0";
+        const totalGain = document.createElement("td");
+        totalGain.id = "totalGain";
+        totalGain.innerText = "0";
+        const buyingPower = document.createElement("td");
+        buyingPower.id = "buyingPower";
+        buyingPower.innerText = "$" + cashBalance.toString();
 
-    var cell3 = row.insertCell();
-    var newText = document.createTextNode('new row');
-    cell3.appendChild(newText);
+        summRow.appendChild(totalValue);
+        summRow.appendChild(totalGain);
+        summRow.appendChild(buyingPower);
 
-    var stockSummary = document.getElementById("stockTable");
-    var row = stockSummary.insertRow();
-    var cell1 = row.insertCell();
-    var newText = document.createTextNode('Placeholder 1');
-    cell1.appendChild(newText);
-    var cell2 = row.insertCell();
-    var newText = document.createTextNode('Placeholder 2');
-    cell2.appendChild(newText);
-    var cell3 = row.insertCell();
-    var newText = document.createTextNode('Placeholder 3');
-    cell3.appendChild(newText);
-    var cell4 = row.insertCell();
-    var newText = document.createTextNode('Placeholder 4');
-    cell4.appendChild(newText);
-    var cell5 = row.insertCell();
-    var newText = document.createTextNode('Placeholder 5');
-    cell5.appendChild(newText);
-    var cell6 = row.insertCell();
-    var newText = document.createTextNode('Placeholder 6');
-    cell6.appendChild(newText);
+        summary.appendChild(summRow);
 
+        // Loop over each holding and add it to the table. Also update summary totals
+        for (i = 0; i < holdings.length; i++) {
+
+            let table = document.getElementById("stockTable");
+            let holding = holdings[i];
+            let sym = holding.symbol;
+            let shares = holding.shares;
+            let averagePrice = holding.averagePrice;
+
+            const stockRow = document.createElement("tr");
+            // Create new cell elements and set their values
+            const symbol = document.createElement("td");
+            const name = document.createElement("td");
+            const quantity = document.createElement("td");
+            const price = document.createElement("td");
+            const dailyChange = document.createElement("td");
+            const gain = document.createElement("td");
+            // gets the name of the stock
+            fetch("/api/stock/fullname/" + sym)
+              .then((nameResponce) => {
+                return nameResponce.text();
+              })
+              .then((nameToDisplay) => {
+                console.log(nameToDisplay);
+                fetch("/api/stock/day/" + sym)
+                  .then((priceResponce) => {
+                    return priceResponce.json();
+                  })
+                  .then((priceToDisplay) => {
+
+                    // sets the ticker link 
+                    const tickerLink = document.createElement("a");
+                    tickerLink.innerText = sym;
+                    tickerLink.setAttribute("href", "./search.html?search=" + sym);
+                    // sets the values of the row
+                    symbol.appendChild(tickerLink);
+                    name.innerText = nameToDisplay;
+                    quantity.innerText = shares;
+                    price.innerText = "$" + priceToDisplay["c"];
+                    dailyChange.innerText = "$" + priceToDisplay["d"] + " (" + priceToDisplay["dp"] + "%)";
+                    dailyChange.style.color = priceToDisplay["d"] > 0 ? "green" : "red";
+                    gain.innerText = "$" + (priceToDisplay["c"] - averagePrice) * shares;
+                    // Add the new cell elements to the new row element
+                    stockRow.appendChild(symbol);
+                    stockRow.appendChild(name);
+                    stockRow.appendChild(quantity);
+                    stockRow.appendChild(price);
+                    stockRow.appendChild(dailyChange);
+                    stockRow.appendChild(gain);
+                    // Add the new row element to the table
+                    table.appendChild(stockRow);
+
+                    // Update the summary totals
+                    val = Number(totalValue.innerText.substring(1)) + (priceToDisplay["c"] * shares);
+                    console.log(val);
+                    totalValue.innerText = "$" + val.toString();
+                    totalGain.innerText = "$" + ((cashBalance + Number(totalValue.innerText.substring(1))- 10000)).toString();
+                    totalGain.style.color = Number(totalGain.innerText.substring(1)) > 0 ? "green" : "red";
+                  });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+        }
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+}
+
+/*
+    This function is called when the user navigates to the profile.html page. It populates the page
+    with the user's information from the database
+*/
+function loadProfile() {
+
+    fetch ("api/users/summary", {
+        method: "GET"
+    })
+    .then(response => {
+        return response.json();
+    })
+    .then ((data) => {
+        console.log(data);
+        document.getElementById("usernameInfo").innerText = "Username: " + data.username;
+        document.getElementById("emailInfo").innerText = "Email: " + data.email;
+        document.getElementById("phoneInfo").innerText = "Phone Number: " + data.phoneNumber;
+        document.getElementById("balanceInfo").innerText = "Current Balance: $" + data.cashBalance;
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+
+}
+
+/*
+    This function allows a user to buy shares of a stock by pressing the button
+*/
+function buyShares() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const stockTicker = urlParams.get("search");
+    fetch("/api/stock/day/" + stockTicker)
+    .then((response) => {
+        return response.json();
+    })
+    .then((data) => {
+        console.log(document.getElementById("shares").value);
+        console.log(data["c"]);
+        console.log(stockTicker);
+        fetch("/api/users/portfolio/buy", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    symbol: stockTicker,
+                    shares: document.getElementById("shares").value,
+                    price: data["c"]
+                })
+        });
+    })
+    .catch((error) => {
+        console.log(error);
+    });
 
 }
