@@ -11,6 +11,11 @@ function SearchTable(props) {
   const [predictionData, setPredictionData] = useState("0.00");
   // gets the data for the serched stock
   useEffect(() => {
+    stockData(ticker); 
+    stockPrediction(ticker);
+  }, []);
+  // gets the daily change of the stock
+  const stockData = (ticker) => {
     todaysData(ticker)
       .then((data) => {
         // sets the correct colorings
@@ -25,9 +30,9 @@ function SearchTable(props) {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
-  // gets the prediction for the stock
-  useEffect(() => {
+  }
+  // gets the stocks prediction
+  const stockPrediction = (ticker) => {
     getPrediction(ticker)
       .then((data) => {
         // sets the correct format
@@ -42,7 +47,7 @@ function SearchTable(props) {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
+  }
 
   return (
     <div>
@@ -68,11 +73,4 @@ function SearchTable(props) {
   );
 }
 
-function getTodaysData() {
-
-}
-
-function getStockPrediction() {
-  
-}
 export default SearchTable;
