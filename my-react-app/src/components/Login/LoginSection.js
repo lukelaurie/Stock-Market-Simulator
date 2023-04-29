@@ -2,9 +2,9 @@ import "../../styles/loginStyle.css";
 
 function LoginSection() {
   return (
-    <div class="form">
-          <div class="container">
-            <label for="uname">
+    <div className="form">
+          <div className="container">
+            <label htmlFor="uname">
               <b>Username</b>
             </label>
             <input
@@ -15,7 +15,7 @@ function LoginSection() {
               className="inputLogin"
             />
 
-            <label for="psw">
+            <label htmlFor="psw">
               <b>Password</b>
             </label>
             <input

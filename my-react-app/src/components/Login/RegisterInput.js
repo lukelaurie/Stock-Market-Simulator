@@ -3,7 +3,7 @@ import "../../styles/loginStyle.css";
 function RegisterInput() {
   return (
     <div>
-        <label for="email">
+        <label htmlFor="email">
             <b>Email</b>
           </label>
           <input
@@ -15,7 +15,7 @@ function RegisterInput() {
             className="inputLogin"
           />
 
-          <label for="newUsername">
+          <label htmlFor="newUsername">
             <b>Username</b>
           </label>
           <input
@@ -27,7 +27,7 @@ function RegisterInput() {
             className="inputLogin"
           />
 
-          <label for="phoneNumber">
+          <label htmlFor="phoneNumber">
             <b>Phone Number</b>
           </label>
           <input
@@ -40,7 +40,7 @@ function RegisterInput() {
             className="inputLogin"
           />
 
-          <label for="newPsw">
+          <label htmlFor="newPsw">
             <b>Password</b>
           </label>
           <input
@@ -52,7 +52,7 @@ function RegisterInput() {
             className="inputLogin"
           />
 
-          <label for="newPswRepeat">
+          <label htmlFor="newPswRepeat">
             <b>Repeat Password</b>
           </label>
           <input

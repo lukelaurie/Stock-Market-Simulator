@@ -7,7 +7,7 @@ function Login() {
   return (
     <div>
       <LoginHeader />
-      <div class="formContainer">
+      <div className="formContainer">
         <LoginSection />
         <SignupLink />
       </div>

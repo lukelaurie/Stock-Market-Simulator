@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function SignupLink() {
   return (
-    <span class="signUp">
+    <span className="signUp">
       <Link to="/register">
         <button className="signUpButton loginButton">
           Don't have an account? Make one here!

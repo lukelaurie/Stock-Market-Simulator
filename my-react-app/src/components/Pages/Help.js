@@ -7,7 +7,7 @@ function Help() {
       <div className="topnav">
         <Header activePage={"help"} />
       </div>
-      <div class="help">
+      <div className="help">
         <h2>Help</h2>
         <p>
           Welcome to Stock Portfolio simulator! Here's how to navigate the

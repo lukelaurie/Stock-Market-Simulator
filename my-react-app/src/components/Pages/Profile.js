@@ -7,7 +7,7 @@ function Profile() {
       <div className="topnav">
         <Header activePage={"profile"} />
       </div>
-      <div class="accountInfo">
+      <div className="accountInfo">
         <h2>Account Information</h2>
         <p>Username: PLACEHOLDER</p>
         <p>First Name: PLACEHOLDER</p>

@@ -18,22 +18,26 @@ function StockSummary() {
     stockDailyChange: "value5",
     stockGain: "value6",
   };
-  
+
   return (
-    <div class="stockSummary">
+    <div className="stockSummary">
       <h2>Stock Summary</h2>
       <table>
-        <tr>
-          <th>Symbol</th>
-          <th>Name</th>
-          <th>Quantity</th>
-          <th>Price</th>
-          <th>Daily Change</th>
-          <th>Gain/Loss</th>
-        </tr>
-        <StockSummaryRow {...propOne}/>
-        <StockSummaryRow {...propTwo}/>
-        <StockSummaryRow {...propTwo}/>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Daily Change</th>
+            <th>Gain/Loss</th>
+          </tr>
+        </thead>
+        <tbody>
+          <StockSummaryRow {...propOne} />
+          <StockSummaryRow {...propTwo} />
+          <StockSummaryRow {...propTwo} />
+        </tbody>
       </table>
     </div>
   );

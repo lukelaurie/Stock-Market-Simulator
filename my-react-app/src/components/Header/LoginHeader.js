@@ -5,8 +5,8 @@ import stockChart from "../../img/stocks.png";
 function LoginHeader() {
   return (
     <header>
-            <img class="headerImage floatLeft" src={dollarSign} alt="Dollar Sign" />
-            <img class="headerImage floatRight" src={stockChart} alt="Stock Market Chart" />
+            <img className="headerImage floatLeft" src={dollarSign} alt="Dollar Sign" />
+            <img className="headerImage floatRight" src={stockChart} alt="Stock Market Chart" />
             <h1 class="headerText">Stock Market Simulator</h1>
     </header>
   );
