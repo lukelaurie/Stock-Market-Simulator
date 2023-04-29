@@ -1,10 +1,14 @@
 import "../../styles/commonStyle.css";
-import Header from '../Header/Header';
+import Header from "../Header/Header";
+import StockPrediction from "../Tables/StockPrediction";
 
 function Predictions() {
   return (
-    <div className="topnav">
-      <Header activePage={"predictions"}/>
+    <div>
+      <div className="topnav">
+        <Header activePage={"predictions"} />
+      </div>
+      <StockPrediction />
     </div>
   );
 }
