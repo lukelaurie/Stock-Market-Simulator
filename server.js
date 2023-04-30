@@ -219,12 +219,11 @@ buyStock = async (req, res) => {
   const { symbol, shares, price } = req.body;
 
   let curCookie = req.cookies;
+  console.log(curCookie);
   username = curCookie.login.username;
   
   if (!symbol || !shares || !price) {
-    return res
-      .status(400)
-      .json({ message: "Missing required fields: symbol, shares, price" });
+    return res.status(400).json({ message: 'Missing required fields: symbol, shares, price' });
   }
 
   console.log(symbol, shares, price);
@@ -233,29 +232,21 @@ buyStock = async (req, res) => {
     const user = await User.findOne({ username: username });
     console.log("user: ", user);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const totalCost = shares * price;
 
     if (user.cashBalance < totalCost) {
-      return res
-        .status(400)
-        .json({ message: "Insufficient funds to complete the transaction" });
+      return res.status(400).json({ message: 'Insufficient funds to complete the transaction' });
     }
 
-    const holdingIndex = user.holdings.findIndex(
-      (holding) => holding.symbol === symbol
-    );
+    const holdingIndex = user.holdings.findIndex(holding => holding.symbol === symbol);
 
     if (holdingIndex >= 0) {
       // Update existing holding
       user.holdings[holdingIndex].shares += shares;
-      user.holdings[holdingIndex].averagePrice =
-        (user.holdings[holdingIndex].averagePrice *
-          user.holdings[holdingIndex].shares +
-          totalCost) /
-        (user.holdings[holdingIndex].shares + shares);
+      user.holdings[holdingIndex].averagePrice = (user.holdings[holdingIndex].averagePrice * user.holdings[holdingIndex].shares + totalCost) / (user.holdings[holdingIndex].shares + shares);
     } else {
       // Add new holding
       user.holdings.push({ symbol, shares, averagePrice: price });
@@ -263,11 +254,10 @@ buyStock = async (req, res) => {
 
     user.cashBalance -= totalCost;
     await user.save();
-    res.status(200).json({ message: "Stock purchased successfully" });
+    res.status(200).json({ message: 'Stock purchased successfully' });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while buying the stock" });
+    console.log(error);
+    res.status(500).json({ message: 'An error occurred while buying the stock' });
   }
 };
 
@@ -322,18 +312,19 @@ sellStock = async (req, res) => {
 };
 
 // Stock routes
-app.get("/api/stocks", getAllStocks);
-app.get("/api/stocks/:symbol", getStockBySymbol);
-app.get("/api/stocks/:symbol/history", getStockHistory);
+app.get('/api/stocks', getAllStocks);
+app.get('/api/stocks/:symbol', getStockBySymbol);
+app.get('/api/stocks/:symbol/history', getStockHistory);
 
 // User routes
-app.post("/api/users/register", register);
-app.post("/api/users/login", login);
-app.post("/api/users/logout", logout);
-app.get("/api/users/summary", getUserSummary);
-app.get("/api/users/portfolio", getPortfolio);
-app.post("/api/users/portfolio/buy", buyStock);
-app.post("/api/users/portfolio/sell", sellStock);
+app.post('/api/users/register', register);
+app.post('/api/users/login', login);
+app.post('/api/users/logout', logout);
+app.get('/api/users/summary', getUserSummary);
+app.get('/api/users/portfolio', getPortfolio);
+app.post('/api/users/portfolio/buy', buyStock);
+app.post('/api/users/portfolio/sell', sellStock);
+
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
@@ -347,21 +338,6 @@ app.use(
   })
 );
 app.use(express.static("public_html"));
-
-
-// Stock routes
-app.get('/api/stocks', getAllStocks);
-app.get('/api/stocks/:symbol', getStockBySymbol);
-app.get('/api/stocks/:symbol/history', getStockHistory);
-
-// User routes
-app.post('/api/users/register', register);
-app.post('/api/users/login', login);
-app.post('/api/users/logout', logout);
-app.get('/api/users/summary', getUserSummary);
-app.get('/api/users/portfolio', getPortfolio);
-app.post('/api/users/portfolio/buy', buyStock);
-app.post('/api/users/portfolio/sell', sellStock);
 
 /*
  * This is the code that gets ran whenever the client
