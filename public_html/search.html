@@ -28,17 +28,15 @@
       <h2 id="stockTitle">STOCK PLACEHOLDER</h2>
       <div class="sharePurchase">
         <h3>Purchase Shares</h3>
-        <form action="PLACEHOLDER">
           <label for="shares">Number of Shares:</label>
           <input type="number" id="shares" name="shares" min="1" max="100" />
-          <input type="submit" value="Buy" id="sharesButton" />
-        </form>
+          <button onclick="buyShares()" id="sharesButton">Buy</button>
       </div>
       <div class="shareSell">
         <h3>Sell Shares</h3>
           <label for="shares">Number of Shares:</label>
           <input type="number" id="sell" name="shares" min="1" max="100" />
-          <button onclick="sellShares" id="sellButton">Sell</button>
+          <button onclick="sellShares()" id="sellButton">Sell</button>
       </div>
       <div class="stockInfo">
         <h3>Info</h3>
@@ -75,5 +73,6 @@
       </div>
     </div>
     <script src="search.js"></script>
+    <script src="frontend.js"></script>
   </body>
 </html>
