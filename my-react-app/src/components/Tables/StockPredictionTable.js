@@ -6,24 +6,34 @@ import { getTopStocks } from "../../utils/topstocks";
 import React, { useEffect, useState } from "react";
 
 function StockPredictionTable() {
-  const [numStocks, setNumStocks] = useState(5);
+  const stocksPerLoad = 5;
   const [predctionStocks, setPredctionStocks] = useState([]);
+  // keeps track of which numbered stock to look for
+  const [numLoaded, setNumLoaded] = useState(stocksPerLoad);
 
   const loadMore = () => {
-    setNumStocks(numStocks + 5);
+    setNumLoaded(numLoaded + 5);
   }
 
   // gets the data for the saerched stock
   useEffect(() => {
-    topStocks();
-  }, []);
+    topStocks(numLoaded);
+  }, [numLoaded]);
+
   // gets all the top stocks
-  const topStocks = () => {
+  const topStocks = (stockCount) => {
     getTopStocks()
       .then((topStocks) => {
-        console.log(topStocks);
-        const promises = topStocks.map((stockInfo) => {
+        // finds the next 5 stocks
+        if (stockCount >= topStocks.length) {
+          var stocksToFind = topStocks.slice(stockCount - stocksPerLoad, topStocks.length);
+        } else {
+          var stocksToFind = topStocks.slice(stockCount - stocksPerLoad, stockCount);
+        }
+        console.log(stocksToFind);
+        const promises = stocksToFind.map((stockInfo) => {
           const ticker = stockInfo[0];
+          // gets the name of the stock and daily info
           return Promise.all([
             fetch(`http://localhost/api/stock/fullname/${ticker}`).then((res) =>
               res.text()
@@ -40,22 +50,22 @@ function StockPredictionTable() {
         });
         return Promise.all(promises);
       })
-      .then((stockObjects) => {
-        setPredctionStocks(stockObjects);
+      // combines the previoud and newly found stocks
+      .then((foundStocks) => {
+        setPredctionStocks([...predctionStocks, ...foundStocks]);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
 
-  const stocksToDisplay = predctionStocks.slice(0, numStocks);
   return (
     <div className="predictionContent">
       <h2>Top Stock Predictions</h2>
       <table className="predictionTable" id="tablePrediction">
         <StockPredictionHead />
         <tbody>
-          {stocksToDisplay.map((curStockInfo, index) => (
+          {predctionStocks.map((curStockInfo, index) => (
             <StockPredictionRow
               key={index}
               stockSymbol={curStockInfo.stockSymbol}
