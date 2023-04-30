@@ -152,6 +152,7 @@ getUserSummary = async (req, res) => {
     // get the username from the login cookie
     let curCookie = req.cookies;
     console.log(curCookie);
+    console.log("after cookie");
 
     const user = await User.findOne({ username: curCookie.login.username }).select('-password');
     if (!user) {
@@ -349,7 +350,6 @@ app.get("/api/prediction/:symbol", async (req, res) => {
  */
 app.get("/api/stock/fullname/:symbol", async (req, res) => {
   let curStock = req.params.symbol;
-  console.log(curStock);
   let key = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
   // send back the name of the sotck
   let url =
@@ -510,7 +510,6 @@ app.post("/api/login", (req, res) => {
           .compare(curPassword, data.password)
           .then((isMatch) => {
             if (!isMatch) {
-              console.log("Match: " + isMatch);
               res.end("ERROR");
             } else {
               sessId = addSession(data.username);
@@ -572,7 +571,6 @@ app.post("/api/register", (req, res) => {
               newUser
                 .save()
                 .then(() => {
-                  console.log("User saved successfully.");
                   res.end("OKAY");
                 })
                 .catch((err) => {
@@ -626,7 +624,6 @@ function addSession(user) {
   let sessionId = Math.floor(Math.random() * 100000);
   let sessionStart = Date.now();
   sessions[user] = { sid: sessionId, start: sessionStart };
-  console.log("Session added for user: " + user + " with id: " + sessionId);
   return sessionId;
 }
 
@@ -636,7 +633,6 @@ function addSession(user) {
  * @param {String} sessionId is the id of the session
  */
 function hasSession(user, sessionId) {
-  console.log(sessions);
   if (sessions[user] && sessions[user].sid == sessionId) {
     return true;
   }

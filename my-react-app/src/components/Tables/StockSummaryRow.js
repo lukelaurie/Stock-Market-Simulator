@@ -1,22 +1,15 @@
 import "../../styles/commonStyle.css";
 
 function StockSummaryRow(props) {
-  const {
-    stockSymbol,
-    stockName,
-    stockQuantity,
-    stockPrice,
-    stockDailyChange,
-    stockGain
-  } = props;
+  let stockData = props.stockData;
   return (
     <tr>
-      <td><a href={`./search?search=${stockSymbol}`}>{stockSymbol}</a></td>
-      <td>{stockName}</td>
-      <td>{stockQuantity}</td>
-      <td>{stockPrice}</td>
-      <td>{stockDailyChange}</td>
-      <td>{stockGain}</td>
+      <td><a href={`./search?search=${stockData.symbol}`}>{stockData.symbol}</a></td>
+      <td>{stockData.stockName}</td>
+      <td>{stockData.quantity}</td>
+      <td>{stockData.price}</td>
+      <td style={stockData.dailyColor}>{stockData.dailyChange}</td>
+      <td style={stockData.overallColor}>{stockData.gainLoss}</td>
     </tr>
   );
 }

@@ -138,3 +138,12 @@ tr:hover {background-color: #ddd;}
     width: 50%;
     background-color: pink;
 }
+
+a {
+    color: #04AA6D;
+}
+
+/* Change the hover color of links on hover */
+a:hover {
+    color: #08df90;
+}
