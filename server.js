@@ -643,6 +643,32 @@ function authenticate(req, res, next) {
 }
 
 /*
+ * This will check to see if the user is currently logged in.
+ * @param {Object} req is the information about the request.
+ * @param {Object} res the responce sent back to the user.
+ */
+app.get("/api/check/login", (req, res) => {
+  // Check for cookies
+  let curCookie = req.cookies;
+  // Verify the existence of cookies (e.g. "id" and "username")
+  if (
+    curCookie &&
+    curCookie.login &&
+    curCookie.login.sid &&
+    curCookie.login.username
+  ) {
+    // Check if the cookie is valid (e.g., using a function like 'hasSession')
+    // This function should be implemented to look up the session in your database
+    var result = hasSession(curCookie.login.username, curCookie.login.sid);
+    if (result) {
+      res.send("valid");
+      return;
+    }
+  }
+  res.send("invalid");
+});
+
+/*
  * This will find the top ten stock predictions, in the
  * database keeping track of the predictions.
  */

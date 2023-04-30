@@ -1,17 +1,35 @@
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 
 function isAuthenticated() {
-  // make call to pai to see if authenitcated
-  return true;
+  return (
+    fetch("http://localhost/api/check/login")
+      .then((res) => res.text())
+      // checks if user has been logged in
+      .then((textResponce) => textResponce === "invalid")
+  );
 }
 
 const PrivateRoutes = () => {
-    let auth = {'token': true} 
-    // if valided goes to page, if not to login
-    return(
-        auth.token ? <Outlet /> : <Navigate to="login"/>
-    )
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkAuth() {
+      const loggedIn = await isAuthenticated();
+      setIsLoggedIn(loggedIn);
+      setIsLoading(false);
+    }
+    checkAuth();
+  }, []);
+  // only allows in after isAuthenticated has been executed
+  if (isLoading) {
+    return;
   }
+  // allows into the page when a cookie/session exitsts
+  return isLoggedIn ? <Outlet /> : <Navigate to="login" />;
+};
 
 export default PrivateRoutes;
