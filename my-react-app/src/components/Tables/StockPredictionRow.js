@@ -11,8 +11,8 @@ function StockPredictionRow(props) {
     <tr>
       <td><a href={`./search?search=${stockSymbol}`}>{stockSymbol}</a></td>
       <td>{stockName}</td>
-      <td>{stockPrediction}</td>
-      <td>{stockPrice}</td>
+      <td>{stockPrediction}%</td>
+      <td>${stockPrice}</td>
     </tr>
   );
 }

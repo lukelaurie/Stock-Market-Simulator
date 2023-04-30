@@ -305,6 +305,10 @@ app.get("/api/stock/fullname/:symbol", async (req, res) => {
   let data = await responce.json();
   let name = data["name"];
   // remove the Inc associated with compant
+  if (name == undefined) {
+    res.send(curStock); 
+    return;
+  }
   name = name.split(" "); 
   if (name.length != 1) {
     let finalWord = name[name.length - 1].toLowerCase();
