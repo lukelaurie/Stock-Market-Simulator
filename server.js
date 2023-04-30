@@ -15,11 +15,9 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieparser = require("cookie-parser");
 const session = require('express-session');
+const { getDailyInfo, getTimeUrl, regressionPrediction } = require('./api');
 
 const app = express();
-
-// Import and use the 'api' model
-const { getDailyInfo, getTimeUrl, regressionPrediction } = require('./api');
 
 // Import and use the 'User' model
 const User = require("./user.js");
