@@ -650,6 +650,7 @@ function authenticate(req, res, next) {
 app.get("/api/check/login", (req, res) => {
   // Check for cookies
   let curCookie = req.cookies;
+  console.log(curCookie);
   // Verify the existence of cookies (e.g. "id" and "username")
   if (
     curCookie &&
@@ -661,6 +662,7 @@ app.get("/api/check/login", (req, res) => {
     // This function should be implemented to look up the session in your database
     var result = hasSession(curCookie.login.username, curCookie.login.sid);
     if (result) {
+      console.log("was valid");
       res.send("valid");
       return;
     }

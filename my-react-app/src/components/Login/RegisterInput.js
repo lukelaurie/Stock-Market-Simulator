@@ -1,6 +1,7 @@
 import "../../styles/loginStyle.css";
 
-function RegisterInput() {
+
+function RegisterInput({onChange}) {
   return (
     <div>
         <label htmlFor="email">
@@ -13,6 +14,7 @@ function RegisterInput() {
             name="email"
             required
             className="inputLogin"
+            onChange={onChange}
           />
 
           <label htmlFor="newUsername">
@@ -25,6 +27,7 @@ function RegisterInput() {
             name="username"
             required
             className="inputLogin"
+            onChange={onChange}
           />
 
           <label htmlFor="phoneNumber">
@@ -38,6 +41,7 @@ function RegisterInput() {
             name="phoneNumber"
             required
             className="inputLogin"
+            onChange={onChange}
           />
 
           <label htmlFor="newPsw">
@@ -50,6 +54,7 @@ function RegisterInput() {
             name="password"
             required
             className="inputLogin"
+            onChange={onChange}
           />
 
           <label htmlFor="newPswRepeat">
@@ -62,6 +67,7 @@ function RegisterInput() {
             name="secondPassword"
             required
             className="inputLogin"
+            onChange={onChange}
           />
     </div>
   );

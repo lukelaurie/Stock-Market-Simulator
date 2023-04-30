@@ -8,7 +8,7 @@ function isAuthenticated() {
     fetch("http://localhost/api/check/login")
       .then((res) => res.text())
       // checks if user has been logged in
-      .then((textResponce) => textResponce === "invalid")
+      .then((textResponce) => textResponce === "valid")
   );
 }
 

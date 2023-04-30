@@ -1,10 +1,10 @@
 import "../../styles/loginStyle.css";
 import { Link } from "react-router-dom";
 
-function RegisterButtons() {
+function RegisterButtons({createUser}) {
   return (
     <div className="clearfix">
-      <button onclick="register()" className="signup loginButton">
+      <button onClick={createUser} className="signup loginButton">
         Sign Up
       </button>
       <Link to="/login">
