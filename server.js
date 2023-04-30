@@ -17,6 +17,10 @@ const cookieparser = require("cookie-parser");
 const session = require('express-session');
 
 const app = express();
+
+// Import and use the 'api' model
+const { getDailyInfo, getTimeUrl, regressionPrediction } = require('./api');
+
 // Import and use the 'User' model
 const User = require("./user.js");
 
