@@ -122,7 +122,7 @@ function loadIndex() {
         totalGain.innerText = "0";
         const buyingPower = document.createElement("td");
         buyingPower.id = "buyingPower";
-        buyingPower.innerText = "$" + cashBalance.toString();
+        buyingPower.innerText = "$" + (Math.round(cashBalance.toString() * 100) / 100).toFixed(2);
 
         summRow.appendChild(totalValue);
         summRow.appendChild(totalGain);
@@ -169,9 +169,9 @@ function loadIndex() {
                     name.innerText = nameToDisplay;
                     quantity.innerText = shares;
                     price.innerText = "$" + priceToDisplay["c"];
-                    dailyChange.innerText = "$" + priceToDisplay["d"] + " (" + priceToDisplay["dp"] + "%)";
+                    dailyChange.innerText = "$" + (Math.round(priceToDisplay["d"] * 100) / 100).toFixed(2) + " (" + (Math.round(priceToDisplay["dp"] * 100) / 100).toFixed(2) + "%)";
                     dailyChange.style.color = priceToDisplay["d"] > 0 ? "green" : "red";
-                    gain.innerText = "$" + (priceToDisplay["c"] - averagePrice) * shares;
+                    gain.innerText = "$" + (Math.round((priceToDisplay["c"] - averagePrice) * shares * 100) / 100).toFixed(2);
                     // Add the new cell elements to the new row element
                     stockRow.appendChild(symbol);
                     stockRow.appendChild(name);
@@ -183,10 +183,10 @@ function loadIndex() {
                     table.appendChild(stockRow);
 
                     // Update the summary totals
-                    val = Number(totalValue.innerText.substring(1)) + (priceToDisplay["c"] * shares);
+                    val = (Math.round(Number(totalValue.innerText.substring(1)) + (priceToDisplay["c"] * shares) * 100) / 100).toFixed(2);
                     console.log(val);
                     totalValue.innerText = "$" + val.toString();
-                    totalGain.innerText = "$" + ((cashBalance + Number(totalValue.innerText.substring(1))- 10000)).toString();
+                    totalGain.innerText = "$" + (Math.round((cashBalance + Number(totalValue.innerText.substring(1))- 10000) * 100) / 100).toFixed(2).toString();
                     totalGain.style.color = Number(totalGain.innerText.substring(1)) > 0 ? "green" : "red";
                   });
               })
@@ -237,7 +237,8 @@ function buyShares() {
         return response.json();
     })
     .then((data) => {
-        console.log(document.getElementById("shares").value);
+        amount = document.getElementById("buy").value;
+        console.log(amount);
         console.log(data["c"]);
         console.log(stockTicker);
         fetch("/api/users/portfolio/buy", {
@@ -247,13 +248,64 @@ function buyShares() {
                 },
                 body: JSON.stringify({
                     symbol: stockTicker,
-                    shares: document.getElementById("shares").value,
+                    shares: Number(amount),
+                    price: Number(data["c"])
+                })
+        })
+        .then ((response) => {
+            return response.json();
+        })
+        .then (() => {
+            alert(amount + " shares of " + stockTicker + " successfully purchased at $" + 
+            data["c"] + " per share for a total of $" + (Number(amount) * Number(data["c"])).toString());
+        })
+        .catch((error) => {
+            console.log(error);
+            alert("Error purchasing stock!");
+        });
+
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+}
+
+function sellShares() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const stockTicker = urlParams.get("search");
+    fetch("/api/stock/day/" + stockTicker)
+    .then((response) => {
+        return response.json();
+    })
+    .then((data) => {
+        console.log(document.getElementById("sell").value);
+        console.log(data["c"]);
+        console.log(stockTicker);
+        fetch("/api/users/portfolio/sell", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    symbol: stockTicker,
+                    shares: document.getElementById("sell").value,
                     price: data["c"]
                 })
+        })
+        .then ((response) => {
+            return response.json();
+        })
+        .then (() => {
+            alert(document.getElementById("sell").value + " shares of " + stockTicker + " successfully sold at $" + 
+            data["c"] + " per share for a total of $" + (Number(document.getElementById("sell").value) * data["c"]));
+        })
+        .catch((error) => {
+            console.log(error);
+            alert("Error selling stock!");
         });
     })
     .catch((error) => {
         console.log(error);
     });
-
 }
