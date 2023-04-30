@@ -14,20 +14,13 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
-const session = require('express-session');
-const cors = require('cors');
-
+const session = require("express-session");
+const cors = require("cors");
 
 const app = express();
 
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  credentials: true
-};
-
-app.use(cors(corsOptions));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
-
 
 // Import and use the 'User' model
 const User = require("./user.js");
@@ -40,11 +33,13 @@ getAllStocks = async (req, res) => {
   try {
     const stocks = await Stock.find({});
     if (!stocks) {
-      return res.status(404).json({ message: 'No stocks found' });
+      return res.status(404).json({ message: "No stocks found" });
     }
     res.status(200).json(stocks);
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while fetching all stocks' });
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching all stocks" });
   }
 };
 
@@ -53,11 +48,17 @@ getStockBySymbol = async (req, res) => {
     const { symbol } = req.params;
     const stock = await Stock.findOne({ ticker: symbol.toUpperCase() });
     if (!stock) {
-      return res.status(404).json({ message: `No stock found with symbol: ${symbol}` });
+      return res
+        .status(404)
+        .json({ message: `No stock found with symbol: ${symbol}` });
     }
     res.status(200).json(stock);
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while fetching the stock by symbol' });
+    res
+      .status(500)
+      .json({
+        message: "An error occurred while fetching the stock by symbol",
+      });
   }
 };
 
@@ -67,7 +68,9 @@ getStockHistory = async (req, res) => {
     const stock = await Stock.findOne({ ticker: symbol.toUpperCase() });
 
     if (!stock) {
-      return res.status(404).json({ message: `No stock found with symbol: ${symbol}` });
+      return res
+        .status(404)
+        .json({ message: `No stock found with symbol: ${symbol}` });
     }
 
     const apiKey = process.env.IEX_API_KEY; // Replace with proper API key
@@ -76,130 +79,160 @@ getStockHistory = async (req, res) => {
     const response = await axios.get(apiUrl);
 
     if (!response.data) {
-      return res.status(404).json({ message: `No historical data found for symbol: ${symbol}` });
+      return res
+        .status(404)
+        .json({ message: `No historical data found for symbol: ${symbol}` });
     }
 
     res.status(200).json(response.data);
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while fetching the stock history' });
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching the stock history" });
   }
 };
-  
+
 // User Controller
 register = async (req, res) => {
   const { username, email, password, phoneNumber } = req.body;
 
   if (!username || !email || !password || !phoneNumber) {
-    return res.status(400).json({ message: 'Missing required fields: username, email, password, phoneNumber' });
+    return res
+      .status(400)
+      .json({
+        message:
+          "Missing required fields: username, email, password, phoneNumber",
+      });
   }
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already in use' });
+      return res.status(400).json({ message: "Email already in use" });
     }
 
     const newUser = new User({ username, email, password, phoneNumber });
     await newUser.save();
 
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while registering the user' });
+    res
+      .status(500)
+      .json({ message: "An error occurred while registering the user" });
   }
 };
-  
+
 login = async (req, res) => {
-const { username, password } = req.body;
+  const { username, password } = req.body;
 
-try {
-  const user = await User.findOne({ username });
+  try {
+    const user = await User.findOne({ username });
 
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-  const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid credentials" });
-  }
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
-  // Set user information in the session
-  req.session.user = {
-    id: user._id,
-    username: user.username
-  };
+    // Set user information in the session
+    req.session.user = {
+      id: user._id,
+      username: user.username,
+    };
 
-  res.status(200).json({ message: "Logged in successfully" });
+    res.status(200).json({ message: "Logged in successfully" });
   } catch (error) {
-  res.status(500).json({ message: "An error occurred during login" });
-}
+    res.status(500).json({ message: "An error occurred during login" });
+  }
 };
 
-  
 logout = async (req, res) => {
-// Clear the session
-req.session.destroy(err => {
-  if (err) {
-    return res.status(500).json({ message: "An error occurred while logging out" });
-  }
+  // Clear the session
+  req.session.destroy((err) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "An error occurred while logging out" });
+    }
 
-  res.status(200).json({ message: "Logged out successfully" });
-});
+    res.status(200).json({ message: "Logged out successfully" });
+  });
 };
 
 getUserSummary = async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.user.username }).select('-password');
+    const user = await User.findOne({ username: req.user.username }).select(
+      "-password"
+    );
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json({
       cashBalance: user.cashBalance,
       holdings: user.holdings,
     });
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while fetching user summary' });
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching user summary" });
   }
 };
 
 getPortfolio = async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.user.username }).select('holdings');
+    const user = await User.findOne({ username: req.user.username }).select(
+      "holdings"
+    );
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json(user.holdings);
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while fetching user portfolio' });
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching user portfolio" });
   }
 };
 
 buyStock = async (req, res) => {
   const { symbol, shares, price } = req.body;
-  
+
   if (!symbol || !shares || !price) {
-    return res.status(400).json({ message: 'Missing required fields: symbol, shares, price' });
+    return res
+      .status(400)
+      .json({ message: "Missing required fields: symbol, shares, price" });
   }
 
   try {
     const user = await User.findOne({ username: req.user.username });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const totalCost = shares * price;
 
     if (user.cashBalance < totalCost) {
-      return res.status(400).json({ message: 'Insufficient funds to complete the transaction' });
+      return res
+        .status(400)
+        .json({ message: "Insufficient funds to complete the transaction" });
     }
 
-    const holdingIndex = user.holdings.findIndex(holding => holding.symbol === symbol);
+    const holdingIndex = user.holdings.findIndex(
+      (holding) => holding.symbol === symbol
+    );
 
     if (holdingIndex >= 0) {
       // Update existing holding
       user.holdings[holdingIndex].shares += shares;
-      user.holdings[holdingIndex].averagePrice = (user.holdings[holdingIndex].averagePrice * user.holdings[holdingIndex].shares + totalCost) / (user.holdings[holdingIndex].shares + shares);
+      user.holdings[holdingIndex].averagePrice =
+        (user.holdings[holdingIndex].averagePrice *
+          user.holdings[holdingIndex].shares +
+          totalCost) /
+        (user.holdings[holdingIndex].shares + shares);
     } else {
       // Add new holding
       user.holdings.push({ symbol, shares, averagePrice: price });
@@ -207,30 +240,37 @@ buyStock = async (req, res) => {
 
     user.cashBalance -= totalCost;
     await user.save();
-    res.status(200).json({ message: 'Stock purchased successfully' });
+    res.status(200).json({ message: "Stock purchased successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while buying the stock' });
+    res
+      .status(500)
+      .json({ message: "An error occurred while buying the stock" });
   }
 };
-
 
 sellStock = async (req, res) => {
   const { symbol, shares, price } = req.body;
 
   if (!symbol || !shares || !price) {
-    return res.status(400).json({ message: 'Missing required fields: symbol, shares, price' });
+    return res
+      .status(400)
+      .json({ message: "Missing required fields: symbol, shares, price" });
   }
 
   try {
     const user = await User.findOne({ username: req.user.username });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const holdingIndex = user.holdings.findIndex(holding => holding.symbol === symbol);
+    const holdingIndex = user.holdings.findIndex(
+      (holding) => holding.symbol === symbol
+    );
 
     if (holdingIndex < 0 || user.holdings[holdingIndex].shares < shares) {
-      return res.status(400).json({ message: 'Insufficient shares to complete the transaction' });
+      return res
+        .status(400)
+        .json({ message: "Insufficient shares to complete the transaction" });
     }
 
     const totalProceeds = shares * price;
@@ -245,25 +285,27 @@ sellStock = async (req, res) => {
 
     user.cashBalance += totalProceeds;
     await user.save();
-    res.status(200).json({ message: 'Stock sold successfully' });
+    res.status(200).json({ message: "Stock sold successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while selling the stock' });
+    res
+      .status(500)
+      .json({ message: "An error occurred while selling the stock" });
   }
 };
-  
+
 // Stock routes
-app.get('/api/stocks', getAllStocks);
-app.get('/api/stocks/:symbol', getStockBySymbol);
-app.get('/api/stocks/:symbol/history', getStockHistory);
+app.get("/api/stocks", getAllStocks);
+app.get("/api/stocks/:symbol", getStockBySymbol);
+app.get("/api/stocks/:symbol/history", getStockHistory);
 
 // User routes
-app.post('/api/users/register', register);
-app.post('/api/users/login', login);
-app.post('/api/users/logout', logout);
-app.get('/api/users/summary', getUserSummary);
-app.get('/api/users/portfolio', getPortfolio);
-app.post('/api/users/portfolio/buy', buyStock);
-app.post('/api/users/portfolio/sell', sellStock);
+app.post("/api/users/register", register);
+app.post("/api/users/login", login);
+app.post("/api/users/logout", logout);
+app.get("/api/users/summary", getUserSummary);
+app.get("/api/users/portfolio", getPortfolio);
+app.post("/api/users/portfolio/buy", buyStock);
+app.post("/api/users/portfolio/sell", sellStock);
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
@@ -307,24 +349,28 @@ app.get("/api/stock/fullname/:symbol", async (req, res) => {
   let curStock = req.params.symbol;
   let key = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
   // send back the name of the sotck
-  let url = "https://finnhub.io/api/v1/stock/profile2?symbol=" + curStock +"&token=" + key;
+  let url =
+    "https://finnhub.io/api/v1/stock/profile2?symbol=" +
+    curStock +
+    "&token=" +
+    key;
   let responce = await fetch(url);
   let data = await responce.json();
   let name = data["name"];
   // remove the Inc associated with compant
   if (name == undefined) {
-    res.send(curStock); 
+    res.send(curStock);
     return;
   }
-  name = name.split(" "); 
+  name = name.split(" ");
   if (name.length != 1) {
     let finalWord = name[name.length - 1].toLowerCase();
-    if (finalWord == "inc" || finalWord == "co" ||finalWord == "corp") {
-      // stips off last part 
+    if (finalWord == "inc" || finalWord == "co" || finalWord == "corp") {
+      // stips off last part
       name = name.slice(0, name.length - 1);
     }
   }
-  const joined = name.join(' ');
+  const joined = name.join(" ");
   res.send(joined);
 });
 
@@ -470,9 +516,7 @@ app.post("/api/login", (req, res) => {
                 { username: data.username, sid: sessId },
                 { maxAge: 1000 * 60 * 60, encode: String }
               );
-              console.log(req.cookies.login);
-
-              res.end("OKAY");
+              res.send("OKAY");
             }
           })
           .catch((err) => {
@@ -623,7 +667,6 @@ setInterval(cleanupSessions, 2000);
 function authenticate(req, res, next) {
   // Check for cookies
   let curCookie = req.cookies;
-  console.log(curCookie);
 
   // Verify the existence of cookies (e.g. "id" and "username")
   if (
@@ -650,12 +693,6 @@ function authenticate(req, res, next) {
   res.redirect("/login.html");
 }
 
-// app.use(function(req, res, next) {
-//   console.log('Request Headers:', req.headers);
-//   console.log('Cookies:', req.cookies);
-//   next();
-// });
-
 /*
  * This will check to see if the user is currently logged in.
  * @param {Object} req is the information about the request.
@@ -664,8 +701,6 @@ function authenticate(req, res, next) {
 app.get("/api/check/login", (req, res) => {
   // Check for cookies
   let curCookie = req.cookies;
-  console.log("The Cookie is");
-  console.log(curCookie);
   // Verify the existence of cookies (e.g. "id" and "username")
   if (
     curCookie &&
@@ -753,7 +788,7 @@ function getTimeUrl(curDate, curStock) {
     allTime: [
       new Date(new Date().setFullYear(new Date().getFullYear() - 30)),
       "W",
-    ]
+    ],
   };
   var startTime = allDates[curDate][0];
   const timePeriod = allDates[curDate][1];
@@ -816,7 +851,7 @@ function regressionPrediction(data, stockName) {
  */
 function saveStockPrediction(stockTicker, prediction) {
   stockTicker = stockTicker.toUpperCase();
-  
+
   Stock.findOne({ ticker: stockTicker }).then((result) => {
     // checks if the stock exists or not
     if (result == null) {
