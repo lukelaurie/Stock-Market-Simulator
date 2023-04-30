@@ -128,3 +128,13 @@ tr:hover {background-color: #ddd;}
 .searchContent {
     text-align: center;
 }
+
+a {
+    color: #04AA6D;
+}
+
+/* Change the hover color of links on hover */
+a:hover {
+    color: #08df90;
+}
+  
