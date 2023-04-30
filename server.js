@@ -199,7 +199,6 @@ buyStock = async (req, res) => {
 
   try {
     const user = await User.findOne({ username: username });
-    console.log("user: ", user);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -256,12 +255,15 @@ sellStock = async (req, res) => {
 
     const totalProceeds = shares * price;
 
-    if (user.holdings[holdingIndex].shares === shares) {
-      // Remove the holding entirely
+    console.log("current shares: ", user.holdings[holdingIndex].shares + "\n shares: " + shares);
+
+    // Reduce the shares of the holding
+    user.holdings[holdingIndex].shares -= shares;
+
+    // Remove the holding if the shares are 0
+    if (user.holdings[holdingIndex].shares === 0) {
+      console.log("removing holding");
       user.holdings.splice(holdingIndex, 1);
-    } else {
-      // Reduce the shares of the holding
-      user.holdings[holdingIndex].shares -= shares;
     }
 
     user.cashBalance += totalProceeds;
