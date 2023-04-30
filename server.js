@@ -17,6 +17,9 @@ const cookieparser = require("cookie-parser");
 const session = require('express-session');
 const { getDailyInfo, getTimeUrl, regressionPrediction } = require('./api');
 
+const SESSION_LENGTH = 30 * 60 * 1000; // 30 minutes in milliseconds
+const sessions = {};
+
 const app = express();
 
 // Import and use the 'User' model
