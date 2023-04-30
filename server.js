@@ -13,13 +13,21 @@ const regression = require("regression");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
-const cookieparser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const session = require('express-session');
 const cors = require('cors');
 
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+app.use(cookieParser());
+
 
 // Import and use the 'User' model
 const User = require("./user.js");
@@ -259,7 +267,6 @@ app.post('/api/users/portfolio/sell', sellStock);
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
-app.use(cookieparser());
 authenticatePages();
 app.use(express.json());
 app.use(bodyParser.json());
@@ -457,13 +464,14 @@ app.post("/api/login", (req, res) => {
               console.log("Match: " + isMatch);
               res.end("ERROR");
             } else {
-              console.log("User logged in: " + data.username);
               sessId = addSession(data.username);
               res.cookie(
                 "login",
                 { username: data.username, sid: sessId },
                 { maxAge: 1000 * 60 * 60, encode: String }
               );
+              console.log(req.cookies.login);
+
               res.end("OKAY");
             }
           })
@@ -581,7 +589,7 @@ function addSession(user) {
  * @param {String} sessionId is the id of the session
  */
 function hasSession(user, sessionId) {
-  console.log("checking session");
+  console.log(sessions);
   if (sessions[user] && sessions[user].sid == sessionId) {
     return true;
   }
@@ -642,6 +650,12 @@ function authenticate(req, res, next) {
   res.redirect("/login.html");
 }
 
+// app.use(function(req, res, next) {
+//   console.log('Request Headers:', req.headers);
+//   console.log('Cookies:', req.cookies);
+//   next();
+// });
+
 /*
  * This will check to see if the user is currently logged in.
  * @param {Object} req is the information about the request.
@@ -650,6 +664,7 @@ function authenticate(req, res, next) {
 app.get("/api/check/login", (req, res) => {
   // Check for cookies
   let curCookie = req.cookies;
+  console.log("The Cookie is");
   console.log(curCookie);
   // Verify the existence of cookies (e.g. "id" and "username")
   if (

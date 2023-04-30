@@ -2,10 +2,12 @@ import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-
 function isAuthenticated() {
+  console.log(document.cookies);
   return (
-    fetch("http://localhost/api/check/login")
+    fetch("http://localhost/api/check/login", {
+      credentials: "include",
+    })
       .then((res) => res.text())
       // checks if user has been logged in
       .then((textResponce) => textResponce === "valid")

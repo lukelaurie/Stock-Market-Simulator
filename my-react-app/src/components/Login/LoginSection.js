@@ -35,7 +35,10 @@ function LoginSection() {
       // checks if login was successful
       if (data === "OKAY") {
           console.log("Login successful");
+          console.log(document.cookie);
+          console.log("after");
           setTimeout(() => {
+
             window.location.href = "/";
           }, 1000);
       } else {
