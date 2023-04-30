@@ -15,6 +15,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieparser = require("cookie-parser");
 const session = require('express-session');
+const auth = require("./auth");
 const {getDailyInfo, getTimeUrl, regressionPrediction} = require('./api');
 
 const app = express();
@@ -280,7 +281,7 @@ sellStock = async (req, res) => {
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
 app.use(cookieparser());
-authenticatePages();
+auth.authenticatePages();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(
@@ -490,7 +491,7 @@ app.post("/api/login", (req, res) => {
               res.end("ERROR");
             } else {
               console.log("User logged in: " + data.username);
-              sessId = addSession(data.username);
+              sessId = auth.addSession(data.username);
               res.cookie(
                 "login",
                 { username: data.username, sid: sessId },
@@ -578,104 +579,6 @@ app.post("/api/logout", (req, res) => {
 
   res.redirect("/login.html");
 });
-
-/*
- * This will protect all of the html pages so that they cannot
- * be accessed without logging into the page first.
- */
-function authenticatePages() {
-  // checks if user has authoritie to log into the pages
-  app.use("/help.html", authenticate);
-  app.use("/index.html", authenticate);
-  app.use("/predictions.html", authenticate);
-  app.use("/profile.html", authenticate);
-  app.use("/search.html", authenticate);
-  // app.use("/", authenticate);
-}
-
-let sessions = {};
-
-/*
- * This will add a session for the user to the sessions object.
- * @param {Object} user is the information about the user
- */
-function addSession(user) {
-  let sessionId = Math.floor(Math.random() * 100000);
-  let sessionStart = Date.now();
-  sessions[user] = { sid: sessionId, start: sessionStart };
-  console.log("Session added for user: " + user + " with id: " + sessionId);
-  return sessionId;
-}
-
-/*
- * This will check if the user has a session.
- * @param {String} user is the information about the user
- * @param {String} sessionId is the id of the session
- */
-function hasSession(user, sessionId) {
-  console.log("checking session");
-  if (sessions[user] && sessions[user].sid == sessionId) {
-    return true;
-  }
-  return false;
-}
-
-/*
- * This will remove a session for the user to the sessions object
- */
-function cleanupSessions() {
-  let now = Date.now();
-  for (let user in sessions) {
-    let session = sessions[user];
-    if (session.start + SESSION_LENGTH < Date.now()) {
-      delete sessions[user];
-    }
-  }
-}
-
-// Set session length to 10 minutes
-const SESSION_LENGTH = 1000 * 60 * 60;
-
-setInterval(cleanupSessions, 2000);
-
-/*
- * This will check if the user can be validated with cookies.
- * @param {Object} req is the information about the request.
- * @param {Object} res the responce sent back to the user.
- * @param {Object} The function to be ran if cookie is valid.
- */
-function authenticate(req, res, next) {
-  // Check for cookies
-  let curCookie = req.cookies;
-  console.log(curCookie);
-
-  // Verify the existence of cookies (e.g. "id" and "username")
-  if (
-    curCookie &&
-    curCookie.login &&
-    curCookie.login.sid &&
-    curCookie.login.username
-  ) {
-    console.log(
-      "Cookie found for user: " +
-        curCookie.login.username +
-        " with id: " +
-        curCookie.login.sid
-    );
-    // Check if the cookie is valid (e.g., using a function like 'hasSession')
-    // This function should be implemented to look up the session in your database
-    var result = hasSession(curCookie.login.username, curCookie.login.sid);
-    if (result) {
-      next();
-      return;
-    }
-  }
-  else {
-    console.log("No cookie found");
-    // sends back to html
-    res.redirect("/login.html");
-  }
-}
 
 /*
  * This will find the top ten stock predictions, in the
