@@ -100,9 +100,9 @@ function Home() {
         ).then(() => {
           // finds the accounts performance
           const accountStart = 10000;
-          accountData["gainLoss"] = Math.round(
-            cashBalance + accountData["portfolioValue"] - accountStart
-          ).toFixed(2);
+          accountData["gainLoss"] = (Math.round(
+            ((cashBalance + accountData["portfolioValue"] - accountStart) * 100)) / 100).toFixed(2);
+
           accountData["portfolioValue"] = (Math.round(accountData["portfolioValue"] * 100) / 100).toFixed(2);
           // sets the correct coloring
           accountData["color"] =
