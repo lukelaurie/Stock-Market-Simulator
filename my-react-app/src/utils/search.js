@@ -46,11 +46,6 @@ function graphInfo(timeAmount, stock) {
  * @param {String} timeAmount is the period of time to collect data.
  */
 function getGraphInfo(data, curStock, timeAmount) {
-  // // destroys the chart if already existing
-  // if (chart != "") {
-  //   chart.destroy();
-  // }
-  // const ctx = canvas.getContext("2d");
   // format for the date
   const red = "rgb(255, 0, 0)";
   const green = "rgb(0, 128, 0)";
@@ -85,29 +80,6 @@ function getGraphInfo(data, curStock, timeAmount) {
   return retVal;
 }
 
-// /*
-//  * This will run the code to display the correct graph and information in the table
-//  * when a user searches for a stock
-//  */
-// function pageLoad() {
-//   const queryString = window.location.search;
-//   const urlParams = new URLSearchParams(queryString);
-//   const search = urlParams.get("search");
-//   // gets the data for the day
-//   todaysData(search);
-// }
-
-// /*
-//  * This function updates the graph to the correct time period when the user selects a new one
-//  * @param {String} timeAmount is the period of time to collect data.
-//  */
-// function changeGraph(timeAmount) {
-//   const queryString = window.location.search;
-//   const urlParams = new URLSearchParams(queryString);
-//   const search = urlParams.get("search");
-//   graphInfo(timeAmount, search);
-// }
-
 /*
  * This function gets all of the current days information for a stock.
  * @param {String} stockTicker is the symbol representing the stock.
@@ -127,11 +99,7 @@ function todaysData(stockTicker) {
       }
       // updates the values of the DOM
       var priceStock = data["c"];
-      // calculates stock performance for the day
-      const openingPrice = data.o;
-      const closingPrice = data.c;
-      var changeStock = ((closingPrice - openingPrice) / openingPrice) * 100;
-      changeStock = changeStock.toFixed(2).toString() + "%";
+      var changeStock = data["dp"].toFixed(2).toString() + "%";
       const stockInfo = {
         priceStock: priceStock,
         changeStock: changeStock,
