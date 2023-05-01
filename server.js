@@ -434,7 +434,7 @@ app.post("/api/date/daily", async (req, res) => {
   let curStock = req.body.symbol;
   let curDate = req.body.date;
   // send back the data to the user
-  let stockInfo = await app.getDailyInfo(curDate, curStock, res);
+  let stockInfo = await api.getDailyInfo(curDate, curStock, res);
   res.send(stockInfo);
 });
 
