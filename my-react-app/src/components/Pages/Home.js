@@ -73,7 +73,6 @@ function Home() {
               var dailyChangeColor =
                 priceToDisplay["d"] > 0 ? "#008000" : "#FF0000";
               // finds the stocks overall change compared to current price
-              console.log(averagePrice + " " + shares);
               var gainAmount =
                 (
                   Math.round(
@@ -83,7 +82,7 @@ function Home() {
               var overallColor = gainAmount >= 0 ? "#008000" : "#FF0000";
               // Update the summary totals
               accountData["portfolioValue"] =
-                accountData["portfolioValue"] + averagePrice * shares;
+                accountData["portfolioValue"] + priceToDisplay["c"] * shares;
               // gets the data for the stock to be displayed on the row
               var stockData = {
                 symbol: sym,
