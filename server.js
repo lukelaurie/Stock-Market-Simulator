@@ -28,6 +28,7 @@ const User = require("./user.js");
 // Import and use the 'Stock' model
 const Stock = require("./Stock.js");
 
+
 // Stock Controller
 getAllStocks = async (req, res) => {
   try {
@@ -194,14 +195,11 @@ buyStock = async (req, res) => {
   const { symbol, shares, price } = req.body;
 
   let curCookie = req.cookies;
-  console.log(curCookie);
   username = curCookie.login.username;
   
   if (!symbol || !shares || !price) {
     return res.status(400).json({ message: 'Missing required fields: symbol, shares, price' });
   }
-
-  console.log(symbol, shares, price);
 
   try {
     const user = await User.findOne({ username: username });
@@ -219,8 +217,9 @@ buyStock = async (req, res) => {
 
     if (holdingIndex >= 0) {
       // Update existing holding
-      user.holdings[holdingIndex].shares += shares;
-      user.holdings[holdingIndex].averagePrice = (user.holdings[holdingIndex].averagePrice * user.holdings[holdingIndex].shares + totalCost) / (user.holdings[holdingIndex].shares + shares);
+      user.holdings[holdingIndex].shares += Number(shares);
+      user.holdings[holdingIndex].averagePrice = 
+      (user.holdings[holdingIndex].averagePrice * (user.holdings[holdingIndex].shares - shares) + totalCost) / (user.holdings[holdingIndex].shares);
     } else {
       // Add new holding
       user.holdings.push({ symbol, shares, averagePrice: price });
@@ -874,3 +873,4 @@ function saveStockPrediction(stockTicker, prediction) {
 app.listen(80, () => {
   console.log("Listening on port 80");
 });
+

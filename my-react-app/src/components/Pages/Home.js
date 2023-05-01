@@ -73,6 +73,7 @@ function Home() {
               var dailyChangeColor =
                 priceToDisplay["d"] > 0 ? "#008000" : "#FF0000";
               // finds the stocks overall change compared to current price
+              console.log(averagePrice + " " + shares);
               var gainAmount =
                 (
                   Math.round(
@@ -90,7 +91,7 @@ function Home() {
                 quantity: quantity,
                 price: price,
                 dailyChange: dailyChange,
-                gainLoss: "%" + gainAmount,
+                gainLoss: "$" + gainAmount,
                 dailyColor: { color: dailyChangeColor },
                 overallColor: { color: overallColor },
               };
@@ -103,6 +104,7 @@ function Home() {
           accountData["gainLoss"] = Math.round(
             cashBalance + accountData["portfolioValue"] - accountStart
           ).toFixed(2);
+          accountData["portfolioValue"] = (Math.round(accountData["portfolioValue"] * 100) / 100).toFixed(2);
           // sets the correct coloring
           accountData["color"] =
             accountData["gainLoss"] >= 0
