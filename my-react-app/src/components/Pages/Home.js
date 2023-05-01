@@ -21,7 +21,7 @@ function Home() {
   const dailyInfo = () => {
     fetch("http://localhost/api/users/summary", {
       method: "GET",
-      credentials: "include",
+      credentials: "include"
     })
       .then((response) => {
         return response.json();
@@ -79,7 +79,6 @@ function Home() {
                     (priceToDisplay["c"] - averagePrice) * shares * 100
                   ) / 100
                 ).toFixed(2);
-              console.log(gainAmount);
               var overallColor = gainAmount >= 0 ? "#008000" : "#FF0000";
               // Update the summary totals
               accountData["portfolioValue"] =
@@ -95,7 +94,6 @@ function Home() {
                 dailyColor: { color: dailyChangeColor },
                 overallColor: { color: overallColor },
               };
-              console.log(stockData);
               allStocks.push(stockData);
             });
           })

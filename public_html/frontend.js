@@ -206,7 +206,7 @@ function loadIndex() {
 */
 function loadProfile() {
 
-    fetch ("api/users/summary", {
+    fetch ("http://localhost/api/users/summary", {
         method: "GET"
     })
     .then(response => {
