@@ -22,6 +22,10 @@ const app = express();
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
 
+//const auth = require("./auth");
+//const {getDailyInfo, getTimeUrl, regressionPrediction} = require('./api');
+
+
 // Import and use the 'User' model
 const User = require("./user.js");
 
@@ -313,6 +317,19 @@ sellStock = async (req, res) => {
   }
 };
 
+mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
+
+//auth.authenticatePages();
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    // to support URL-encoded bodies
+    extended: true,
+  })
+);
+app.use(express.static("public_html"));
+
 // Stock routes
 app.get('/api/stocks', getAllStocks);
 app.get('/api/stocks/:symbol', getStockBySymbol);
@@ -532,7 +549,7 @@ app.post("/api/login", (req, res) => {
               console.log("Match: " + isMatch);
               res.end("ERROR");
             } else {
-              sessId = addSession(data.username);
+              sessId = auth.addSession(data.username);
               res.cookie(
                 "login",
                 { username: data.username, sid: sessId },
@@ -868,6 +885,8 @@ function regressionPrediction(data, stockName) {
 }
 
 /*
+=======
+>>>>>>> c85011f0b070e1d08ec4f93519819806a3841a1b
  * This will either update the already existing value of the
  * prediction, or if not yet creaed it will create a new mapping.
  * @param {String} stockTicker is symbol for the stock.
