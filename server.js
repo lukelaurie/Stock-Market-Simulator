@@ -839,7 +839,9 @@ function regressionPrediction(data, stockName) {
     100;
   percentage = percentage.toFixed(2);
   // saves the prediction
-  saveStockPrediction(stockName, percentage);
+  if (prices.length > 1000) {
+    saveStockPrediction(stockName, percentage);
+  }
   return percentage.toString() + "%";
 }
 
