@@ -18,65 +18,60 @@ function LoginSection() {
     // make request to server here with username and password values
     let user = {
       username: username,
-      password: password
-  };
-  fetch ("http://localhost/api/login", {
+      password: password,
+    };
+    fetch("http://localhost/api/login", {
       method: "POST",
       headers: {
-          "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(user),
-      credentials: 'include'
-  })
-  .then(response => {
-      return response.text();
-  })
-  .then ((data) => {
-      console.log(data);
-      // checks if login was successful
-      if (data === "OKAY") {
-          console.log("Login successful");
-          console.log(document.cookie);
-          console.log("after");
-          setTimeout(() => {
-
-            window.location.href = "/";
-          }, 1000);
-      } else {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.text();
+      })
+      .then((data) => {
+        // checks if login was successful
+        if (data === "OKAY") {
+          window.location.href = "/";
+        } else {
           alert("Invalid username or password");
-      }
-  });
+        }
+      });
   };
   return (
     <div className="form">
-          <div className="container">
-            <label htmlFor="uname">
-              <b>Username</b>
-            </label>
-            <input
-              type="text"
-              placeholder="Enter Username"
-              name="username"
-              id="uname"
-              className="inputLogin"
-              onChange={handleUsernameChange}
-            />
+      <div className="container">
+        <label htmlFor="uname">
+          <b>Username</b>
+        </label>
+        <input
+          type="text"
+          placeholder="Enter Username"
+          name="username"
+          id="uname"
+          className="inputLogin"
+          onChange={handleUsernameChange}
+        />
 
-            <label htmlFor="psw">
-              <b>Password</b>
-            </label>
-            <input
-              type="password"
-              placeholder="Enter Password"
-              name="password"
-              id="psw"
-              className="inputLogin"
-              onChange={handlePasswordChange}
-            />
+        <label htmlFor="psw">
+          <b>Password</b>
+        </label>
+        <input
+          type="password"
+          placeholder="Enter Password"
+          name="password"
+          id="psw"
+          className="inputLogin"
+          onChange={handlePasswordChange}
+        />
 
-            <button onClick={handleLogin} className="loginButton">Login</button>
-          </div>
-        </div>
+        <button onClick={handleLogin} className="loginButton">
+          Login
+        </button>
+      </div>
+    </div>
   );
 }
 

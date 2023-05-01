@@ -1,23 +1,24 @@
 import "../../styles/commonStyle.css";
 import TableRow from "./StockSummaryRow";
 
-function AccountTable() {
+function AccountTable(props) {
+  let accountInfo = props.accountSummary; 
   return (
     <div className="accountSummary">
       <h2>Account Summary</h2>
       <table id="summary">
         <thead>
           <tr>
-            <th>Account Value</th>
-            <th>Gain/Loss</th>
-            <th>Daily Change</th>
+            <th>Portfolio Value</th>
+            <th>Total Gain/Loss</th>
+            <th>Buying Power</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>New Row</td>
-            <td>New Row</td>
-            <td>New Row</td>
+            <td>${accountInfo.portfolioValue}</td>
+            <td style={accountInfo.color}>${accountInfo.gainLoss}</td>
+            <td>{accountInfo.buyingPower}</td>
           </tr>
         </tbody>
       </table>

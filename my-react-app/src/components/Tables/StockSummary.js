@@ -1,24 +1,8 @@
 import "../../styles/commonStyle.css";
 import StockSummaryRow from "./StockSummaryRow";
 
-function StockSummary() {
-  const propOne = {
-    stockSymbol: "TSLA",
-    stockName: "value2",
-    stockQuantity: "value3",
-    stockPrice: "value4",
-    stockDailyChange: "value5",
-    stockGain: "value6",
-  };
-  const propTwo = {
-    stockSymbol: "WMT",
-    stockName: "value2",
-    stockQuantity: "value3",
-    stockPrice: "value4",
-    stockDailyChange: "value5",
-    stockGain: "value6",
-  };
-
+function StockSummary(props) {
+  var predctionStocks = props.allStocks;
   return (
     <div className="stockSummary">
       <h2>Stock Summary</h2>
@@ -34,9 +18,9 @@ function StockSummary() {
           </tr>
         </thead>
         <tbody>
-          <StockSummaryRow {...propOne} />
-          <StockSummaryRow {...propTwo} />
-          <StockSummaryRow {...propTwo} />
+          {predctionStocks.map((stockData, index) => (
+            <StockSummaryRow key={index} stockData={stockData} />
+          ))}
         </tbody>
       </table>
     </div>
