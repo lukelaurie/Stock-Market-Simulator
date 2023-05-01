@@ -547,8 +547,7 @@ app.post("/api/login", (req, res) => {
             if (!isMatch) {
               res.end("ERROR");
             } else {
-              // sessId = auth.addSession(data.username);
-              sessId = addSession(data.username);
+              sessId = auth.addSession(data.username);
               res.cookie(
                 "login",
                 { username: data.username, sid: sessId },
@@ -653,7 +652,7 @@ app.get("/api/check/login", (req, res) => {
   ) {
     // Check if the cookie is valid (e.g., using a function like 'hasSession')
     // This function should be implemented to look up the session in your database
-    var result = hasSession(curCookie.login.username, curCookie.login.sid);
+    var result = auth.hasSession(curCookie.login.username, curCookie.login.sid);
     if (result) {
       console.log("was valid");
       res.send("valid");
