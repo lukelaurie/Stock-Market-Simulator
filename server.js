@@ -15,6 +15,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const auth = require("./auth");
 
 const app = express();
 
