@@ -674,10 +674,6 @@ function cleanupSessions() {
   }
 }
 
-// Set session length to 10 minutes
-const SESSION_LENGTH = 1000 * 60 * 60;
-
-setInterval(cleanupSessions, 2000);
 
 /*
  * This will check to see if the user is currently logged in.
