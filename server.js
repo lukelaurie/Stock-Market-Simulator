@@ -289,7 +289,6 @@ mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
-authenticatePages();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(
@@ -298,8 +297,6 @@ app.use(
     extended: true,
   })
 );
-app.use(express.static("public_html"));
-
 
 // Stock routes
 app.get('/api/stocks', getAllStocks);
@@ -317,17 +314,6 @@ app.post('/api/users/portfolio/sell', sellStock);
 
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
-
-authenticatePages();
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    // to support URL-encoded bodies
-    extended: true,
-  })
-);
-app.use(express.static("public_html"));
 
 /*
  * This is the code that gets ran whenever the client
@@ -607,20 +593,6 @@ app.post("/api/logout", (req, res) => {
   res.redirect("/login.html");
 });
 
-/*
- * This will protect all of the html pages so that they cannot
- * be accessed without logging into the page first.
- */
-function authenticatePages() {
-  // checks if user has authoritie to log into the pages
-  app.use("/help.html", authenticate);
-  app.use("/index.html", authenticate);
-  app.use("/predictions.html", authenticate);
-  app.use("/profile.html", authenticate);
-  app.use("/search.html", authenticate);
-  // app.use("/", authenticate);
-}
-
 let sessions = {};
 
 /*
@@ -663,44 +635,6 @@ function cleanupSessions() {
 const SESSION_LENGTH = 1000 * 60 * 60;
 
 setInterval(cleanupSessions, 2000);
-
-/*
- * This will check if the user can be validated with cookies.
- * @param {Object} req is the information about the request.
- * @param {Object} res the responce sent back to the user.
- * @param {Object} The function to be ran if cookie is valid.
- */
-function authenticate(req, res, next) {
-  // Check for cookies
-  let curCookie = req.cookies;
-
-  // Verify the existence of cookies (e.g. "id" and "username")
-  if (
-    curCookie &&
-    curCookie.login &&
-    curCookie.login.sid &&
-    curCookie.login.username
-  ) {
-    console.log(
-      "Cookie found for user: " +
-        curCookie.login.username +
-        " with id: " +
-        curCookie.login.sid
-    );
-    // Check if the cookie is valid (e.g., using a function like 'hasSession')
-    // This function should be implemented to look up the session in your database
-    var result = hasSession(curCookie.login.username, curCookie.login.sid);
-    if (result) {
-      next();
-      return;
-    }
-  }
-  else {
-    console.log("No cookie found");
-    // sends back to html
-    res.redirect("/login.html");
-  }
-}
 
 /*
  * This will check to see if the user is currently logged in.
