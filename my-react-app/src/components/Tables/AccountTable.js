@@ -17,7 +17,7 @@ function AccountTable(props) {
         <tbody>
           <tr>
             <td>${accountInfo.portfolioValue}</td>
-            <td style={accountInfo.color}>${accountInfo.gainLoss}</td>
+            <td style={accountInfo.color}>{accountInfo.gainLoss}</td>
             <td>{accountInfo.buyingPower}</td>
           </tr>
         </tbody>

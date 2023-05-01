@@ -63,12 +63,16 @@ function Home() {
               var stockName = nameToDisplay;
               var quantity = shares;
               var price = "$" + priceToDisplay["c"];
+              var dollarPrice = Math.abs(priceToDisplay["d"]);
+              var percentPrice = Math.abs(priceToDisplay["dp"]);
               // get the dolor and percentage change for the day
+              var gainSymbol = priceToDisplay["d"] >= 0 ? "+" : "-";
+
               var dailyChange =
-                "$" +
-                (Math.round(priceToDisplay["d"] * 100) / 100).toFixed(2) +
-                " (" +
-                (Math.round(priceToDisplay["dp"] * 100) / 100).toFixed(2) +
+              gainSymbol + "$" +
+                (Math.round(dollarPrice * 100) / 100).toFixed(2) +
+                " (" + gainSymbol +
+                (Math.round(percentPrice * 100) / 100).toFixed(2) +
                 "%)";
               var dailyChangeColor =
                 priceToDisplay["d"] > 0 ? "#008000" : "#FF0000";
@@ -79,7 +83,15 @@ function Home() {
                     (priceToDisplay["c"] - averagePrice) * shares * 100
                   ) / 100
                 ).toFixed(2);
-              var overallColor = gainAmount >= 0 ? "#008000" : "#FF0000";
+                // sets the correct styling and symbols
+                if (gainAmount >= 0) {
+                  var overallColor = "#008000"; 
+                  gainAmount = "+$" + gainAmount;
+                } else {
+                  var overallColor = "#FF0000"; 
+                  gainAmount = Math.abs(gainAmount)
+                  gainAmount = "-$" + gainAmount;
+                }
               // Update the summary totals
               accountData["portfolioValue"] =
                 accountData["portfolioValue"] + priceToDisplay["c"] * shares;
@@ -90,7 +102,7 @@ function Home() {
                 quantity: quantity,
                 price: price,
                 dailyChange: dailyChange,
-                gainLoss: "$" + gainAmount,
+                gainLoss: gainAmount,
                 dailyColor: { color: dailyChangeColor },
                 overallColor: { color: overallColor },
               };
@@ -105,10 +117,13 @@ function Home() {
 
           accountData["portfolioValue"] = (Math.round(accountData["portfolioValue"] * 100) / 100).toFixed(2);
           // sets the correct coloring
-          accountData["color"] =
-            accountData["gainLoss"] >= 0
-              ? { color: "#008000" }
-              : { color: "#FF0000" };
+          if (accountData["gainLoss"] >= 0) {
+            accountData["color"] = {color: "#008000"}; 
+            accountData["gainLoss"] = "+$" + accountData["gainLoss"]
+          } else {
+            accountData["color"] = {color: "#FF0000"};
+          }
+      
           setAccountSummary(accountData);
           setPredctionStocks(allStocks);
         });
