@@ -27,7 +27,6 @@ db.connectDB();
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
 
-const auth = require("./auth");
 const {getDailyInfo, getTimeUrl, regressionPrediction} = require('./api');
 
 // Import and use the 'User' model
