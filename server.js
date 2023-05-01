@@ -16,14 +16,19 @@ const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const auth = require("./auth");
+const db = require('./db');
+const routes = require("./routes");
 
 const app = express();
+
+// Connect to the MongoDB database
+db.connectDB();
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
 
-//const auth = require("./auth");
-//const {getDailyInfo, getTimeUrl, regressionPrediction} = require('./api');
+const auth = require("./auth");
+const {getDailyInfo, getTimeUrl, regressionPrediction} = require('./api');
 
 // Import and use the 'User' model
 const User = require("./user.js");
@@ -342,19 +347,6 @@ app.use(
   })
 );
 
-// Stock routes
-app.get("/api/stocks", getAllStocks);
-app.get("/api/stocks/:symbol", getStockBySymbol);
-app.get("/api/stocks/:symbol/history", getStockHistory);
-
-// User routes
-app.post("/api/users/register", register);
-app.post("/api/users/login", login);
-app.post("/api/users/logout", logout);
-app.get("/api/users/summary", getUserSummary);
-app.get("/api/users/portfolio", getPortfolio);
-app.post("/api/users/portfolio/buy", buyStock);
-app.post("/api/users/portfolio/sell", sellStock);
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
@@ -368,7 +360,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 app.get("/api/prediction/:symbol", async (req, res) => {
   let curStock = req.params.symbol;
   // send back the prediction
-  const predictionValue = await getDailyInfo(
+  const predictionValue = await api.getDailyInfo(
     "predictionInterval",
     curStock,
     res
@@ -434,7 +426,7 @@ app.post("/api/date/daily", async (req, res) => {
   let curStock = req.body.symbol;
   let curDate = req.body.date;
   // send back the data to the user
-  let stockInfo = await getDailyInfo(curDate, curStock, res);
+  let stockInfo = await api.getDailyInfo(curDate, curStock, res);
   res.send(stockInfo);
 });
 
@@ -547,8 +539,7 @@ app.post("/api/login", (req, res) => {
             if (!isMatch) {
               res.end("ERROR");
             } else {
-              // sessId = auth.addSession(data.username);
-              sessId = addSession(data.username);
+              sessId = auth.addSession(data.username);
               res.cookie(
                 "login",
                 { username: data.username, sid: sessId },
@@ -636,49 +627,6 @@ app.post("/api/logout", (req, res) => {
   res.redirect("/login.html");
 });
 
-let sessions = {};
-
-/*
- * This will add a session for the user to the sessions object.
- * @param {Object} user is the information about the user
- */
-function addSession(user) {
-  let sessionId = Math.floor(Math.random() * 100000);
-  let sessionStart = Date.now();
-  sessions[user] = { sid: sessionId, start: sessionStart };
-  return sessionId;
-}
-
-/*
- * This will check if the user has a session.
- * @param {String} user is the information about the user
- * @param {String} sessionId is the id of the session
- */
-function hasSession(user, sessionId) {
-  if (sessions[user] && sessions[user].sid == sessionId) {
-    return true;
-  }
-  return false;
-}
-
-/*
- * This will remove a session for the user to the sessions object
- */
-function cleanupSessions() {
-  let now = Date.now();
-  for (let user in sessions) {
-    let session = sessions[user];
-    if (session.start + SESSION_LENGTH < Date.now()) {
-      delete sessions[user];
-    }
-  }
-}
-
-// Set session length to 10 minutes
-const SESSION_LENGTH = 1000 * 60 * 60;
-
-setInterval(cleanupSessions, 2000);
-
 /*
  * This will check to see if the user is currently logged in.
  * @param {Object} req is the information about the request.
@@ -696,7 +644,7 @@ app.get("/api/check/login", (req, res) => {
   ) {
     // Check if the cookie is valid (e.g., using a function like 'hasSession')
     // This function should be implemented to look up the session in your database
-    var result = hasSession(curCookie.login.username, curCookie.login.sid);
+    var result = auth.hasSession(curCookie.login.username, curCookie.login.sid);
     if (result) {
       console.log("was valid");
       res.send("valid");
@@ -726,25 +674,6 @@ async function topStocks() {
   return topStocks;
 }
 
-/*
- * This will get all of the daily stock information up until a
- * given date.
- * @param {String} curDate is the information about the which date
- * should be searched up to.
- * @param {String} curStock is the stock to get info about.
- */
-async function getDailyInfo(curDate, curStock) {
-  // gets the data at the correct url
-  let url = await getTimeUrl(curDate, curStock);
-  const responce = await fetch(url);
-  const data = await responce.json();
-  if (curDate == "predictionInterval") {
-    let prediction = regressionPrediction(data, curStock);
-    return prediction;
-  } else {
-    return data;
-  }
-}
 
 /*
  * This will get whatever the latest trading day was.
@@ -759,90 +688,6 @@ async function getLatestTradingDay(apiKey, symbol) {
   // Extract the latest trading day from the response data
   const latestTradingDay = new Date(data.t * 1000);
   return latestTradingDay;
-}
-
-/*
- * This will create the correct url, such that the correct information
- * will be accessed from the url.
- * @param {String} curDate is the information about the which date
- * should be searched up to.
- * @param {String} curStock is the stock to get info about.
- * @return {Array} The url to access the data and the correct interval.
- */
-async function getTimeUrl(curDate, curStock) {
-  let apiKey = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
-  // gets all the correct times and symbols
-  const allDates = {
-    day: [await getLatestTradingDay(apiKey, curStock), "5"],
-    week: [new Date(new Date().setDate(new Date().getDate() - 7)), "30"],
-    month: [new Date(new Date().setMonth(new Date().getMonth() - 1)), "60"],
-    sixMonth: [new Date(new Date().setMonth(new Date().getMonth() - 6)), "D"],
-    year: [new Date(new Date().setMonth(new Date().getMonth() - 12)), "D"],
-    fiveYear: [
-      new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
-      "W",
-    ],
-    predictionInterval: [
-      new Date(new Date().setFullYear(new Date().getFullYear() - 5)),
-      "D",
-    ],
-    allTime: [
-      new Date(new Date().setFullYear(new Date().getFullYear() - 30)),
-      "W",
-    ],
-  };
-  var startTime = allDates[curDate][0];
-  const timePeriod = allDates[curDate][1];
-  // Set the start time to midnight today
-  startTime.setHours(0, 0, 0, 0);
-  const startTimestamp = Math.floor(startTime.getTime() / 1000);
-  // Set the end time to the current time
-  const endTimestamp = Math.floor(Date.now() / 1000);
-  let url =
-    "https://finnhub.io/api/v1/stock/candle?symbol=" +
-    curStock +
-    "&resolution=" +
-    timePeriod +
-    "&from=" +
-    startTimestamp +
-    "&to=" +
-    endTimestamp +
-    "&token=" +
-    apiKey;
-  return url;
-}
-
-/*
- * This will use a linear regression model in order to determine
- * a stocks predicted amount of change over the next year.
- * @param {Object} data is all the information about the stock.
- * @param {String} stockName is the name of the stock.
- * @return {String} The predictd stock change.
- */
-function regressionPrediction(data, stockName) {
-  if (data["s"] == "no_data") {
-    return "0.00%";
-  }
-  // gets the data points
-  const prices = data["c"];
-  const priceMappings = prices.map((price, index) => [index, price]);
-  // Perform linear regression to predict future prices
-  const result = regression.linear(priceMappings);
-  const slope = result.equation[0];
-  const intercept = result.equation[1];
-  // predicts the performance for the next year
-  const currentPrice = slope * prices.length + intercept;
-  const futurePrice = slope * (prices.length + 252) + intercept;
-  let percentage =
-    ((futurePrice - currentPrice) /
-      ((Math.abs(currentPrice) + Math.abs(futurePrice)) / 2)) *
-    100;
-  percentage = percentage.toFixed(2);
-  // saves the prediction
-  if (prices.length > 1000) {
-    saveStockPrediction(stockName, percentage);
-  }
-  return percentage.toString() + "%";
 }
 
 /*
