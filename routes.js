@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+
+const { hasSession } = require('./auth');
+
 const {
   register,
   login,
@@ -13,13 +16,14 @@ const {
   sellStock,
 } = require('./server');
 
-// Define isAuthenticated middleware
 const isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
+  const curCookie = req.cookies;
+  if (curCookie && curCookie.login && curCookie.login.sid && curCookie.login.username && hasSession(curCookie.login.username, curCookie.login.sid)) {
     return next();
   }
   res.status(401).json({ message: 'Unauthorized' });
 };
+
 
 // User routes
 router.post('/user/register', register);
