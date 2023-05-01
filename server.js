@@ -17,6 +17,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const auth = require("./auth");
 const db = require('./db');
+const routes = require("./routes");
 
 const app = express();
 
@@ -346,19 +347,6 @@ app.use(
   })
 );
 
-// Stock routes
-app.get("/api/stocks", getAllStocks);
-app.get("/api/stocks/:symbol", getStockBySymbol);
-app.get("/api/stocks/:symbol/history", getStockHistory);
-
-// User routes
-app.post("/api/users/register", register);
-app.post("/api/users/login", login);
-app.post("/api/users/logout", logout);
-app.get("/api/users/summary", getUserSummary);
-app.get("/api/users/portfolio", getPortfolio);
-app.post("/api/users/portfolio/buy", buyStock);
-app.post("/api/users/portfolio/sell", sellStock);
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
