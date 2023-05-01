@@ -147,3 +147,7 @@ a {
 a:hover {
     color: #08df90;
 }
+
+.button {
+    border: 1px black solid;
+}

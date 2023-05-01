@@ -4,7 +4,13 @@ import StockChart from "./StockChart";
 
 
 function StockPerformance(props) {
-  const [time, setTime] = useState("fiveYear");
+  const [time, setTime] = useState("day");
+  const [selectedButton, setSelectedButton] = useState(0); 
+
+  const clickStockTime = (timeInterval, stockIndex) => {
+    setTime(timeInterval);
+    setSelectedButton(stockIndex);
+  };
 
   return (
     <div>
@@ -12,37 +18,37 @@ function StockPerformance(props) {
       <table className="buttonTable">
         <tr className="buttonRow">
           <td>
-            <button className="button" onClick={() => setTime('day')}>
+            <button style={{backgroundColor: selectedButton === 0 ? '#CCCCCC' : '#EFEFEF'}} className="button" onClick={() => clickStockTime("day", 0)}>
               1D
             </button>
           </td>
           <td>
-            <button className="button" onClick={() => setTime('week')}>
+            <button style={{backgroundColor: selectedButton === 1 ? '#CCCCCC' : '#EFEFEF'}} className="button" onClick={() => clickStockTime('week', 1)}>
               1W
             </button>
           </td>
           <td>
-            <button className="button" onClick={() => setTime('month')}>
+            <button style={{backgroundColor: selectedButton === 2 ? '#CCCCCC' : '#EFEFEF'}} className="button" onClick={() => clickStockTime('month', 2)}>
               1M
             </button>
           </td>
           <td>
-            <button className="button" onClick={() => setTime('sixMonth')}>
+            <button style={{backgroundColor: selectedButton === 3 ? '#CCCCCC' : '#EFEFEF'}} className="button" onClick={() => clickStockTime('sixMonth', 3)}>
               6M
             </button>
           </td>
           <td>
-            <button className="button" onClick={() => setTime('year')}>
+            <button style={{backgroundColor: selectedButton === 4 ? '#CCCCCC' : '#EFEFEF'}} className="button" onClick={() => clickStockTime('year', 4)}>
               1Y
             </button>
           </td>
           <td>
-            <button className="button" onClick={() => setTime('fiveYear')}>
+            <button style={{backgroundColor: selectedButton === 5 ? '#CCCCCC' : '#EFEFEF'}} className="button" onClick={() => clickStockTime('fiveYear', 5)}>
               5Y
             </button>
           </td>
           <td>
-            <button className="button" onClick={() => setTime('allTime')}>
+            <button style={{backgroundColor: selectedButton === 6 ? '#CCCCCC' : '#EFEFEF'}} className="button" onClick={() => clickStockTime('allTime', 6)}>
               All
             </button>
           </td>
