@@ -16,8 +16,12 @@ const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const auth = require("./auth");
+const db = require('./db');
 
 const app = express();
+
+// Connect to the MongoDB database
+db.connectDB();
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
