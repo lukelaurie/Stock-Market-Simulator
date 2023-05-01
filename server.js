@@ -14,7 +14,6 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
-const session = require("express-session");
 const cors = require("cors");
 
 const app = express();
@@ -796,7 +795,10 @@ function regressionPrediction(data, stockName) {
  */
 function saveStockPrediction(stockTicker, prediction) {
   stockTicker = stockTicker.toUpperCase();
-
+  // limits the stocks that can be chosen
+  if (prediction > 18) {
+    return;
+  }
   Stock.findOne({ ticker: stockTicker }).then((result) => {
     // checks if the stock exists or not
     if (result == null) {
