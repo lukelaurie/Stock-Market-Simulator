@@ -636,49 +636,6 @@ app.post("/api/logout", (req, res) => {
   res.redirect("/login.html");
 });
 
-let sessions = {};
-
-/*
- * This will add a session for the user to the sessions object.
- * @param {Object} user is the information about the user
- */
-function addSession(user) {
-  let sessionId = Math.floor(Math.random() * 100000);
-  let sessionStart = Date.now();
-  sessions[user] = { sid: sessionId, start: sessionStart };
-  return sessionId;
-}
-
-/*
- * This will check if the user has a session.
- * @param {String} user is the information about the user
- * @param {String} sessionId is the id of the session
- */
-function hasSession(user, sessionId) {
-  if (sessions[user] && sessions[user].sid == sessionId) {
-    return true;
-  }
-  return false;
-}
-
-/*
- * This will remove a session for the user to the sessions object
- */
-function cleanupSessions() {
-  let now = Date.now();
-  for (let user in sessions) {
-    let session = sessions[user];
-    if (session.start + SESSION_LENGTH < Date.now()) {
-      delete sessions[user];
-    }
-  }
-}
-
-// Set session length to 10 minutes
-const SESSION_LENGTH = 1000 * 60 * 60;
-
-setInterval(cleanupSessions, 2000);
-
 /*
  * This will check to see if the user is currently logged in.
  * @param {Object} req is the information about the request.
