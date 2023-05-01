@@ -1,3 +1,7 @@
+/**
+ * This is a reusable component which displays the 
+ * table row of information in the table.
+ */
 import "../../styles/commonStyle.css";
 
 function StockPredictionRow(props) {

@@ -1,3 +1,8 @@
+/**
+ * This is a reusable component which displays the 
+ * table containing information about the users 
+ * information.
+ */
 import "../../styles/commonStyle.css";
 import TableRow from "./StockSummaryRow";
 
@@ -16,6 +21,7 @@ function AccountTable(props) {
         </thead>
         <tbody>
           <tr>
+            {/* The info about the users account */}
             <td>${accountInfo.portfolioValue}</td>
             <td style={accountInfo.color}>{accountInfo.gainLoss}</td>
             <td>{accountInfo.buyingPower}</td>

@@ -1,3 +1,7 @@
+/**
+ * This is the main component which controls which page is 
+ * currently being displayed to the user.
+ */
 // imports all of the needed pages
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./Pages/Home";

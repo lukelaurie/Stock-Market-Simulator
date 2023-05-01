@@ -1,3 +1,8 @@
+/**
+ * This is a reusable component which allows for a 
+ * user to be able to buy and sell shares of a searched 
+ * stock.
+ */
 import "../../styles/loginStyle.css";
 import { useEffect, useState } from "react";
 
@@ -10,6 +15,7 @@ function StockTrade(props) {
     setBuyShares(event.target.value);
   };
 
+  // function to run whenever the user purchases a stock
   const handleBuySubmit = (event) => {
     event.preventDefault();
     fetch("http://localhost/api/stock/day/" + stockTicker)
@@ -57,6 +63,7 @@ function StockTrade(props) {
       });
   };
 
+  // function that gets ran whenever a user sells a stock
   const handleSellSubmit = (event) => {
     event.preventDefault();
     fetch("http://localhost/api/stock/day/" + stockTicker)

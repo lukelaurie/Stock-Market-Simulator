@@ -1,3 +1,8 @@
+/**
+ * This is a reusable component which displays the 
+ * table which contains all of the stocks and info 
+ * about them which were purchased by the user.
+ */
 import "../../styles/commonStyle.css";
 import StockSummaryRow from "./StockSummaryRow";
 

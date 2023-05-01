@@ -1,3 +1,6 @@
+/**
+ * This is a reusable header that is used for the login page.
+ */
 import "../../styles/loginStyle.css";
 import dollarSign from "../../img/dollarSign.png";
 import stockChart from "../../img/stocks.png";

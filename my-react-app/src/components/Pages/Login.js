@@ -1,3 +1,7 @@
+/**
+ * This is a reusable component which puts together all 
+ * of the componets that makes up the login page.
+ */
 import "../../styles/loginStyle.css";
 
 import LoginHeader from "../Header/LoginHeader";

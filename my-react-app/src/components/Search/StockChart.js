@@ -1,3 +1,7 @@
+/**
+ * This is a reusable component that pulls together 
+ * the information to make a stock graph.
+ */
 import React from 'react';
 import { useEffect, useState } from "react";
 import LineChart from './LineChart';

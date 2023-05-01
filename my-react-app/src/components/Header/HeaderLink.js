@@ -1,3 +1,7 @@
+/**
+ * This is a reusable component which defines the links in order to 
+ * swap between web pages.
+ */
 import "../../styles/commonStyle.css";
 
 function HeaderLink(props) {

@@ -1,3 +1,8 @@
+/**
+ * This is a reusable component which displays the 
+ * table containing all of the stocks top predictions 
+ * where the user can click a link to view more stocks.
+ */
 import "../../styles/commonStyle.css";
 import StockPredictionRow from "./StockPredictionRow";
 import StockPredictionHead from "./StockPredictionHead";

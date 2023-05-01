@@ -1,3 +1,9 @@
+/**
+ * This is a reusable component which puts together all 
+ * of the componets that makes up the main home page so, 
+ * that user can see and click on all the stocks in their 
+ * portfolio.
+ */
 import "../../styles/commonStyle.css";
 import Header from "../Header/Header";
 import AccountTable from "../Tables/AccountTable";
@@ -21,7 +27,7 @@ function Home() {
   const dailyInfo = () => {
     fetch("http://localhost/api/users/summary", {
       method: "GET",
-      credentials: "include"
+      credentials: "include",
     })
       .then((response) => {
         return response.json();
@@ -59,71 +65,31 @@ function Home() {
                 }
               ),
             ]).then(([nameToDisplay, priceToDisplay]) => {
-              // calculates all the needed information
-              var stockName = nameToDisplay;
-              var quantity = shares;
-              var price = "$" + priceToDisplay["c"];
-              var dollarPrice = Math.abs(priceToDisplay["d"]);
-              var percentPrice = Math.abs(priceToDisplay["dp"]);
-              // get the dolor and percentage change for the day
-              var gainSymbol = priceToDisplay["d"] >= 0 ? "+" : "-";
-
-              var dailyChange =
-              gainSymbol + "$" +
-                (Math.round(dollarPrice * 100) / 100).toFixed(2) +
-                " (" + gainSymbol +
-                (Math.round(percentPrice * 100) / 100).toFixed(2) +
-                "%)";
-              var dailyChangeColor =
-                priceToDisplay["d"] > 0 ? "#008000" : "#FF0000";
-              // finds the stocks overall change compared to current price
-              var gainAmount =
-                (
-                  Math.round(
-                    (priceToDisplay["c"] - averagePrice) * shares * 100
-                  ) / 100
-                ).toFixed(2);
-                // sets the correct styling and symbols
-                if (gainAmount >= 0) {
-                  var overallColor = "#008000"; 
-                  gainAmount = "+$" + gainAmount;
-                } else {
-                  var overallColor = "#FF0000"; 
-                  gainAmount = Math.abs(gainAmount)
-                  gainAmount = "-$" + gainAmount;
-                }
-              // Update the summary totals
-              accountData["portfolioValue"] =
-                accountData["portfolioValue"] + priceToDisplay["c"] * shares;
-              // gets the data for the stock to be displayed on the row
-              var stockData = {
-                symbol: sym,
-                stockName: stockName,
-                quantity: quantity,
-                price: price,
-                dailyChange: dailyChange,
-                gainLoss: gainAmount,
-                dailyColor: { color: dailyChangeColor },
-                overallColor: { color: overallColor },
-              };
+              let stockInfo = [nameToDisplay, shares, priceToDisplay, averagePrice, sym];
+              var stockData = runCalculations(stockInfo, accountData);
               allStocks.push(stockData);
             });
           })
         ).then(() => {
           // finds the accounts performance
           const accountStart = 10000;
-          accountData["gainLoss"] = (Math.round(
-            ((cashBalance + accountData["portfolioValue"] - accountStart) * 100)) / 100).toFixed(2);
+          accountData["gainLoss"] = (
+            Math.round(
+              (cashBalance + accountData["portfolioValue"] - accountStart) * 100
+            ) / 100
+          ).toFixed(2);
 
-          accountData["portfolioValue"] = (Math.round(accountData["portfolioValue"] * 100) / 100).toFixed(2);
+          accountData["portfolioValue"] = (
+            Math.round(accountData["portfolioValue"] * 100) / 100
+          ).toFixed(2);
           // sets the correct coloring
           if (accountData["gainLoss"] >= 0) {
-            accountData["color"] = {color: "#008000"}; 
-            accountData["gainLoss"] = "+$" + accountData["gainLoss"]
+            accountData["color"] = { color: "#008000" };
+            accountData["gainLoss"] = "+$" + accountData["gainLoss"];
           } else {
-            accountData["color"] = {color: "#FF0000"};
+            accountData["color"] = { color: "#FF0000" };
           }
-      
+
           setAccountSummary(accountData);
           setPredctionStocks(allStocks);
         });
@@ -141,6 +107,58 @@ function Home() {
       <StockSummary allStocks={predctionStocks} />
     </div>
   );
+}
+
+function runCalculations(stockInfo, accountData) {
+  // calculates all the needed information
+  var stockName = stockInfo[0];
+  var shares = stockInfo[1];
+  var priceToDisplay = stockInfo[2];
+  var averagePrice = stockInfo[3];
+  var sym = stockInfo[4];
+  var price = "$" + priceToDisplay["c"];
+  var dollarPrice = Math.abs(priceToDisplay["d"]);
+  var percentPrice = Math.abs(priceToDisplay["dp"]);
+  // get the dolor and percentage change for the day
+  var gainSymbol = priceToDisplay["d"] >= 0 ? "+" : "-";
+
+  var dailyChange =
+    gainSymbol +
+    "$" +
+    (Math.round(dollarPrice * 100) / 100).toFixed(2) +
+    " (" +
+    gainSymbol +
+    (Math.round(percentPrice * 100) / 100).toFixed(2) +
+    "%)";
+  var dailyChangeColor = priceToDisplay["d"] > 0 ? "#008000" : "#FF0000";
+  // finds the stocks overall change compared to current price
+  var gainAmount = (
+    Math.round((priceToDisplay["c"] - averagePrice) * shares * 100) / 100
+  ).toFixed(2);
+  // sets the correct styling and symbols
+  if (gainAmount >= 0) {
+    var overallColor = "#008000";
+    gainAmount = "+$" + gainAmount;
+  } else {
+    var overallColor = "#FF0000";
+    gainAmount = Math.abs(gainAmount);
+    gainAmount = "-$" + gainAmount;
+  }
+  // Update the summary totals
+  accountData["portfolioValue"] =
+    accountData["portfolioValue"] + priceToDisplay["c"] * shares;
+  // gets the data for the stock to be displayed on the row
+  var stockData = {
+    symbol: sym,
+    stockName: stockName,
+    quantity: shares,
+    price: price,
+    dailyChange: dailyChange,
+    gainLoss: gainAmount,
+    dailyColor: { color: dailyChangeColor },
+    overallColor: { color: overallColor },
+  };
+  return stockData;
 }
 
 export default Home;

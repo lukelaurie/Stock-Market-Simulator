@@ -1,3 +1,7 @@
+/**
+ * This is a reusable header that is a container for all of the 
+ * components that make up the header.
+ */
 import "../../styles/commonStyle.css";
 
 import HeaderLink from "./HeaderLink";

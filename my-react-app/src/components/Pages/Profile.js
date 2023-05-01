@@ -1,3 +1,8 @@
+/**
+ * This is a reusable component which puts together all 
+ * of the componets that makes up the profile page so the user 
+ * can see login information about themselves.
+ */
 import "../../styles/commonStyle.css";
 import Header from "../Header/Header";
 import { useEffect, useState } from "react";

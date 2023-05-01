@@ -1,3 +1,9 @@
+/**
+ * This is what checks if the user has been logged in 
+ * and if so it will allow thm into the page that 
+ * they are trying to access.
+ */
+
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";

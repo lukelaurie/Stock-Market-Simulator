@@ -1,3 +1,7 @@
+/**
+ * This is a reusable component which displays the 
+ * table header of the prediction row in the table.
+ */
 import "../../styles/commonStyle.css";
 
 function StockPredictionHead() {

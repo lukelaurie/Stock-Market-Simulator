@@ -1,3 +1,8 @@
+/**
+ * This is a reusable component which displays the 
+ * table containing information about a stock which 
+ * was searcher for by the user.
+ */
 import "../../styles/loginStyle.css";
 import { useEffect, useState } from "react";
 import { todaysData, getPrediction } from "../../utils/search";

@@ -1,3 +1,9 @@
+/**
+ * This is a reusable component which puts together all 
+ * of the componets that makes up the search page so 
+ * the user can see all of then needed information 
+ * about a stock.
+ */
 import "../../styles/commonStyle.css";
 import Header from "../Header/Header";
 import StockPerformance from "../Search/StockPerformance";

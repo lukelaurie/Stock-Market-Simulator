@@ -3,9 +3,8 @@
  * stock page interactive. For example it will display to the
  * user an interactive graph based on a time interval of their
  * choosing
- * Author: Luke Laurie
- * Date: 4/8/2023
  */
+
 /*
  * This will get all of the needed data for a graph on its
  * correct time interval.

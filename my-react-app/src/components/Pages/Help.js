@@ -1,3 +1,7 @@
+/**
+ * This is a reusable component which puts together all 
+ * of the componets that makes up the help page.
+ */
 import "../../styles/commonStyle.css";
 import Header from "../Header/Header";
 

@@ -1,3 +1,8 @@
+/**
+ * This is a reusable component which provides the 
+ * bar allowing the user to swap between the different 
+ * charts.
+ */
 import "../../styles/loginStyle.css";
 import { useEffect, useState } from "react";
 import StockChart from "./StockChart";

@@ -1,3 +1,8 @@
+/**
+ * This is a reusable component which puts together all 
+ * of the componets that makes up the register page so that 
+ * the user can create a new user whenever.
+ */
 import "../../styles/loginStyle.css";
 import RegisterInput from "../Login/RegisterInput";
 import RegisterButtons from "../Login/RegisterButtons";

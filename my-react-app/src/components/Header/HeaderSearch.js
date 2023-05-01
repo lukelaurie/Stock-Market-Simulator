@@ -1,3 +1,7 @@
+/**
+ * This is a reusable header that contains the link allowing the 
+ * user to make a search for a stock.
+ */
 import "../../styles/commonStyle.css";
 
 function HeaderSearch() {
