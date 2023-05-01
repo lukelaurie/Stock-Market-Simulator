@@ -46,61 +46,8 @@ function cleanupSessions() {
   }
 }
 
-/*
- * This will protect all of the html pages so that they cannot
- * be accessed without logging into the page first.
- */
-function authenticatePages(app) {
-  // checks if user has authority to log into the pages
-  app.use("/help.html", authenticate);
-  app.use("/index.html", authenticate);
-  app.use("/predictions.html", authenticate);
-  app.use("/profile.html", authenticate);
-  app.use("/search.html", authenticate);
-  // app.use("/", authenticate);
-}
-
-/*
- * This middleware will check if the user can be validated with cookies.
- * @param {Object} req is the information about the request.
- * @param {Object} res the response sent back to the user.
- * @param {Function} next is the function to be run if the cookie is valid.
- */
-function authenticate(req, res, next) {
-  // Check for cookies
-  const curCookie = req.cookies;
-  console.log(curCookie);
-
-  // Verify the existence of cookies (e.g., "id" and "username")
-  if (
-    curCookie &&
-    curCookie.login &&
-    curCookie.login.sid &&
-    curCookie.login.username
-  ) {
-    console.log(
-      "Cookie found for user: " +
-        curCookie.login.username +
-        " with id: " +
-        curCookie.login.sid
-    );
-    // Check if the cookie is valid (e.g., using a function like 'hasSession')
-    const result = hasSession(curCookie.login.username, curCookie.login.sid);
-    if (result) {
-      next();
-      return;
-    }
-  } else {
-    console.log("No cookie found");
-    // sends back to html
-    res.redirect("/login.html");
-  }
-}
-
 module.exports = {
   addSession,
   hasSession,
-  cleanupSessions,
-  authenticate,
-  authenticatePages
+  cleanupSessions
 };
