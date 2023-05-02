@@ -35,7 +35,6 @@ function StockPredictionTable() {
         } else {
           var stocksToFind = topStocks.slice(stockCount - stocksPerLoad, stockCount);
         }
-        console.log(stocksToFind);
         const promises = stocksToFind.map((stockInfo) => {
           const ticker = stockInfo[0];
           // gets the name of the stock and daily info

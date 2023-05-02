@@ -10,7 +10,7 @@ function LoginHeader() {
     <header>
             <img className="headerImage floatLeft" src={dollarSign} alt="Dollar Sign" />
             <img className="headerImage floatRight" src={stockChart} alt="Stock Market Chart" />
-            <h1 class="headerText">Stock Market Simulator</h1>
+            <h1 className="headerText">Stock Market Simulator</h1>
     </header>
   );
 }
