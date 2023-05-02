@@ -381,7 +381,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 app.get("/api/prediction/:symbol", async (req, res) => {
   let curStock = req.params.symbol;
   // send back the prediction
-  const predictionValue = await api.getDailyInfo(
+  const predictionValue = await getDailyInfo(
     "predictionInterval",
     curStock,
     res
@@ -447,7 +447,7 @@ app.post("/api/date/daily", async (req, res) => {
   let curStock = req.body.symbol;
   let curDate = req.body.date;
   // send back the data to the user
-  let stockInfo = await api.getDailyInfo(curDate, curStock, res);
+  let stockInfo = await getDailyInfo(curDate, curStock, res);
   res.send(stockInfo);
 });
 
