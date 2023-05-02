@@ -25,7 +25,7 @@ function Home() {
   }, []);
 
   const dailyInfo = () => {
-    fetch("http://localhost/api/users/summary", {
+    fetch("http://localhost/user/summary", {
       method: "GET",
       credentials: "include",
     })
@@ -73,7 +73,7 @@ function Home() {
         ).then(() => {
           // finds the accounts performance
           const accountStart = 10000;
-          accountData["gainLoss"] = (
+          accountData["gainLoss"] = "$" + (
             Math.round(
               (cashBalance + accountData["portfolioValue"] - accountStart) * 100
             ) / 100
@@ -85,7 +85,7 @@ function Home() {
           // sets the correct coloring
           if (accountData["gainLoss"] >= 0) {
             accountData["color"] = { color: "#008000" };
-            accountData["gainLoss"] = "+$" + accountData["gainLoss"];
+            accountData["gainLoss"] = "+$" + (Math.round(Number(accountData["gainLoss"]) * 100) / 100).toFixed(2);
           } else {
             accountData["color"] = { color: "#FF0000" };
           }

@@ -25,6 +25,14 @@ db.connectDB();
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    // to support URL-encoded bodies
+    extended: true,
+  })
+);
 
 const {getDailyInfo, getTimeUrl, regressionPrediction} = require('./api');
 
@@ -174,6 +182,7 @@ async function logout(req, res) {
 // Get the user's summary
 async function getUserSummary(req, res) {
   try {
+    console.log("here");
     // get the username from the login cookie
     let curCookie = req.cookies;
     console.log(curCookie);
@@ -221,6 +230,7 @@ async function getPortfolio(req, res) {
 
 // Buy a stock
 async function buyStock(req, res) {
+  console.log(req.body);
   const { symbol, shares, price } = req.body;
 
   let curCookie = req.cookies;
@@ -332,11 +342,12 @@ async function sellStock(req, res) {
 
 // Check if user is authenticated 
 function isAuthenticated(req, res, next) {
-  if (req.session && req.session.user) {
-    next();
-  } else {
-    res.status(401).json({ message: "Unauthorized access" });
-  }
+  // if (req.session && req.session.user) {
+  //   next();
+  // } else {
+  //   res.status(401).json({ message: "Unauthorized access" });
+  // }
+  next();
 }
 
 // Define routes 
@@ -358,15 +369,6 @@ mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 //auth.authenticatePages();
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
-
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    // to support URL-encoded bodies
-    extended: true,
-  })
-);
 
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");

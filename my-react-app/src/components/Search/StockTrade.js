@@ -24,7 +24,7 @@ function StockTrade(props) {
       })
       // sends request to the server to buy the stocks
       .then((data) => {
-        fetch("http://localhost/api/users/portfolio/buy", {
+        fetch("http://localhost/portfolio/buy", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -71,7 +71,7 @@ function StockTrade(props) {
         return response.json();
     })
     .then((data) => {
-        fetch("http://localhost/api/users/portfolio/sell", {
+        fetch("http://localhost/portfolio/sell", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

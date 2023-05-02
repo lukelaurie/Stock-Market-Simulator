@@ -16,7 +16,7 @@ function Profile() {
     loginInfo();
   }, []);
   const loginInfo = () => {
-    fetch("http://localhost/api/users/summary", {
+    fetch("http://localhost/user/summary", {
       method: "GET",
       credentials: "include"
     })
