@@ -35,7 +35,7 @@ const User = require("./user.js");
 const Stock = require("./Stock.js");
 
 // Stock Controller
-getAllStocks = async (req, res) => {
+async function getAllStocks(req, res) {
   try {
     const stocks = await Stock.find({});
     if (!stocks) {
@@ -50,7 +50,7 @@ getAllStocks = async (req, res) => {
 };
 
 // Given a stock symbol, return the stock
-getStockBySymbol = async (req, res) => {
+async function getStockBySymbol(req, res) {
   try {
     const { symbol } = req.params;
     const stock = await Stock.findOne({ ticker: symbol.toUpperCase() });
@@ -68,7 +68,7 @@ getStockBySymbol = async (req, res) => {
 };
 
 // Given a stock symbol, return the stock's historical data
-getStockHistory = async (req, res) => {
+async function getStockHistory(req, res) {
   try {
     const { symbol } = req.params;
     const stock = await Stock.findOne({ ticker: symbol.toUpperCase() });
