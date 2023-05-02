@@ -26,20 +26,6 @@ db.connectDB();
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
 
-// Define routes 
-app.post('/user/register', register);
-app.post('/user/login', login);
-app.get('/user/logout', logout);
-app.get('/user/summary', isAuthenticated, getUserSummary);
-
-app.get('/stocks', getAllStocks);
-app.get('/stocks/:symbol', getStockBySymbol);
-app.get('/stocks/:symbol/history', getStockHistory);
-
-app.get('/portfolio', isAuthenticated, getPortfolio);
-app.post('/portfolio/buy', isAuthenticated, buyStock);
-app.post('/portfolio/sell', isAuthenticated, sellStock);
-
 const {getDailyInfo, getTimeUrl, regressionPrediction} = require('./api');
 
 // Import and use the 'User' model
@@ -343,6 +329,20 @@ async function sellStock(req, res) {
       .json({ message: "An error occurred while selling the stock" });
   }
 };
+
+// Define routes 
+app.post('/user/register', register);
+app.post('/user/login', login);
+app.get('/user/logout', logout);
+app.get('/user/summary', isAuthenticated, getUserSummary);
+
+app.get('/stocks', getAllStocks);
+app.get('/stocks/:symbol', getStockBySymbol);
+app.get('/stocks/:symbol/history', getStockHistory);
+
+app.get('/portfolio', isAuthenticated, getPortfolio);
+app.post('/portfolio/buy', isAuthenticated, buyStock);
+app.post('/portfolio/sell', isAuthenticated, sellStock);
 
 mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
