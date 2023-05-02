@@ -37,6 +37,9 @@ function StockTrade(props) {
           }),
         })
           .then((response) => {
+            if (!response.ok) {
+              throw new Error("Error buying stock!");
+            }
             return response.json();
           })
           .then(() => {
@@ -84,6 +87,9 @@ function StockTrade(props) {
                 })
         })
         .then ((response) => {
+            if (!response.ok) {
+                throw new Error("Error selling stock!");
+            }
             return response.json();
         })
         // message about information from stocks sold
