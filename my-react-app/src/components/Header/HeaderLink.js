@@ -1,5 +1,5 @@
 /**
- * This is a reusable component which defines the links in order to 
+ * This is a reusable component which defines the links in order to
  * swap between web pages.
  */
 import "../../styles/commonStyle.css";
@@ -12,16 +12,18 @@ function HeaderLink(props) {
       <a className={curPage === "home" ? "active" : ""} href="/">
         Home
       </a>
-      <a className={curPage === "profile" ? "active" : ""} href="profile">
-        Profile
-      </a>
       <a
         className={curPage === "predictions" ? "active" : ""}
         href="predictions"
       >
         Top Predictions
       </a>
-      <a className={curPage === "help" ? "active" : ""} href="help">Help</a>
+      <a className={curPage === "profile" ? "active" : ""} href="profile">
+        Profile
+      </a>
+      <a className={curPage === "help" ? "active" : ""} href="help">
+        Help
+      </a>
     </span>
   );
 }

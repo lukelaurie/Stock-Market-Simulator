@@ -15,7 +15,6 @@ function addSession(user) {
   const sessionId = Math.floor(Math.random() * 100000);
   const sessionStart = Date.now();
   sessions[user] = { sid: sessionId, start: sessionStart };
-  console.log("Session added for user: " + user + " with id: " + sessionId);
   return sessionId;
 }
 
