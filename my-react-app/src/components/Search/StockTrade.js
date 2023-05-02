@@ -42,7 +42,7 @@ function StockTrade(props) {
             }
             return response.json();
           })
-          .then((data) => {
+          .then(() => {
             // rounds to 2 decimal places
             const totalPayment = (Math.round((buyShares * Number(data["c"])) * 100) / 100).toFixed(2);
             // alers message that the stock has been bought
@@ -92,7 +92,7 @@ function StockTrade(props) {
             return response.json();
         })
         // message about information from stocks sold
-        .then ((data) => {
+        .then (() => {
             // rounds to 2 decimal places
             const totalPayment = (Math.round(sellShares * data["c"] * 100) / 100).toFixed(2);
             alert(sellShares + " shares of " + stockTicker + " successfully sold at $" + 
