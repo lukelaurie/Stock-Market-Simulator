@@ -39,7 +39,12 @@ function StockTrade(props) {
           .then((response) => {
             return response.json();
           })
-          .then(() => {
+          .then((data) => {
+            // checks if purchase war successful
+            if (data.message != "Stock purchased successfully") {
+              alert(data.message); 
+              return;
+            }
             // rounds to 2 decimal places
             const totalPayment = (Math.round((buyShares * Number(data["c"])) * 100) / 100).toFixed(2);
             // alers message that the stock has been bought
@@ -87,7 +92,12 @@ function StockTrade(props) {
             return response.json();
         })
         // message about information from stocks sold
-        .then (() => {
+        .then ((data) => {
+          // checks if purchase war successful
+          if (data.message != "Stock sold successfully") {
+            alert(data.message); 
+            return;
+          }
             // rounds to 2 decimal places
             const totalPayment = (Math.round(sellShares * data["c"] * 100) / 100).toFixed(2);
             alert(sellShares + " shares of " + stockTicker + " successfully sold at $" + 
