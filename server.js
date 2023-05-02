@@ -26,6 +26,20 @@ db.connectDB();
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
 
+// Define routes 
+app.post('/user/register', register);
+app.post('/user/login', login);
+app.get('/user/logout', logout);
+app.get('/user/summary', isAuthenticated, getUserSummary);
+
+app.get('/stocks', getAllStocks);
+app.get('/stocks/:symbol', getStockBySymbol);
+app.get('/stocks/:symbol/history', getStockHistory);
+
+app.get('/portfolio', isAuthenticated, getPortfolio);
+app.post('/portfolio/buy', isAuthenticated, buyStock);
+app.post('/portfolio/sell', isAuthenticated, sellStock);
+
 const {getDailyInfo, getTimeUrl, regressionPrediction} = require('./api');
 
 // Import and use the 'User' model
@@ -713,24 +727,6 @@ function saveStockPrediction(stockTicker, prediction) {
     }
   });
 }
-
-// Importing all routes from routes.js
-const routes = require("./routes");
-
-// Exporting all routes to routes.js
-module.exports = {
-  register,
-  login,
-  logout,
-  getUserSummary,
-  getAllStocks,
-  getStockBySymbol,
-  getStockHistory,
-  getPortfolio,
-  buyStock,
-  sellStock,
-};
-
 
 
 /*
