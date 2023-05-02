@@ -8,17 +8,17 @@ import LineChart from './LineChart';
 import { graphInfo } from "../../utils/search";
 
 
-
 function StockChart(props) {
   // initialzies the needed data
   const [datapoints, setStockData] = useState([]);
   const [labels, setStockLabels] = useState([]);
   const [color, setStockColor] = useState([]);
+  const [wasError, setWasError] = useState([false]);
   const title = props.stockTicker;
   // gets the data for the searched stock
   useEffect(() => {
     chartInfo(title, props.time); 
-  }, [title, props.time]);
+  }, [props.time]);
   // gets the daily change of the stock
   const chartInfo = (ticker, time) => {
     graphInfo(time, ticker)
@@ -29,7 +29,12 @@ function StockChart(props) {
         setStockColor(data.color);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        // displays error if invalid stock was chosen
+        if (!wasError) {
+          alert("Choose A Valid Stock Ticker");
+          setWasError(true);
+        }
+        window.location.href = "/";
       });
   }
 

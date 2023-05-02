@@ -26,14 +26,12 @@ function graphInfo(timeAmount, stock) {
     .then((curData) => {
       // draws the graph if data was found
       if (Object.keys(curData).length > 1) {
-        
         return getGraphInfo(curData, stock, timeAmount);
-      } else {
-        alert("Choose A Valid Stock Ticker");
       }
+
     })
     .catch((err) => {
-      alert("Choose A Valid Stock Ticker");
+      console.log(err);
     });
 }
 
