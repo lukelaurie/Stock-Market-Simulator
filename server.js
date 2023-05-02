@@ -723,13 +723,14 @@ module.exports = {
   login,
   logout,
   getUserSummary,
-  getPortfolio,
-  buyStock,
-  sellStock,
   getAllStocks,
   getStockBySymbol,
   getStockHistory,
+  getPortfolio,
+  buyStock,
+  sellStock,
 };
+
 
 
 /*
