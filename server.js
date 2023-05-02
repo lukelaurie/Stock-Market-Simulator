@@ -19,7 +19,7 @@ const auth = require("./auth");
 const userInteraction = require("./userInteraction");
 const { getDailyInfo, topStocks } = require("./api");
 
-mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
+mongoose.connect("mongodb://127.0.0.1/stockSimulation");
 
 const app = express();
 
