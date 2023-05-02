@@ -16,12 +16,12 @@ const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const auth = require("./auth");
-const db = require('./db');
+const userInteraction = require("./userInteraction");
+const { getDailyInfo, topStocks } = require("./api");
+
+mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
 
 const app = express();
-
-// Connect to the MongoDB database
-db.connectDB();
 
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
@@ -34,344 +34,19 @@ app.use(
   })
 );
 
-const {getDailyInfo, getTimeUrl, regressionPrediction} = require('./api');
+// Connect to the MongoDB database
+//db.connectDB();
 
 // Import and use the 'User' model
 const User = require("./user.js");
 
-// Import and use the 'Stock' model
-const Stock = require("./Stock.js");
-
-// Stock Controller
-async function getAllStocks(req, res) {
-  try {
-    const stocks = await Stock.find({});
-    if (!stocks) {
-      return res.status(404).json({ message: "No stocks found" });
-    }
-    res.status(200).json(stocks);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching all stocks" });
-  }
-};
-
-// Given a stock symbol, return the stock
-async function getStockBySymbol(req, res) {
-  try {
-    const { symbol } = req.params;
-    const stock = await Stock.findOne({ ticker: symbol.toUpperCase() });
-    if (!stock) {
-      return res
-        .status(404)
-        .json({ message: `No stock found with symbol: ${symbol}` });
-    }
-    res.status(200).json(stock);
-  } catch (error) {
-    res.status(500).json({
-      message: "An error occurred while fetching the stock by symbol",
-    });
-  }
-};
-
-// Given a stock symbol, return the stock's historical data
-async function getStockHistory(req, res) {
-  try {
-    const { symbol } = req.params;
-    const stock = await Stock.findOne({ ticker: symbol.toUpperCase() });
-
-    if (!stock) {
-      return res
-        .status(404)
-        .json({ message: `No stock found with symbol: ${symbol}` });
-    }
-
-    const apiKey = process.env.IEX_API_KEY; // Replace with proper API key
-    const apiUrl = `https://cloud.iexapis.com/stable/stock/${symbol}/chart/1y?token=${apiKey}`;
-
-    const response = await axios.get(apiUrl);
-
-    if (!response.data) {
-      return res
-        .status(404)
-        .json({ message: `No historical data found for symbol: ${symbol}` });
-    }
-
-    res.status(200).json(response.data);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching the stock history" });
-  }
-};
-
-// User Controller
-
-// Register a user
-async function register(req, res) {
-  const { username, email, password, phoneNumber } = req.body;
-
-  if (!username || !email || !password || !phoneNumber) {
-    return res.status(400).json({
-      message:
-        "Missing required fields: username, email, password, phoneNumber",
-    });
-  }
-
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
-    }
-
-    const newUser = new User({ username, email, password, phoneNumber });
-    await newUser.save();
-
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while registering the user" });
-  }
-};
-
-// Login a user
-async function login(req, res) {
-  const { username, password } = req.body;
-
-  try {
-    const user = await User.findOne({ username });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    // Set user information in the session
-    req.session.user = {
-      id: user._id,
-      username: user.username,
-    };
-
-    res.status(200).json({ message: "Logged in successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "An error occurred during login" });
-  }
-};
-
-// Logout a user
-async function logout(req, res) {
-  // Clear the session
-  req.session.destroy((err) => {
-    if (err) {
-      return res
-        .status(500)
-        .json({ message: "An error occurred while logging out" });
-    }
-
-    res.status(200).json({ message: "Logged out successfully" });
-  });
-};
-
-// Get the user's summary
-async function getUserSummary(req, res) {
-  try {
-    console.log("here");
-    // get the username from the login cookie
-    let curCookie = req.cookies;
-    console.log(curCookie);
-    console.log("after cookie");
-
-    const user = await User.findOne({
-      username: curCookie.login.username,
-    }).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json({
-      cashBalance: user.cashBalance,
-      holdings: user.holdings,
-      username: user.username,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-    });
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching user summary" });
-  }
-};
-
-// Get the user's portfolio
-async function getPortfolio(req, res) {
-  let curCookie = req.cookies;
-  console.log(curCookie);
-  username = curCookie.login.username;
-
-  try {
-    const user = await User.findOne({ username: username }).select("holdings");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json(user.holdings);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching user portfolio" });
-  }
-};
-
-// Buy a stock
-async function buyStock(req, res) {
-  console.log(req.body);
-  const { symbol, shares, price } = req.body;
-
-  let curCookie = req.cookies;
-  username = curCookie.login.username;
-
-  if (!symbol || !shares || !price) {
-    return res
-      .status(400)
-      .json({ message: "Missing required fields: symbol, shares, price" });
-  }
-
-  try {
-    const user = await User.findOne({ username: username });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const totalCost = shares * price;
-
-    if (user.cashBalance < totalCost) {
-      return res
-        .status(400)
-        .json({ message: "Insufficient funds to complete the transaction" });
-    }
-
-    const holdingIndex = user.holdings.findIndex(
-      (holding) => holding.symbol === symbol
-    );
-
-    if (holdingIndex >= 0) {
-      // Update existing holding
-      user.holdings[holdingIndex].shares += Number(shares);
-      user.holdings[holdingIndex].averagePrice =
-        (user.holdings[holdingIndex].averagePrice *
-          (user.holdings[holdingIndex].shares - shares) +
-          totalCost) /
-        user.holdings[holdingIndex].shares;
-    } else {
-      // Add new holding
-      user.holdings.push({ symbol, shares, averagePrice: price });
-    }
-
-    user.cashBalance -= totalCost;
-    await user.save();
-    res.status(200).json({ message: "Stock purchased successfully" });
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while buying the stock" });
-  }
-};
-
-// Sell a stock
-async function sellStock(req, res) {
-  const { symbol, shares, price } = req.body;
-
-  let curCookie = req.cookies;
-  console.log(curCookie);
-  username = curCookie.login.username;
-
-  if (!symbol || !shares || !price) {
-    return res
-      .status(400)
-      .json({ message: "Missing required fields: symbol, shares, price" });
-  }
-
-  try {
-    const user = await User.findOne({ username: username });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const holdingIndex = user.holdings.findIndex(
-      (holding) => holding.symbol === symbol
-    );
-
-    if (holdingIndex < 0 || user.holdings[holdingIndex].shares < shares) {
-      return res
-        .status(400)
-        .json({ message: "Insufficient shares to complete the transaction" });
-    }
-
-    const totalProceeds = shares * price;
-
-    console.log(
-      "current shares: ",
-      user.holdings[holdingIndex].shares + "\n shares: " + shares
-    );
-
-    // Reduce the shares of the holding
-    user.holdings[holdingIndex].shares -= shares;
-
-    // Remove the holding if the shares are 0
-    if (user.holdings[holdingIndex].shares === 0) {
-      console.log("removing holding");
-      user.holdings.splice(holdingIndex, 1);
-    }
-
-    user.cashBalance += totalProceeds;
-    await user.save();
-    res.status(200).json({ message: "Stock sold successfully" });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while selling the stock" });
-  }
-};
-
-// Check if user is authenticated 
-function isAuthenticated(req, res, next) {
-  // if (req.session && req.session.user) {
-  //   next();
-  // } else {
-  //   res.status(401).json({ message: "Unauthorized access" });
-  // }
-  next();
-}
-
-// Define routes 
-app.post('/user/register', register);
-app.post('/user/login', login);
-app.get('/user/logout', logout);
-app.get('/user/summary', isAuthenticated, getUserSummary);
-
-app.get('/stocks', getAllStocks);
-app.get('/stocks/:symbol', getStockBySymbol);
-app.get('/stocks/:symbol/history', getStockHistory);
-
-app.get('/portfolio', isAuthenticated, getPortfolio);
-app.post('/portfolio/buy', isAuthenticated, buyStock);
-app.post('/portfolio/sell', isAuthenticated, sellStock);
-
-mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
-
-//auth.authenticatePages();
-
-mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
-
-
-mongoose.connect("mongodb://127.0.0.1:27017/stockSimulation");
+// Define routes from userInteraction
+app.get("/user/summary", userInteraction.getUserSummary);
+app.get("/stocks", userInteraction.getAllStocks);
+app.get("/stocks/:symbol", userInteraction.getStockBySymbol);
+app.get("/portfolio", userInteraction.getPortfolio);
+app.post("/portfolio/buy", userInteraction.buyStock);
+app.post("/portfolio/sell", userInteraction.sellStock);
 
 /*
  * This is the code that gets ran whenever the client
@@ -669,76 +344,12 @@ app.get("/api/check/login", (req, res) => {
     // This function should be implemented to look up the session in your database
     var result = auth.hasSession(curCookie.login.username, curCookie.login.sid);
     if (result) {
-      console.log("was valid");
       res.send("valid");
       return;
     }
   }
   res.send("invalid");
 });
-
-/*
- * This will find the top ten stock predictions, in the
- * database keeping track of the predictions.
- */
-async function topStocks() {
-  // finds all the existing stock predictions
-  let curPrediction = await Stock.find({});
-  let topStocks = [];
-  // gets all of the stocks
-  for (i in curPrediction) {
-    let curStock = curPrediction[i];
-    topStocks.push([curStock.ticker, curStock.prediction]);
-  }
-  // sorts the stocks in descending order
-  topStocks.sort((a, b) => {
-    return b[1] - a[1];
-  });
-  return topStocks;
-}
-
-
-/*
- * This will get whatever the latest trading day was.
- * @param {String} apiKey is the key for the api.
- * @param {String} symbol is the stock to get info about.
- * @return {Date} the date representing the latest trading day
- */
-async function getLatestTradingDay(apiKey, symbol) {
-  let url = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`;
-  let response = await fetch(url);
-  let data = await response.json();
-  // Extract the latest trading day from the response data
-  const latestTradingDay = new Date(data.t * 1000);
-  return latestTradingDay;
-}
-
-/*
- * This will either update the already existing value of the
- * prediction, or if not yet creaed it will create a new mapping.
- * @param {String} stockTicker is symbol for the stock.
- * @param {Number} prediction is the number representing how much
- * the stock may change.
- */
-function saveStockPrediction(stockTicker, prediction) {
-  stockTicker = stockTicker.toUpperCase();
-  // limits the stocks that can be chosen
-  if (prediction > 18) {
-    return;
-  }
-  Stock.findOne({ ticker: stockTicker }).then((result) => {
-    // checks if the stock exists or not
-    if (result == null) {
-      // creates a new datapoint
-      Stock.create({ ticker: stockTicker, prediction: prediction });
-    } else {
-      // updates the value of the prediction
-      result.prediction = prediction;
-      result.save();
-    }
-  });
-}
-
 
 /*
  * This will set port 3000 as the location where the page
