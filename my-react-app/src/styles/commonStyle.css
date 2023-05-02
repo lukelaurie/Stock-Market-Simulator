@@ -150,3 +150,23 @@ a:hover {
 .button {
     border: 1px black solid;
 }
+
+.accountInfo {
+    text-align: center;
+}
+
+.accountTable {
+    display: inline-block;
+    text-align: left;
+    margin: 10px;
+    padding: 10px;
+    list-style-type: "\1F4B0";
+}
+
+.accountTable li {
+    padding-left: 10px;
+}
+
+.accountTable p {
+    font-size: 20px;
+}

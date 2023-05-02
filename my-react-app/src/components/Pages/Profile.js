@@ -41,10 +41,12 @@ function Profile() {
         <Header activePage={"profile"} />
       </div>
       <div className="accountInfo">
-        <p>Username: {username}</p>
-        <p>Email: {email}</p>
-        <p>Phone Number: {phoneNumber}</p>
-        <p>Current Balance: ${accountBalance}</p>
+        <ul className="accountTable">
+          <li><p>Username: {username}</p></li>
+          <li><p>Email: {email}</p></li>
+          <li><p>Phone Number: {phoneNumber}</p></li>
+          <li><p>Current Balance: ${accountBalance}</p></li>
+        </ul>
       </div>
     </div>
   );
