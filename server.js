@@ -17,7 +17,6 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const auth = require("./auth");
 const db = require('./db');
-const routes = require("./routes");
 
 const app = express();
 
@@ -714,6 +713,9 @@ function saveStockPrediction(stockTicker, prediction) {
     }
   });
 }
+
+// Importing all routes from routes.js
+const routes = require("./routes");
 
 /*
  * This will set port 3000 as the location where the page
