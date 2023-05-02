@@ -43,11 +43,6 @@ function StockTrade(props) {
             return response.json();
           })
           .then((data) => {
-            // checks if purchase war successful
-            if (data.message != "Stock purchased successfully") {
-              alert(data.message); 
-              return;
-            }
             // rounds to 2 decimal places
             const totalPayment = (Math.round((buyShares * Number(data["c"])) * 100) / 100).toFixed(2);
             // alers message that the stock has been bought
@@ -62,8 +57,7 @@ function StockTrade(props) {
             );
           })
           .catch((error) => {
-            console.log(error);
-            alert("Error purchasing stock!");
+            alert("Insufficient funds to complete the transaction");
           });
       })
       .catch((error) => {
@@ -99,19 +93,13 @@ function StockTrade(props) {
         })
         // message about information from stocks sold
         .then ((data) => {
-          // checks if purchase war successful
-          if (data.message != "Stock sold successfully") {
-            alert(data.message); 
-            return;
-          }
             // rounds to 2 decimal places
             const totalPayment = (Math.round(sellShares * data["c"] * 100) / 100).toFixed(2);
             alert(sellShares + " shares of " + stockTicker + " successfully sold at $" + 
             data["c"] + " per share for a total of $" + totalPayment);
         })
         .catch((error) => {
-            console.log(error);
-            alert("Error selling stock!");
+            alert("Insufficient shares to complete the transaction");
         });
     })
     .catch((error) => {
