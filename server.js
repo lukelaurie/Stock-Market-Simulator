@@ -101,7 +101,7 @@ getStockHistory = async (req, res) => {
 // User Controller
 
 // Register a user
-register = async (req, res) => {
+async function register(req, res) {
   const { username, email, password, phoneNumber } = req.body;
 
   if (!username || !email || !password || !phoneNumber) {
@@ -129,7 +129,7 @@ register = async (req, res) => {
 };
 
 // Login a user
-login = async (req, res) => {
+async function login(req, res) {
   const { username, password } = req.body;
 
   try {
@@ -158,7 +158,7 @@ login = async (req, res) => {
 };
 
 // Logout a user
-logout = async (req, res) => {
+async function logout(req, res) {
   // Clear the session
   req.session.destroy((err) => {
     if (err) {
@@ -172,7 +172,7 @@ logout = async (req, res) => {
 };
 
 // Get the user's summary
-getUserSummary = async (req, res) => {
+async function getUserSummary(req, res) {
   try {
     // get the username from the login cookie
     let curCookie = req.cookies;
@@ -201,7 +201,7 @@ getUserSummary = async (req, res) => {
 };
 
 // Get the user's portfolio
-getPortfolio = async (req, res) => {
+async function getPortfolio(req, res) {
   let curCookie = req.cookies;
   console.log(curCookie);
   username = curCookie.login.username;
@@ -220,7 +220,7 @@ getPortfolio = async (req, res) => {
 };
 
 // Buy a stock
-buyStock = async (req, res) => {
+async function buyStock(req, res) {
   const { symbol, shares, price } = req.body;
 
   let curCookie = req.cookies;
@@ -275,7 +275,7 @@ buyStock = async (req, res) => {
 };
 
 // Sell a stock
-sellStock = async (req, res) => {
+async function sellStock(req, res) {
   const { symbol, shares, price } = req.body;
 
   let curCookie = req.cookies;
