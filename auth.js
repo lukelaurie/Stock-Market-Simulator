@@ -26,7 +26,6 @@ function addSession(user) {
  * @returns {Boolean} True if the user has a session, otherwise false.
  */
 function hasSession(user, sessionId) {
-  console.log("Checking session");
   if (sessions[user] && sessions[user].sid === sessionId) {
     return true;
   }

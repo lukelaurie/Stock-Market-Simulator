@@ -5,7 +5,6 @@
  */
 import "../../styles/commonStyle.css";
 import StockSummaryRow from "./StockSummaryRow";
-
 function StockSummary(props) {
   var predctionStocks = props.allStocks;
   return (
@@ -23,7 +22,7 @@ function StockSummary(props) {
           </tr>
         </thead>
         <tbody>
-          {predctionStocks.map((stockData, index) => (
+          {predctionStocks.sort((a, b) => (a.stockName > b.stockName) ? 1 : -1).map((stockData, index) => (
             <StockSummaryRow key={index} stockData={stockData} />
           ))}
         </tbody>

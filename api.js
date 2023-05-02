@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 const regression = require("regression");
+const Stock = require("./Stock.js");
 
 /*
  * This will get all of the daily stock information up until a
@@ -10,7 +11,7 @@ const regression = require("regression");
  */
 async function getDailyInfo(curDate, curStock) {
   // gets the data at the correct url
-  let url = getTimeUrl(curDate, curStock);
+  let url = await getTimeUrl(curDate, curStock);
   const responce = await fetch(url);
   const data = await responce.json();
   if (curDate == "predictionInterval") {
@@ -29,11 +30,11 @@ async function getDailyInfo(curDate, curStock) {
  * @param {String} curStock is the stock to get info about.
  * @return {Array} The url to access the data and the correct interval.
  */
-function getTimeUrl(curDate, curStock) {
+async function getTimeUrl(curDate, curStock) {
   let apiKey = "ch0nj29r01qhadkofgl0ch0nj29r01qhadkofglg";
   // gets all the correct times and symbols
   const allDates = {
-    day: [new Date(new Date().setDate(new Date().getDate() - 1)), "5"],
+    day: [await getLatestTradingDay(apiKey, curStock), "5"],
     week: [new Date(new Date().setDate(new Date().getDate() - 7)), "30"],
     month: [new Date(new Date().setMonth(new Date().getMonth() - 1)), "60"],
     sixMonth: [new Date(new Date().setMonth(new Date().getMonth() - 6)), "D"],
@@ -49,7 +50,7 @@ function getTimeUrl(curDate, curStock) {
     allTime: [
       new Date(new Date().setFullYear(new Date().getFullYear() - 30)),
       "W",
-    ]
+    ],
   };
   var startTime = allDates[curDate][0];
   const timePeriod = allDates[curDate][1];
@@ -98,11 +99,74 @@ function regressionPrediction(data, stockName) {
       ((Math.abs(currentPrice) + Math.abs(futurePrice)) / 2)) *
     100;
   percentage = percentage.toFixed(2);
+  saveStockPrediction(stockName, percentage);
   return percentage.toString() + "%";
+}
+
+/*
+ * This will get whatever the latest trading day was.
+ * @param {String} apiKey is the key for the api.
+ * @param {String} symbol is the stock to get info about.
+ * @return {Date} the date representing the latest trading day
+ */
+async function getLatestTradingDay(apiKey, symbol) {
+  let url = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`;
+  let response = await fetch(url);
+  let data = await response.json();
+  // Extract the latest trading day from the response data
+  const latestTradingDay = new Date(data.t * 1000);
+  return latestTradingDay;
+}
+
+/*
+ * This will either update the already existing value of the
+ * prediction, or if not yet creaed it will create a new mapping.
+ * @param {String} stockTicker is symbol for the stock.
+ * @param {Number} prediction is the number representing how much
+ * the stock may change.
+ */
+function saveStockPrediction(stockTicker, prediction) {
+  stockTicker = stockTicker.toUpperCase();
+  // limits the stocks that can be chosen
+  if (prediction > 18) {
+    return;
+  }
+  Stock.findOne({ ticker: stockTicker }).then((result) => {
+    // checks if the stock exists or not
+    if (result == null) {
+      // creates a new datapoint
+      Stock.create({ ticker: stockTicker, prediction: prediction });
+    } else {
+      // updates the value of the prediction
+      result.prediction = prediction;
+      result.save();
+    }
+  });
+}
+
+/*
+ * This will find the top ten stock predictions, in the
+ * database keeping track of the predictions.
+ */
+async function topStocks() {
+  // finds all the existing stock predictions
+  let curPrediction = await Stock.find({});
+  let topStocks = [];
+  // gets all of the stocks
+  for (i in curPrediction) {
+    let curStock = curPrediction[i];
+    topStocks.push([curStock.ticker, curStock.prediction]);
+  }
+  // sorts the stocks in descending order
+  topStocks.sort((a, b) => {
+    return b[1] - a[1];
+  });
+  return topStocks;
 }
 
 module.exports = {
   getDailyInfo,
   getTimeUrl,
   regressionPrediction,
+  topStocks
 };
