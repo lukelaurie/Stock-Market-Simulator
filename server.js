@@ -717,6 +717,21 @@ function saveStockPrediction(stockTicker, prediction) {
 // Importing all routes from routes.js
 const routes = require("./routes");
 
+// Exporting all routes to routes.js
+module.exports = {
+  register,
+  login,
+  logout,
+  getUserSummary,
+  getPortfolio,
+  buyStock,
+  sellStock,
+  getAllStocks,
+  getStockBySymbol,
+  getStockHistory,
+};
+
+
 /*
  * This will set port 3000 as the location where the page
  * can be accesed.
