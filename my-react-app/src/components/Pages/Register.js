@@ -22,7 +22,7 @@ function Register() {
       return;
     }
 
-    fetch("http://localhost/api/register", {
+    fetch("http://157.230.181.102:8080/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

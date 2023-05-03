@@ -25,7 +25,7 @@ function Home() {
   }, []);
 
   const dailyInfo = () => {
-    fetch("http://localhost/user/summary", {
+    fetch("http://157.230.181.102:8080/user/summary", {
       method: "GET",
       credentials: "include",
     })
@@ -54,12 +54,12 @@ function Home() {
             let averagePrice = holding.averagePrice;
 
             return Promise.all([
-              fetch("http://localhost/api/stock/fullname/" + sym).then(
+              fetch("http://157.230.181.102:8080/api/stock/fullname/" + sym).then(
                 (nameResponce) => {
                   return nameResponce.text();
                 }
               ),
-              fetch("http://localhost/api/stock/day/" + sym).then(
+              fetch("http://157.230.181.102:8080/api/stock/day/" + sym).then(
                 (priceResponce) => {
                   return priceResponce.json();
                 }

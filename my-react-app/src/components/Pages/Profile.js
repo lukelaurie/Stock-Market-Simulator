@@ -16,7 +16,7 @@ function Profile() {
     loginInfo();
   }, []);
   const loginInfo = () => {
-    fetch("http://localhost/user/summary", {
+    fetch("http://157.230.181.102:8080/user/summary", {
       method: "GET",
       credentials: "include"
     })

@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 function isAuthenticated() {
   return (
-    fetch("http://localhost/api/check/login", {
+    fetch("http://157.230.181.102:8080/api/check/login", {
       credentials: "include",
     })
       .then((res) => res.text())

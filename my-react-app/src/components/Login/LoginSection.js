@@ -20,7 +20,7 @@ function LoginSection() {
       username: username,
       password: password,
     };
-    fetch("http://localhost/api/login", {
+    fetch("http://157.230.181.102:8080/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -18,13 +18,13 @@ function StockTrade(props) {
   // function to run whenever the user purchases a stock
   const handleBuySubmit = (event) => {
     event.preventDefault();
-    fetch("http://localhost/api/stock/day/" + stockTicker)
+    fetch("http://157.230.181.102:8080/api/stock/day/" + stockTicker)
       .then((response) => {
         return response.json();
       })
       // sends request to the server to buy the stocks
       .then((data) => {
-        fetch("http://localhost/portfolio/buy", {
+        fetch("http://157.230.181.102:8080/portfolio/buy", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -68,12 +68,12 @@ function StockTrade(props) {
   // function that gets ran whenever a user sells a stock
   const handleSellSubmit = (event) => {
     event.preventDefault();
-    fetch("http://localhost/api/stock/day/" + stockTicker)
+    fetch("http://157.230.181.102:8080/api/stock/day/" + stockTicker)
     .then((response) => {
         return response.json();
     })
     .then((data) => {
-        fetch("http://localhost/portfolio/sell", {
+        fetch("http://157.230.181.102:8080/portfolio/sell", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
