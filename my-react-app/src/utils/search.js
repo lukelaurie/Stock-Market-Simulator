@@ -13,7 +13,7 @@
  */
 function graphInfo(timeAmount, stock) {
   // makes a post requst to the server
-  return fetch("http://157.230.181.102:8080/api/date/daily/", {
+  return fetch("http://stocksimulator.me:8080/api/date/daily/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -83,7 +83,7 @@ function getGraphInfo(data, curStock, timeAmount) {
  * @return {Object} the data containing the info for the day.
  */
 function todaysData(stockTicker) {
-  let url = "http://157.230.181.102:8080/api/stock/day/" + stockTicker;
+  let url = "http://stocksimulator.me:8080/api/stock/day/" + stockTicker;
   // gets the days information
   return fetch(url)
     .then((responce) => {
@@ -114,7 +114,7 @@ function todaysData(stockTicker) {
  * @return {String} the percentage prediction for the stock.
  */
 function getPrediction(stockTicker) {
-  let url = "http://157.230.181.102:8080/api/prediction/" + stockTicker;
+  let url = "http://stocksimulator.me:8080/api/prediction/" + stockTicker;
   // gets the days information
   return fetch(url)
     .then((responce) => {

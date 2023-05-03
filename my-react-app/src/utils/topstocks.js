@@ -11,7 +11,7 @@
  * will then display it in it scorrect table view.
  */
 function getTopStocks() {
-  return fetch("http://157.230.181.102:8080/api/stock/top")
+  return fetch("http://stocksimulator.me:8080/api/stock/top")
     .then((response) => response.json()) // parse the response body as JSON
     .then((data) => {
       return data;

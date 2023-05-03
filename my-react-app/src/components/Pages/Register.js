@@ -22,7 +22,7 @@ function Register() {
       return;
     }
 
-    fetch("http://157.230.181.102:8080/api/register", {
+    fetch("http://stocksimulator.me:8080/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

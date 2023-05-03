@@ -39,10 +39,10 @@ function StockPredictionTable() {
           const ticker = stockInfo[0];
           // gets the name of the stock and daily info
           return Promise.all([
-            fetch(`http://157.230.181.102:8080/api/stock/fullname/${ticker}`).then((res) =>
+            fetch(`http://stocksimulator.me:8080/api/stock/fullname/${ticker}`).then((res) =>
               res.text()
             ),
-            fetch(`http://157.230.181.102:8080/api/stock/day/${ticker}`).then((res) =>
+            fetch(`http://stocksimulator.me:8080/api/stock/day/${ticker}`).then((res) =>
               res.json()
             ),
           ]).then(([name, price]) => ({

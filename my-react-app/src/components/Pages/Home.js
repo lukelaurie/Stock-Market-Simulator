@@ -25,7 +25,7 @@ function Home() {
   }, []);
 
   const dailyInfo = () => {
-    fetch("http://157.230.181.102:8080/user/summary", {
+    fetch("http://stocksimulator.me:8080/user/summary", {
       method: "GET",
       credentials: "include",
     })
@@ -54,12 +54,12 @@ function Home() {
             let averagePrice = holding.averagePrice;
 
             return Promise.all([
-              fetch("http://157.230.181.102:8080/api/stock/fullname/" + sym).then(
+              fetch("http://stocksimulator.me:8080/api/stock/fullname/" + sym).then(
                 (nameResponce) => {
                   return nameResponce.text();
                 }
               ),
-              fetch("http://157.230.181.102:8080/api/stock/day/" + sym).then(
+              fetch("http://stocksimulator.me:8080/api/stock/day/" + sym).then(
                 (priceResponce) => {
                   return priceResponce.json();
                 }
