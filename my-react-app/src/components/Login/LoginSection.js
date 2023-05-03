@@ -33,10 +33,9 @@ function LoginSection() {
         return response.text();
       })
       .then((data) => {
-        console.log(data);
         // checks if login was successful
         if (data === "OKAY") {
-          window.location.href = "157.230.181.102:8080/";
+          window.location.href = "/";
         } else {
           alert("Invalid username or password");
         }

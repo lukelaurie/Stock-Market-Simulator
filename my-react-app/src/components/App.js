@@ -20,14 +20,14 @@ function App() {
       <Routes>
         {/* Only allows access when user is vlaidated */}
         <Route element={<PrivateRoutes />}>
-          <Route path="http://157.230.181.102:3000/" element={<HomePage />} />
-          <Route path="http://157.230.181.102:3000/profile" element={<ProfilePage />} exact />
-          <Route path="http://157.230.181.102:3000/help" element={<HelpPage />} />
-          <Route path="http://157.230.181.102:3000/predictions" element={<PredictionPage />} />
-          <Route path="http://157.230.181.102:3000/search" element={<SearchPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/profile" element={<ProfilePage />} exact />
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="/predictions" element={<PredictionPage />} />
+          <Route path="/search" element={<SearchPage />} />
         </Route>
-        <Route path="http://157.230.181.102:3000/login" element={<LoginPage />} />
-        <Route path="http://157.230.181.102:3000/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </BrowserRouter>
   );
