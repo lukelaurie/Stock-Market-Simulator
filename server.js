@@ -17,11 +17,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 // allows access from all other servers
 app.use(cors({ origin: "*", credentials: true }));
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+
 const auth = require("./auth");
 const userInteraction = require("./userInteraction");
 const { getDailyInfo, topStocks } = require("./api");
