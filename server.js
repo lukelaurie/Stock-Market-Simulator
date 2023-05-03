@@ -15,6 +15,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const app = express();
 // allows access from all other servers
 app.use(cors({ origin: "*", credentials: true }));
 
@@ -23,8 +24,6 @@ const userInteraction = require("./userInteraction");
 const { getDailyInfo, topStocks } = require("./api");
 
 mongoose.connect("mongodb://127.0.0.1/stockSimulation");
-
-const app = express();
 
 app.use(cookieParser());
 app.use(express.json());
