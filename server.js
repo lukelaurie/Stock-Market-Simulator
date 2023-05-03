@@ -22,8 +22,8 @@ const { getDailyInfo, topStocks } = require("./api");
 mongoose.connect("mongodb://127.0.0.1/stockSimulation");
 
 const app = express();
-
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+// allows access from all other servers
+app.use(cors({ origin: "*", credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json());
