@@ -20,7 +20,6 @@ function LoginSection() {
       username: username,
       password: password,
     };
-    console.log(user);
     fetch("http://stocksimulator.me:8080/api/login", {
       method: "POST",
       headers: {
