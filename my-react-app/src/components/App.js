@@ -19,13 +19,13 @@ function App() {
       {/* Switches to correct route based on the url */}
       <Routes>
         {/* Only allows access when user is vlaidated */}
-        <Route element={<PrivateRoutes />}>
+        {/* <Route element={<PrivateRoutes />}> */}
           <Route path="/" element={<HomePage />} />
           <Route path="/profile" element={<ProfilePage />} exact />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/predictions" element={<PredictionPage />} />
           <Route path="/search" element={<SearchPage />} />
-        </Route>
+        {/* </Route> */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>
