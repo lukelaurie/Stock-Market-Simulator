@@ -89,6 +89,7 @@ function Home() {
             Math.round(accountData["portfolioValue"] * 100) / 100
           ).toFixed(2);
           // sets the correct coloring
+          console.log(accountData["gainLoss"] );
           if (accountData["gainLoss"] >= 0) {
             accountData["color"] = { color: "#008000" };
             accountData["gainLoss"] =
