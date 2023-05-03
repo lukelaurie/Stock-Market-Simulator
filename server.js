@@ -18,7 +18,7 @@ const cors = require("cors");
 const app = express();
 // allows access from all other servers
 app.use(cors({
-  origin: ['http://157.230.181.102:3000', 'http://localhost:3000'],
+  origin: ['http://157.230.181.102:3000', 'http://stocksimulator.me:3000', 'http://stocksimulator.me'],
   credentials: true
 }));
 
