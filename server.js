@@ -17,7 +17,10 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const app = express();
 // allows access from all other servers
-app.use(cors({ origin: "*", credentials: true }));
+app.use(cors({
+  origin: ['http://157.230.181.102:3000', 'http://localhost:3000'],
+  credentials: true
+}));
 
 const auth = require("./auth");
 const userInteraction = require("./userInteraction");
