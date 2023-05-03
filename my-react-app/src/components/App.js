@@ -19,15 +19,15 @@ function App() {
       {/* Switches to correct route based on the url */}
       <Routes>
         {/* Only allows access when user is vlaidated */}
-        {/* <Route element={<PrivateRoutes />}> */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/profile" element={<ProfilePage />} exact />
-          <Route path="/help" element={<HelpPage />} />
-          <Route path="/predictions" element={<PredictionPage />} />
-          <Route path="/search" element={<SearchPage />} />
-        {/* </Route> */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route element={<PrivateRoutes />}>
+          <Route path="157.230.181.102:8080/" element={<HomePage />} />
+          <Route path="157.230.181.102:8080/profile" element={<ProfilePage />} exact />
+          <Route path="157.230.181.102:8080/help" element={<HelpPage />} />
+          <Route path="157.230.181.102:8080/predictions" element={<PredictionPage />} />
+          <Route path="157.230.181.102:8080/search" element={<SearchPage />} />
+        </Route>
+        <Route path="157.230.181.102:8080/login" element={<LoginPage />} />
+        <Route path="157.230.181.102:8080/register" element={<RegisterPage />} />
       </Routes>
     </BrowserRouter>
   );

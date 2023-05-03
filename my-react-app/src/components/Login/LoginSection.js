@@ -20,6 +20,7 @@ function LoginSection() {
       username: username,
       password: password,
     };
+    console.log(user);
     fetch("http://157.230.181.102:8080/api/login", {
       method: "POST",
       headers: {
@@ -32,9 +33,10 @@ function LoginSection() {
         return response.text();
       })
       .then((data) => {
+        console.log(data);
         // checks if login was successful
         if (data === "OKAY") {
-          window.location.href = "/";
+          window.location.href = "157.230.181.102:8080/";
         } else {
           alert("Invalid username or password");
         }
