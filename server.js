@@ -355,6 +355,6 @@ app.get("/api/check/login", (req, res) => {
  * This will set port 3000 as the location where the page
  * can be accesed.
  */
-app.listen(80, () => {
-  console.log("Listening on port 80");
+app.listen(8080, () => {
+  console.log("Listening on port 8080");
 });
