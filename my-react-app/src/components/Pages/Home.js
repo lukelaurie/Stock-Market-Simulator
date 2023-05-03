@@ -1,7 +1,7 @@
 /**
- * This is a reusable component which puts together all 
- * of the componets that makes up the main home page so, 
- * that user can see and click on all the stocks in their 
+ * This is a reusable component which puts together all
+ * of the componets that makes up the main home page so,
+ * that user can see and click on all the stocks in their
  * portfolio.
  */
 import "../../styles/commonStyle.css";
@@ -54,18 +54,24 @@ function Home() {
             let averagePrice = holding.averagePrice;
 
             return Promise.all([
-              fetch("http://stocksimulator.me:8080/api/stock/fullname/" + sym).then(
-                (nameResponce) => {
-                  return nameResponce.text();
-                }
-              ),
+              fetch(
+                "http://stocksimulator.me:8080/api/stock/fullname/" + sym
+              ).then((nameResponce) => {
+                return nameResponce.text();
+              }),
               fetch("http://stocksimulator.me:8080/api/stock/day/" + sym).then(
                 (priceResponce) => {
                   return priceResponce.json();
                 }
               ),
             ]).then(([nameToDisplay, priceToDisplay]) => {
-              let stockInfo = [nameToDisplay, shares, priceToDisplay, averagePrice, sym];
+              let stockInfo = [
+                nameToDisplay,
+                shares,
+                priceToDisplay,
+                averagePrice,
+                sym,
+              ];
               var stockData = runCalculations(stockInfo, accountData);
               allStocks.push(stockData);
             });
@@ -73,7 +79,7 @@ function Home() {
         ).then(() => {
           // finds the accounts performance
           const accountStart = 10000;
-          accountData["gainLoss"] = "$" + (
+          accountData["gainLoss"] = (
             Math.round(
               (cashBalance + accountData["portfolioValue"] - accountStart) * 100
             ) / 100
@@ -85,9 +91,20 @@ function Home() {
           // sets the correct coloring
           if (accountData["gainLoss"] >= 0) {
             accountData["color"] = { color: "#008000" };
-            accountData["gainLoss"] = "+$" + (Math.round(Number(accountData["gainLoss"]) * 100) / 100).toFixed(2);
+            accountData["gainLoss"] =
+              "+$" +
+              (Math.round(Number(accountData["gainLoss"]) * 100) / 100).toFixed(
+                2
+              );
           } else {
             accountData["color"] = { color: "#FF0000" };
+            accountData["gainLoss"] =
+              "-$" +
+              Math.abs(
+                (
+                  Math.round(Number(accountData["gainLoss"]) * 100) / 100
+                ).toFixed(2)
+              );
           }
 
           setAccountSummary(accountData);
