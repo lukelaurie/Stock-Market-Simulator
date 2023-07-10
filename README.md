@@ -11,5 +11,5 @@ The Stock Market Simulator is built using the following technologies:
 - JavaScript
 - Express
 - MongoDB
-- 
+
 Feel free to explore the codebase and make the most of this simulator to enhance your understanding of the stock market and refine your trading strategies.
